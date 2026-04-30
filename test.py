@@ -22,17 +22,20 @@ FPS = 60
 
 # Try to use the Pixelify font, fallback to system monospace font
 try:
-    title_font = pygame.font.Font("assets/font/PixelifySans-Regular.ttf", 64)
-    menu_font = pygame.font.Font("assets/font/PixelifySans-Regular.ttf", 32)
+    title_font = pygame.font.Font("assets/font/PixelifySans-Regular.ttf", 72)
+    menu_font = pygame.font.Font("assets/font/PixelifySans-Regular.ttf", 48)
+    credit_font = pygame.font.Font("assets/font/PixelifySans-Regular.ttf", 24)
 except (FileNotFoundError, pygame.error):
-    title_font = pygame.font.SysFont("monospace", 64, bold=False)
-    menu_font = pygame.font.SysFont("monospace", 32, bold=False)
+    title_font = pygame.font.SysFont("monospace", 72, bold=False)
+    menu_font = pygame.font.SysFont("monospace", 48, bold=False)
+    credit_font = pygame.font.SysFont("monospace", 24, bold=False)
 
 # Menu items
 menu_items = ["Play Game", "Settings", "Credits"]
 selected_item = 0
 menu_item_rects = []
 hover_scale = [1.0, 1.0, 1.0]  # For smooth hover animations
+current_scene = "menu"  # Track which scene we're in
 
 # Game loop
 running = True
@@ -47,63 +50,95 @@ while running:
         if event.type == pygame.QUIT:
             running = False
         elif event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_UP:
-                selected_item = (selected_item - 1) % len(menu_items)
-            elif event.key == pygame.K_DOWN:
-                selected_item = (selected_item + 1) % len(menu_items)
-            elif event.key == pygame.K_RETURN:
-                if menu_items[selected_item] == "Play Game":
-                    print("Starting game...")
-                elif menu_items[selected_item] == "Settings":
-                    print("Opening settings...")
-                elif menu_items[selected_item] == "Credits":
-                    print("Opening credits...")
-        elif event.type == pygame.MOUSEBUTTONDOWN:
-            # Check if clicked on any menu item
-            for i, rect in enumerate(menu_item_rects):
-                if rect.collidepoint(mouse_pos):
-                    if menu_items[i] == "Play Game":
+            if event.key == pygame.K_ESCAPE:
+                current_scene = "menu"
+            elif current_scene == "menu":
+                if event.key == pygame.K_UP:
+                    selected_item = (selected_item - 1) % len(menu_items)
+                elif event.key == pygame.K_DOWN:
+                    selected_item = (selected_item + 1) % len(menu_items)
+                elif event.key == pygame.K_RETURN:
+                    if menu_items[selected_item] == "Play Game":
                         print("Starting game...")
-                    elif menu_items[i] == "Settings":
+                    elif menu_items[selected_item] == "Settings":
                         print("Opening settings...")
-                    elif menu_items[i] == "Credits":
-                        print("Opening credits...")
+                    elif menu_items[selected_item] == "Credits":
+                        current_scene = "credits"
+        elif event.type == pygame.MOUSEBUTTONDOWN:
+            if current_scene == "menu":
+                # Check if clicked on any menu item
+                for i, rect in enumerate(menu_item_rects):
+                    if rect.collidepoint(mouse_pos):
+                        if menu_items[i] == "Play Game":
+                            print("Starting game...")
+                        elif menu_items[i] == "Settings":
+                            print("Opening settings...")
+                        elif menu_items[i] == "Credits":
+                            current_scene = "credits"
     
     screen.fill(BLACK)
 
-    title_text = title_font.render("RPG Placeholder Title", True, WHITE)
-    title_rect = title_text.get_rect(center=(SCREEN_WIDTH // 2, 120))
-    screen.blit(title_text, title_rect)
+    if current_scene == "menu":
+        # Draw main menu
+        title_text = title_font.render("RPG Placeholder Title", False, WHITE)
+        title_rect = title_text.get_rect(center=(SCREEN_WIDTH // 2, 120))
+        screen.blit(title_text, title_rect)
 
-    for i in range(len(menu_items)):
-        if i == selected_item:
-            hover_scale[i] = min(hover_scale[i] + 0.05, 1.15)
-        else:
-            hover_scale[i] = max(hover_scale[i] - 0.05, 1.0)
+        for i in range(len(menu_items)):
+            if i == selected_item:
+                hover_scale[i] = min(hover_scale[i] + 0.05, 1.15)
+            else:
+                hover_scale[i] = max(hover_scale[i] - 0.05, 1.0)
 
-    menu_start_y = 300
-    menu_item_rects = []
-    for i, item in enumerate(menu_items):
-        if i == selected_item:
-            color = WHITE
-            text = menu_font.render(f"> {item} <", True, color)
-        else:
-            color = GRAY
-            text = menu_font.render(item, True, color)
+        menu_start_y = 300
+        menu_item_rects = []
+        for i, item in enumerate(menu_items):
+            if i == selected_item:
+                color = WHITE
+                text = menu_font.render(f"> {item} <", False, color)
+            else:
+                color = GRAY
+                text = menu_font.render(item, False, color)
+            
+            if hover_scale[i] != 1.0:
+                scaled_width = int(text.get_width() * hover_scale[i])
+                scaled_height = int(text.get_height() * hover_scale[i])
+                text = pygame.transform.scale(text, (scaled_width, scaled_height))
+            
+            text_rect = text.get_rect(topleft=(150, menu_start_y + i * 100))
+            menu_item_rects.append(text_rect)
+            screen.blit(text, text_rect)
         
-        if hover_scale[i] != 1.0:
-            scaled_width = int(text.get_width() * hover_scale[i])
-            scaled_height = int(text.get_height() * hover_scale[i])
-            text = pygame.transform.smoothscale(text, (scaled_width, scaled_height))
-        
-        text_rect = text.get_rect(topleft=(150, menu_start_y + i * 100))
-        menu_item_rects.append(text_rect)
-        screen.blit(text, text_rect)
+        for i, rect in enumerate(menu_item_rects):
+            if rect.collidepoint(mouse_pos):
+                selected_item = i
+                break
     
-    for i, rect in enumerate(menu_item_rects):
-        if rect.collidepoint(mouse_pos):
-            selected_item = i
-            break
+    elif current_scene == "credits":
+        # Draw credits scene
+        credits_title = title_font.render("CREDITS", False, WHITE)
+        credits_title_rect = credits_title.get_rect(center=(SCREEN_WIDTH // 2, 80))
+        screen.blit(credits_title, credits_title_rect)
+        
+        credits_items = [
+            "Software Assessment",
+            "",
+            "Made by The Coding Conquerors of Destiny™",
+            "",
+            "Blacktown Boys High School"
+        ]
+        
+        credits_start_y = 200
+        for i, item in enumerate(credits_items):
+            if item:  # Only render non-empty lines
+                credits_text = credit_font.render(item, False, WHITE)
+                credits_rect = credits_text.get_rect(center=(SCREEN_WIDTH // 2, credits_start_y + i * 60))
+                screen.blit(credits_text, credits_rect)
+        
+        # Draw "Press ESC to return" hint
+        esc_text = credit_font.render("Press ESC to return to menu", False, GRAY)
+        esc_rect = esc_text.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT - 50))
+        screen.blit(esc_text, esc_rect)
     
     pygame.display.update()
 
