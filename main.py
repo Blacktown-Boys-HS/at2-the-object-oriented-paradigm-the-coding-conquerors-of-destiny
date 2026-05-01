@@ -66,6 +66,14 @@ def main():
         
         # Update current scene
         scenes[current_scene].update(mouse_pos)
+        deferred_next_scene = None
+        if hasattr(scenes[current_scene], "consume_requested_scene"):
+            deferred_next_scene = scenes[current_scene].consume_requested_scene()
+        if (not is_transitioning) and deferred_next_scene and deferred_next_scene != current_scene:
+            pending_scene = deferred_next_scene
+            is_transitioning = True
+            transition_direction = 1
+            transition_alpha = 0
         
         # Render current scene
         scenes[current_scene].render(screen)
