@@ -25,6 +25,8 @@ class CreditsScene:
             "",
             "Made by The Coding Conquerors of Destiny",
             "",
+            "Angadjot Dhaliwal and Sri Hari Srinigganathan",
+            "",
             "Blacktown Boys High School",
         ]
 
