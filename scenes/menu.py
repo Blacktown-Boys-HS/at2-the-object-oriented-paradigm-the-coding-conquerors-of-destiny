@@ -2,13 +2,14 @@
 Menu scene for the RPG game.
 """
 import math
-import random
 import pygame
 from globals import (
-    SCREEN_WIDTH, SCREEN_HEIGHT, WHITE, GRAY, BACKGROUND, YELLOW,
+    SCREEN_WIDTH, SCREEN_HEIGHT, WHITE, GRAY, YELLOW, FPS,
     SCENE_CREDITS, SCENE_GAME, SCENE_SETTINGS
 )
 from pos import Position
+
+from .aesthetic import SharedBackground, draw_footer_hint, safe_scale_surface
 
 
 class MenuScene:
@@ -24,19 +25,13 @@ class MenuScene:
         self.menu_item_rects = []
         self.hover_scale = [1.0 for _ in self.menu_items]
         self.selection_box_y = 0
+        self.activation_item = None
+        self.activation_progress = 0.0
+        self.activation_duration = 0.18
+        self.pending_scene = None
 
         self.time_seconds = 0.0
-        self.background_dots = []
-        for _ in range(60):
-            self.background_dots.append(
-                {
-                    "x": random.randint(0, SCREEN_WIDTH),
-                    "y": random.randint(0, SCREEN_HEIGHT),
-                    "radius": random.randint(1, 3),
-                    "speed": random.uniform(0.3, 1.4),
-                    "alpha": random.randint(40, 120),
-                }
-            )
+        self.bg = SharedBackground()
 
     def handle_event(self, event):
         """Handle input events."""
@@ -46,14 +41,21 @@ class MenuScene:
             elif event.key == pygame.K_DOWN:
                 self.selected_item = (self.selected_item + 1) % len(self.menu_items)
             elif event.key in (pygame.K_RETURN, pygame.K_SPACE):
-                return self._get_selected_action()
+                self._start_selection_activate()
         elif event.type == pygame.MOUSEBUTTONDOWN:
             mouse_pos = pygame.mouse.get_pos()
             for i, rect in enumerate(self.menu_item_rects):
                 if rect.collidepoint(mouse_pos):
                     self.selected_item = i
-                    return self._get_selected_action()
+                    self._start_selection_activate()
+                    break
         return None
+
+    def _start_selection_activate(self):
+        """Play a short confirm animation before scene transition."""
+        if self.activation_item is None:
+            self.activation_item = self.selected_item
+            self.activation_progress = 0.0
     
     def _get_selected_action(self):
         """Get the action for the selected menu item."""
@@ -67,21 +69,20 @@ class MenuScene:
 
     def _safe_scale_text(self, surface, scale_factor):
         """Scale text surfaces safely and prefer smooth scaling."""
-        target_width = max(1, int(surface.get_width() * scale_factor))
-        target_height = max(1, int(surface.get_height() * scale_factor))
-        converted = surface.convert_alpha()
-        return pygame.transform.smoothscale(converted, (target_width, target_height))
+        return safe_scale_surface(surface, scale_factor)
+
+    def consume_requested_scene(self):
+        """Return and clear a deferred scene transition request."""
+        scene = self.pending_scene
+        self.pending_scene = None
+        return scene
 
     def update(self, mouse_pos):
         """Update menu state."""
         self.time_seconds = pygame.time.get_ticks() / 1000.0
+        dt = 1.0 / FPS
 
-        # Move background dots down slowly to add depth.
-        for dot in self.background_dots:
-            dot["y"] += dot["speed"]
-            if dot["y"] > SCREEN_HEIGHT + dot["radius"]:
-                dot["y"] = -dot["radius"]
-                dot["x"] = random.randint(0, SCREEN_WIDTH)
+        self.bg.update(dt)
 
         # Check for mouse hover
         for i, rect in enumerate(self.menu_item_rects):
@@ -91,8 +92,13 @@ class MenuScene:
 
         # Update hover scales
         for i in range(len(self.menu_items)):
+            # Selected item gets extra punch during confirm animation.
+            activation_bonus = 0.0
+            if self.activation_item == i:
+                activation_bonus = 0.10 * (1.0 - self.activation_progress)
+
             if i == self.selected_item:
-                self.hover_scale[i] = min(self.hover_scale[i] + 0.05, 1.10)
+                self.hover_scale[i] = min(self.hover_scale[i] + 0.05, 1.10 + activation_bonus)
             else:
                 self.hover_scale[i] = max(self.hover_scale[i] - 0.05, 1.0)
 
@@ -102,21 +108,16 @@ class MenuScene:
             self.selection_box_y = target_y
         self.selection_box_y += (target_y - self.selection_box_y) * 0.20
 
+        if self.activation_item is not None:
+            self.activation_progress += dt / self.activation_duration
+            if self.activation_progress >= 1.0:
+                self.pending_scene = self._get_selected_action()
+                self.activation_item = None
+                self.activation_progress = 0.0
+
     def render(self, screen):
         """Render the menu scene."""
-        screen.fill(BACKGROUND)
-
-        # Draw a soft vertical gradient for better contrast.
-        for y in range(0, SCREEN_HEIGHT, 4):
-            shade = 30 + int((y / SCREEN_HEIGHT) * 20)
-            pygame.draw.rect(screen, (shade, shade, shade + 8), (0, y, SCREEN_WIDTH, 4))
-
-        # Draw moving background dots.
-        dot_surface = pygame.Surface((SCREEN_WIDTH, SCREEN_HEIGHT), pygame.SRCALPHA)
-        for dot in self.background_dots:
-            color = (255, 255, 255, dot["alpha"])
-            pygame.draw.circle(dot_surface, color, (int(dot["x"]), int(dot["y"])), dot["radius"])
-        screen.blit(dot_surface, (0, 0))
+        self.bg.draw(screen)
 
         screen_center = Position(SCREEN_WIDTH // 2, 0)
 
@@ -141,9 +142,15 @@ class MenuScene:
         # Draw selection highlight box.
         selection_rect = pygame.Rect(130, int(self.selection_box_y) - 8, 440, 76)
         box_surface = pygame.Surface((selection_rect.width, selection_rect.height), pygame.SRCALPHA)
-        box_surface.fill((255, 255, 255, 22))
+        box_alpha = 22
+        if self.activation_item == self.selected_item:
+            box_alpha = 22 + int(70 * (1.0 - self.activation_progress))
+        box_surface.fill((255, 255, 255, box_alpha))
         screen.blit(box_surface, selection_rect.topleft)
-        pygame.draw.rect(screen, (130, 130, 130), selection_rect, width=2, border_radius=8)
+        border_color = (130, 130, 130)
+        if self.activation_item == self.selected_item:
+            border_color = (220, 200, 120)
+        pygame.draw.rect(screen, border_color, selection_rect, width=2, border_radius=8)
 
         # Draw menu items
         menu_start_pos = Position(150, 300)
@@ -183,10 +190,8 @@ class MenuScene:
                 self.menu_item_rects.append(text_rect)
                 screen.blit(text, text_rect)
 
-        controls_text = self.credit_font.render(
+        draw_footer_hint(
+            screen,
+            self.credit_font,
             "Use UP/DOWN or mouse to select, ENTER/SPACE to confirm",
-            False,
-            (190, 190, 190)
         )
-        controls_rect = controls_text.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT - 45))
-        screen.blit(controls_text, controls_rect)
