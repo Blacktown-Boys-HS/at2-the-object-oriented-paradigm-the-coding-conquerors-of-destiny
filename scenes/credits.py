@@ -16,6 +16,9 @@ class CreditsScene:
         self.menu_font = menu_font
         self.credit_font = credit_font
         
+        self.fade_alpha = 255
+        self.is_fading = False
+        
         self.credits_items = [
             "Software Assessment",
             "",
@@ -28,16 +31,25 @@ class CreditsScene:
         """Handle input events."""
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_ESCAPE:
+                self.is_fading = True
                 return SCENE_MENU
         return None
     
     def update(self, mouse_pos):
         """Update credits state."""
-        pass
+        if self.is_fading:
+            self.fade_alpha = max(self.fade_alpha - 8, 0)
+            if self.fade_alpha == 0:
+                self.is_fading = False
     
     def render(self, screen):
         """Render the credits scene."""
         screen.fill(BACKGROUND)
+        
+        # Create fade surface
+        fade_surface = pygame.Surface((SCREEN_WIDTH, SCREEN_HEIGHT))
+        fade_surface.set_alpha(255 - self.fade_alpha)
+        fade_surface.fill(BACKGROUND)
         
         screen_center = Position(SCREEN_WIDTH // 2, 0)
         
@@ -61,3 +73,7 @@ class CreditsScene:
         esc_pos = Position(SCREEN_WIDTH // 2, SCREEN_HEIGHT - 50)
         esc_rect = esc_text.get_rect(center=esc_pos.to_int_tuple())
         screen.blit(esc_text, esc_rect)
+        
+        # Apply fade overlay
+        if self.is_fading:
+            screen.blit(fade_surface, (0, 0))
