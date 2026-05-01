@@ -50,7 +50,7 @@ def main():
         SCENE_MENU: MenuScene(title_font, menu_font, credit_font, sound_manager.effects),
         SCENE_CREDITS: CreditsScene(title_font, menu_font, credit_font, sound_manager.effects),
         SCENE_GAME: GameScene(title_font, menu_font, credit_font, sound_manager.effects),
-        SCENE_SETTINGS: SettingsScene(title_font, menu_font, credit_font, sound_manager.effects),
+        SCENE_SETTINGS: SettingsScene(title_font, menu_font, credit_font, sound_manager),
     }
     
     current_scene = SCENE_MENU

@@ -21,6 +21,34 @@ class SoundManager:
         }
         self.menu_theme_path = self.sound_dir / "Main Menu Theme - Calm (E,80BPM).wav"
         self.music_scenes = {SCENE_MENU, SCENE_CREDITS, SCENE_SETTINGS}
+        self._music_volume = 1.0
+        self._sfx_volume = 1.0
+        self.apply_volumes()
+
+    @property
+    def music_volume(self):
+        return self._music_volume
+
+    @property
+    def sfx_volume(self):
+        return self._sfx_volume
+
+    def set_music_volume(self, volume):
+        """Background music volume 0.0–1.0."""
+        self._music_volume = max(0.0, min(1.0, float(volume)))
+        pygame.mixer.music.set_volume(self._music_volume)
+
+    def set_sfx_volume(self, volume):
+        """Sound effects volume 0.0–1.0."""
+        self._sfx_volume = max(0.0, min(1.0, float(volume)))
+        for sound in self.effects.values():
+            sound.set_volume(self._sfx_volume)
+
+    def apply_volumes(self):
+        """Re-apply stored volumes (e.g. after mixer re-init)."""
+        pygame.mixer.music.set_volume(self._music_volume)
+        for sound in self.effects.values():
+            sound.set_volume(self._sfx_volume)
 
     def update_music_for_scene(self, scene_name):
         """Play/stop looped background music based on active scene."""
