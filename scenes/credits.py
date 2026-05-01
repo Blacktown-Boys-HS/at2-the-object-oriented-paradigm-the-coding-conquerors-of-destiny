@@ -20,13 +20,13 @@ class CreditsScene:
         self.time_seconds = 0.0
 
         self.credits_items = [
-            "Software Assessment",
+            "> Software Assessment",
             "",
-            "Made by The Coding Conquerors of Destiny",
+            "> Made by The Coding Conquerors of Destiny",
             "",
-            "Angadjot Dhaliwal and Sri Hari Srinigganathan",
+            "> Angadjot Dhaliwal and Sri Hari Srinigganathan",
             "",
-            "Blacktown Boys High School",
+            "> BLACKTOWN BOYS HIGH SCHOOL",
         ]
 
     def handle_event(self, event):

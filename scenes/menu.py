@@ -133,7 +133,7 @@ class MenuScene:
 
         # Draw title with subtle pulse.
         pulse = 1.0 + (math.sin(self.time_seconds * 2.2) * 0.02)
-        title_text = self.title_font.render("RPG Placeholder Title", False, WHITE)
+        title_text = self.title_font.render("Pixel Warriors: Revenge of the Missing Semicolon", False, WHITE)
         title_text = self._safe_scale_text(title_text, pulse)
         title_pos = screen_center.add(Position(0, 115))
         title_rect = title_text.get_rect(center=title_pos.to_int_tuple())
