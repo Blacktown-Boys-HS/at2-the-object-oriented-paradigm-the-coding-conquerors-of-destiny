@@ -1,0 +1,14 @@
+Be concise and code-first.
+
+This is a Python Pygame RPG project.
+
+Prioritise:
+- game loops
+- scenes
+- player movement
+- collisions
+- UI and menus
+
+Avoid unnecessary explanation unless asked.
+
+Give clean, production-style code.

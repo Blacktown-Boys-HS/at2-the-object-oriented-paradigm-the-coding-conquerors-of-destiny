@@ -7,15 +7,14 @@ from globals import SCREEN_WIDTH, WHITE, SCENE_MENU, FPS
 from pos import Position
 
 from .aesthetic import SharedBackground, draw_pulsing_title, draw_footer_hint
-
-
 class CreditsScene:
     """Credits scene."""
 
-    def __init__(self, title_font, menu_font, credit_font):
+    def __init__(self, title_font, menu_font, credit_font, sounds=None):
         self.title_font = title_font
         self.menu_font = menu_font
         self.credit_font = credit_font
+        self.sounds = sounds or {}
 
         self.bg = SharedBackground()
         self.time_seconds = 0.0

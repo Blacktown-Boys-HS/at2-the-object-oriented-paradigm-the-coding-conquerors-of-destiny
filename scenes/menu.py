@@ -15,10 +15,11 @@ from .aesthetic import SharedBackground, draw_footer_hint, safe_scale_surface
 class MenuScene:
     """Main menu scene."""
 
-    def __init__(self, title_font, menu_font, credit_font):
+    def __init__(self, title_font, menu_font, credit_font, sounds=None):
         self.title_font = title_font
         self.menu_font = menu_font
         self.credit_font = credit_font
+        self.sounds = sounds or {}
 
         self.menu_items = ["Play Game", "Settings", "Credits"]
         self.selected_item = 0
@@ -29,6 +30,7 @@ class MenuScene:
         self.activation_progress = 0.0
         self.activation_duration = 0.18
         self.pending_scene = None
+        self.last_selected_item = self.selected_item
 
         self.time_seconds = 0.0
         self.bg = SharedBackground()
@@ -54,6 +56,9 @@ class MenuScene:
     def _start_selection_activate(self):
         """Play a short confirm animation before scene transition."""
         if self.activation_item is None:
+            confirm_sound = self.sounds.get("confirm")
+            if confirm_sound:
+                confirm_sound.play()
             self.activation_item = self.selected_item
             self.activation_progress = 0.0
     
@@ -89,6 +94,11 @@ class MenuScene:
             if rect.collidepoint(mouse_pos):
                 self.selected_item = i
                 break
+        if self.selected_item != self.last_selected_item:
+            hover_sound = self.sounds.get("button_hover")
+            if hover_sound:
+                hover_sound.play()
+            self.last_selected_item = self.selected_item
 
         # Update hover scales
         for i in range(len(self.menu_items)):

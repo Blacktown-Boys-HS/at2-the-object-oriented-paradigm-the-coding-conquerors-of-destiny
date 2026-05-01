@@ -1,6 +1,7 @@
 """
 Global variables and constants for the RPG game.
 """
+from pathlib import Path
 import pygame
 
 # Screen setup
@@ -33,11 +34,17 @@ CREDIT_FONT_SIZE = 24
 
 def load_fonts():
     """Load fonts from assets folder."""
+    base_dir = Path(__file__).resolve().parent
+    font_candidates = [
+        base_dir / "assets" / "fonts" / "Kenney Pixel.ttf",
+        base_dir / "assets" / "font" / "Kenney Pixel.ttf",
+    ]
     try:
-        title_font = pygame.font.Font("assets/font/Kenney Pixel.ttf", TITLE_FONT_SIZE)
-        menu_font = pygame.font.Font("assets/font/Kenney Pixel.ttf", MENU_FONT_SIZE)
-        credit_font = pygame.font.Font("assets/font/Kenney Pixel.ttf", CREDIT_FONT_SIZE)
-    except (FileNotFoundError, pygame.error):
+        font_path = next(path for path in font_candidates if path.exists())
+        title_font = pygame.font.Font(str(font_path), TITLE_FONT_SIZE)
+        menu_font = pygame.font.Font(str(font_path), MENU_FONT_SIZE)
+        credit_font = pygame.font.Font(str(font_path), CREDIT_FONT_SIZE)
+    except (StopIteration, FileNotFoundError, pygame.error):
         title_font = pygame.font.SysFont("monospace", TITLE_FONT_SIZE, bold=False)
         menu_font = pygame.font.SysFont("monospace", MENU_FONT_SIZE, bold=False)
         credit_font = pygame.font.SysFont("monospace", CREDIT_FONT_SIZE, bold=False)
