@@ -76,6 +76,72 @@ class MenuScene:
         """Scale text surfaces safely and prefer smooth scaling."""
         return safe_scale_surface(surface, scale_factor)
 
+    def _draw_menu_title(self, screen, center_xy, pulse):
+        """Styled main title: depth, outline, warm shimmer, accent rule."""
+        title_str = "Pixel Warriors: Revenge of the Missing Semicolon"
+        shimmer = 0.5 + 0.5 * math.sin(self.time_seconds * 2.8)
+        main_color = (
+            255,
+            int(215 + 40 * shimmer),
+            int(110 + 70 * shimmer),
+        )
+        shadow_deep = (14, 10, 32)
+        rim = (72, 58, 120)
+
+        base = self.title_font.render(title_str, False, WHITE)
+        w, h = base.get_width(), base.get_height()
+        pad = 10
+        composite = pygame.Surface((w + pad * 2, h + pad * 2), pygame.SRCALPHA)
+        ox, oy = pad, pad
+
+        for d in (5, 4, 3, 2, 1):
+            layer = self.title_font.render(title_str, False, shadow_deep)
+            composite.blit(layer, (ox + d, oy + d))
+
+        for dx, dy in (
+            (-1, 0), (1, 0), (0, -1), (0, 1),
+            (-1, -1), (1, -1), (-1, 1), (1, 1),
+        ):
+            layer = self.title_font.render(title_str, False, rim)
+            composite.blit(layer, (ox + dx, oy + dy))
+
+        composite.blit(self.title_font.render(title_str, False, main_color), (ox, oy))
+
+        scaled = self._safe_scale_text(composite, pulse)
+        rect = scaled.get_rect(center=center_xy)
+        screen.blit(scaled, rect)
+
+        bar_w = int(scaled.get_width() * 0.68)
+        bar_y = rect.bottom + 8
+        bar_x0 = center_xy[0] - bar_w // 2
+        bar_x1 = center_xy[0] + bar_w // 2
+        pygame.draw.line(
+            screen,
+            (80, 60, 120),
+            (bar_x0, bar_y + 1),
+            (bar_x1, bar_y + 1),
+            3,
+        )
+        pygame.draw.line(
+            screen,
+            (220, 175, 90),
+            (bar_x0, bar_y),
+            (bar_x1, bar_y),
+            2,
+        )
+        cx, mid_y = center_xy[0], bar_y + 12
+        rh = 5 + int(2 * (0.5 + 0.5 * math.sin(self.time_seconds * 3.2)))
+        pygame.draw.polygon(
+            screen,
+            (255, 200, 100),
+            [
+                (cx, mid_y - rh),
+                (cx + rh, mid_y),
+                (cx, mid_y + rh),
+                (cx - rh, mid_y),
+            ],
+        )
+
     def consume_requested_scene(self):
         """Return and clear a deferred scene transition request."""
         scene = self.pending_scene
@@ -133,11 +199,8 @@ class MenuScene:
 
         # Draw title with subtle pulse.
         pulse = 1.0 + (math.sin(self.time_seconds * 2.2) * 0.02)
-        title_text = self.title_font.render("Pixel Warriors: Revenge of the Missing Semicolon", False, WHITE)
-        title_text = self._safe_scale_text(title_text, pulse)
         title_pos = screen_center.add(Position(0, 115))
-        title_rect = title_text.get_rect(center=title_pos.to_int_tuple())
-        screen.blit(title_text, title_rect)
+        self._draw_menu_title(screen, title_pos.to_int_tuple(), pulse)
 
         # Draw subtitle
         madeby_text = self.credit_font.render(
