@@ -78,6 +78,10 @@ def main():
     splash_phase = "fade_in"
     splash_alpha = 0
     splash_hold_left = SPLASH_HOLD_FRAMES
+    if showing_splash:
+        game_start_fx = sound_manager.effects.get("game_start")
+        if game_start_fx:
+            game_start_fx.play()
     
     # Initialize scenes
     scenes = {

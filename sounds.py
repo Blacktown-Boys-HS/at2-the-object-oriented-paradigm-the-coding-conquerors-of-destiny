@@ -19,6 +19,11 @@ class SoundManager:
             "cancel_back": pygame.mixer.Sound(str(self.sound_dir / "Cancel  Back.wav")),
             "confirm": pygame.mixer.Sound(str(self.sound_dir / "Confirm_1.wav")),
         }
+        game_start_path = self.sound_dir / "Game Start Sound FX.mp3"
+        try:
+            self.effects["game_start"] = pygame.mixer.Sound(str(game_start_path))
+        except pygame.error:
+            pass
         self.menu_theme_path = self.sound_dir / "Main Menu Theme - Calm (E,80BPM).wav"
         self.music_scenes = {SCENE_MENU, SCENE_CREDITS, SCENE_SETTINGS}
         self._music_volume = 1.0
