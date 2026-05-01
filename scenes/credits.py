@@ -3,10 +3,10 @@ Credits scene for the RPG game.
 """
 import pygame
 from globals import (
-    SCREEN_WIDTH, SCREEN_HEIGHT, WHITE, GRAY, BLACK,
+    SCREEN_WIDTH, SCREEN_HEIGHT, WHITE, GRAY, BACKGROUND,
     SCENE_MENU
 )
-
+from pos import Position
 
 class CreditsScene:
     """Credits scene."""
@@ -37,22 +37,27 @@ class CreditsScene:
     
     def render(self, screen):
         """Render the credits scene."""
-        screen.fill(BLACK)
+        screen.fill(BACKGROUND)
+        
+        screen_center = Position(SCREEN_WIDTH // 2, 0)
         
         # Draw title
         credits_title = self.title_font.render("CREDITS", False, WHITE)
-        credits_title_rect = credits_title.get_rect(center=(SCREEN_WIDTH // 2, 80))
+        title_pos = screen_center.add(Position(0, 80))
+        credits_title_rect = credits_title.get_rect(center=title_pos.to_int_tuple())
         screen.blit(credits_title, credits_title_rect)
         
         # Draw credits items
-        credits_start_y = 200
+        credits_start_pos = Position(SCREEN_WIDTH // 2, 200)
         for i, item in enumerate(self.credits_items):
-            if item:  # Only render non-empty lines
+            if item:
                 credits_text = self.credit_font.render(item, False, WHITE)
-                credits_rect = credits_text.get_rect(center=(SCREEN_WIDTH // 2, credits_start_y + i * 60))
+                item_pos = credits_start_pos.add(Position(0, i * 60))
+                credits_rect = credits_text.get_rect(center=item_pos.to_int_tuple())
                 screen.blit(credits_text, credits_rect)
         
         # Draw "Press ESC to return" hint
         esc_text = self.credit_font.render("Press ESC to return to menu", False, GRAY)
-        esc_rect = esc_text.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT - 50))
+        esc_pos = Position(SCREEN_WIDTH // 2, SCREEN_HEIGHT - 50)
+        esc_rect = esc_text.get_rect(center=esc_pos.to_int_tuple())
         screen.blit(esc_text, esc_rect)

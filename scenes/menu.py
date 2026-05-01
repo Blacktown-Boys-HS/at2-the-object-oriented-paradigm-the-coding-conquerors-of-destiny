@@ -3,9 +3,10 @@ Menu scene for the RPG game.
 """
 import pygame
 from globals import (
-    SCREEN_WIDTH, SCREEN_HEIGHT, WHITE, GRAY, BLACK,
+    SCREEN_WIDTH, SCREEN_HEIGHT, WHITE, GRAY, BACKGROUND,
     SCENE_CREDITS, SCENE_GAME, SCENE_SETTINGS
 )
+from pos import Position
 
 
 class MenuScene:
@@ -67,20 +68,24 @@ class MenuScene:
     
     def render(self, screen):
         """Render the menu scene."""
-        screen.fill(BLACK)
+        screen.fill(BACKGROUND)
+        
+        screen_center = Position(SCREEN_WIDTH // 2, 0)
         
         # Draw title
         title_text = self.title_font.render("RPG Placeholder Title", False, WHITE)
-        title_rect = title_text.get_rect(center=(SCREEN_WIDTH // 2, 120))
+        title_pos = screen_center.add(Position(0, 120))
+        title_rect = title_text.get_rect(center=title_pos.to_int_tuple())
         screen.blit(title_text, title_rect)
         
         # Draw subtitle
         madeby_text = self.credit_font.render("Made by The Coding Conquerors of Destiny™", False, WHITE)
-        madeby_rect = madeby_text.get_rect(center=(SCREEN_WIDTH // 2, 240))
+        madeby_pos = screen_center.add(Position(0, 240))
+        madeby_rect = madeby_text.get_rect(center=madeby_pos.to_int_tuple())
         screen.blit(madeby_text, madeby_rect)
         
         # Draw menu items
-        menu_start_y = 300
+        menu_start_pos = Position(150, 300)
         self.menu_item_rects = []
         for i, item in enumerate(self.menu_items):
             if i == self.selected_item:
@@ -96,6 +101,7 @@ class MenuScene:
                 scaled_height = int(text.get_height() * self.hover_scale[i])
                 text = pygame.transform.scale(text, (scaled_width, scaled_height))
             
-            text_rect = text.get_rect(topleft=(150, menu_start_y + i * 100))
+            item_pos = menu_start_pos.add(Position(0, i * 100))
+            text_rect = text.get_rect(topleft=item_pos.to_int_tuple())
             self.menu_item_rects.append(text_rect)
             screen.blit(text, text_rect)
