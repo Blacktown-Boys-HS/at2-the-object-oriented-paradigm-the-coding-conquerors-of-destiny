@@ -5,7 +5,13 @@ import math
 import random
 import pygame
 
-from globals import SCREEN_WIDTH, SCREEN_HEIGHT, BACKGROUND, WHITE
+from globals import (
+    SCREEN_WIDTH,
+    SCREEN_HEIGHT,
+    BACKGROUND,
+    WHITE,
+    FONT_ANTIALIAS,
+)
 
 FOOTER_HINT_COLOR = (190, 190, 190)
 SUBTITLE_COLOR = (215, 215, 215)
@@ -13,11 +19,11 @@ BODY_MUTED = (200, 200, 200)
 
 
 def safe_scale_surface(surface, scale_factor):
-    """Scale surfaces safely; prefer smooth scaling after convert_alpha."""
+    """Scale surfaces with nearest neighbor so text stays crisp (no smooth blur)."""
     target_width = max(1, int(surface.get_width() * scale_factor))
     target_height = max(1, int(surface.get_height() * scale_factor))
     converted = surface.convert_alpha()
-    return pygame.transform.smoothscale(converted, (target_width, target_height))
+    return pygame.transform.scale(converted, (target_width, target_height))
 
 
 class SharedBackground:
@@ -65,20 +71,20 @@ class SharedBackground:
 
 def draw_pulsing_title(screen, font, text, center_x, center_y, time_seconds):
     pulse = 1.0 + (math.sin(time_seconds * 2.2) * 0.02)
-    surf = font.render(text, False, WHITE)
+    surf = font.render(text, FONT_ANTIALIAS, WHITE)
     surf = safe_scale_surface(surf, pulse)
     rect = surf.get_rect(center=(center_x, center_y))
     screen.blit(surf, rect)
 
 
 def draw_subtitle_centered(screen, font, text, center_x, center_y, color=SUBTITLE_COLOR):
-    surf = font.render(text, False, color)
+    surf = font.render(text, FONT_ANTIALIAS, color)
     rect = surf.get_rect(center=(center_x, center_y))
     screen.blit(surf, rect)
 
 
 def draw_footer_hint(screen, font, text, margin_bottom=45, color=FOOTER_HINT_COLOR):
-    surf = font.render(text, False, color)
+    surf = font.render(text, FONT_ANTIALIAS, color)
     rect = surf.get_rect(
         center=(screen.get_width() // 2, screen.get_height() - margin_bottom)
     )

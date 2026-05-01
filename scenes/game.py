@@ -2,7 +2,7 @@
 Placeholder game scene for the RPG game.
 """
 import pygame
-from globals import SCREEN_WIDTH, SCREEN_HEIGHT, SCENE_MENU, FPS
+from globals import SCREEN_WIDTH, SCREEN_HEIGHT, SCENE_MENU, FPS, FONT_ANTIALIAS
 
 from .aesthetic import (
     SharedBackground,
@@ -56,7 +56,9 @@ class GameScene:
             200,
         )
 
-        coming = self.menu_font.render("Coming soon!", False, (230, 230, 230))
+        coming = self.menu_font.render(
+            "Coming soon!", FONT_ANTIALIAS, (230, 230, 230)
+        )
         coming_rect = coming.get_rect(
             center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2 + 20)
         )

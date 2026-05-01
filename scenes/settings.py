@@ -11,6 +11,7 @@ from globals import (
     GRAY,
     LIGHT_GRAY,
     YELLOW,
+    FONT_ANTIALIAS,
 )
 
 from .aesthetic import (
@@ -113,7 +114,7 @@ class SettingsScene:
         )
 
         for key, spec in self._sliders.items():
-            label_surf = self.menu_font.render(spec["label"], False, WHITE)
+            label_surf = self.menu_font.render(spec["label"], FONT_ANTIALIAS, WHITE)
             label_rect = label_surf.get_rect(
                 center=(SCREEN_WIDTH // 2, spec["y"] - 42)
             )
@@ -133,7 +134,9 @@ class SettingsScene:
             pygame.draw.circle(screen, WHITE, (thumb_cx, thumb_cy), self._THUMB_R, width=2)
 
             pct = int(round(val * 100))
-            pct_surf = self.credit_font.render(f"{pct}%", False, (200, 200, 200))
+            pct_surf = self.credit_font.render(
+                f"{pct}%", FONT_ANTIALIAS, (200, 200, 200)
+            )
             pct_rect = pct_surf.get_rect(midleft=(track.right + 20, track.centery))
             screen.blit(pct_surf, pct_rect)
 

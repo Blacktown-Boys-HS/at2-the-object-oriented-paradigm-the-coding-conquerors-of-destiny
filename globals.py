@@ -31,6 +31,9 @@ TITLE_FONT_SIZE = 72
 MENU_FONT_SIZE = 48
 CREDIT_FONT_SIZE = 24
 
+# pygame.font.Font.render(…, antialias, …) — False keeps pixel fonts crisp
+FONT_ANTIALIAS = False
+
 
 def load_fonts():
     """Load fonts from assets folder."""

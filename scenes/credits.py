@@ -2,7 +2,7 @@
 Credits scene for the RPG game.
 """
 import pygame
-from globals import SCREEN_WIDTH, WHITE, SCENE_MENU, FPS
+from globals import SCREEN_WIDTH, WHITE, SCENE_MENU, FPS, FONT_ANTIALIAS
 
 from pos import Position
 
@@ -57,7 +57,7 @@ class CreditsScene:
         credits_start_pos = Position(SCREEN_WIDTH // 2, 240)
         for i, item in enumerate(self.credits_items):
             if item:
-                credits_text = self.credit_font.render(item, False, WHITE)
+                credits_text = self.credit_font.render(item, FONT_ANTIALIAS, WHITE)
                 item_pos = credits_start_pos.add(Position(0, i * 60))
                 credits_rect = credits_text.get_rect(center=item_pos.to_int_tuple())
                 screen.blit(credits_text, credits_rect)

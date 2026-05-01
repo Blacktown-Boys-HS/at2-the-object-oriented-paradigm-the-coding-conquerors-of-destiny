@@ -5,7 +5,7 @@ import math
 import pygame
 from globals import (
     SCREEN_WIDTH, SCREEN_HEIGHT, WHITE, GRAY, YELLOW, FPS,
-    SCENE_CREDITS, SCENE_GAME, SCENE_SETTINGS
+    SCENE_CREDITS, SCENE_GAME, SCENE_SETTINGS, FONT_ANTIALIAS,
 )
 from pos import Position
 
@@ -88,24 +88,27 @@ class MenuScene:
         shadow_deep = (14, 10, 32)
         rim = (72, 58, 120)
 
-        base = self.title_font.render(title_str, False, WHITE)
+        base = self.title_font.render(title_str, FONT_ANTIALIAS, WHITE)
         w, h = base.get_width(), base.get_height()
         pad = 10
         composite = pygame.Surface((w + pad * 2, h + pad * 2), pygame.SRCALPHA)
         ox, oy = pad, pad
 
         for d in (5, 4, 3, 2, 1):
-            layer = self.title_font.render(title_str, False, shadow_deep)
+            layer = self.title_font.render(title_str, FONT_ANTIALIAS, shadow_deep)
             composite.blit(layer, (ox + d, oy + d))
 
         for dx, dy in (
             (-1, 0), (1, 0), (0, -1), (0, 1),
             (-1, -1), (1, -1), (-1, 1), (1, 1),
         ):
-            layer = self.title_font.render(title_str, False, rim)
+            layer = self.title_font.render(title_str, FONT_ANTIALIAS, rim)
             composite.blit(layer, (ox + dx, oy + dy))
 
-        composite.blit(self.title_font.render(title_str, False, main_color), (ox, oy))
+        composite.blit(
+            self.title_font.render(title_str, FONT_ANTIALIAS, main_color),
+            (ox, oy),
+        )
 
         scaled = self._safe_scale_text(composite, pulse)
         rect = scaled.get_rect(center=center_xy)
@@ -205,8 +208,8 @@ class MenuScene:
         # Draw subtitle
         madeby_text = self.credit_font.render(
             "Made by The Coding Conquerors of Destiny™",
-            False,
-            (215, 215, 215)
+            FONT_ANTIALIAS,
+            (215, 215, 215),
         )
         madeby_pos = screen_center.add(Position(0, 225))
         madeby_rect = madeby_text.get_rect(center=madeby_pos.to_int_tuple())
@@ -231,8 +234,8 @@ class MenuScene:
         for i, item in enumerate(self.menu_items):
             if i == self.selected_item:
                 # Render ">" in yellow, item in white
-                arrow_text = self.menu_font.render("> ", False, YELLOW)
-                item_text = self.menu_font.render(item, False, WHITE)
+                arrow_text = self.menu_font.render("> ", FONT_ANTIALIAS, YELLOW)
+                item_text = self.menu_font.render(item, FONT_ANTIALIAS, WHITE)
                 
                 item_pos = menu_start_pos.add(Position(0, i * 100))
                 
@@ -252,7 +255,7 @@ class MenuScene:
                 screen.blit(item_text, item_rect)
             else:
                 color = GRAY
-                text = self.menu_font.render(item, False, color)
+                text = self.menu_font.render(item, FONT_ANTIALIAS, color)
                 
                 # Apply hover scale
                 if self.hover_scale[i] != 1.0:
