@@ -33,9 +33,9 @@ def main():
 
     # Custom cursor setup (with click-scale effect)
     cursor_pressed = False
-    cursor_scale = 1.0
-    cursor_scale_default = 1.0
-    cursor_scale_pressed = 0.85
+    cursor_scale = 1.25
+    cursor_scale_default = 1.25
+    cursor_scale_pressed = 1.08
     cursor_scale_speed = 0.35
     custom_cursor = None
     cursor_path = Path(__file__).resolve().parent / "assets" / "cursor" / "8_white.png"
