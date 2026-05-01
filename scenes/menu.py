@@ -141,7 +141,7 @@ class MenuScene:
 
         # Draw subtitle
         madeby_text = self.credit_font.render(
-            "Made by The Coding Conquerors of Destiny",
+            "Made by The Coding Conquerors of Destiny™",
             False,
             (215, 215, 215)
         )
