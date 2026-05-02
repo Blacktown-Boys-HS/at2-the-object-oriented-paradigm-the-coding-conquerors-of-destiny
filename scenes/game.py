@@ -1,8 +1,11 @@
 """
 Placeholder game scene for the RPG game.
 """
+from pathlib import Path
+
 import pygame
 from globals import SCREEN_WIDTH, SCREEN_HEIGHT, SCENE_MENU, FPS, FONT_ANTIALIAS
+from sprite_sheet import SpriteSheet
 
 from .aesthetic import (
     SharedBackground,
@@ -15,6 +18,9 @@ from .aesthetic import (
 class GameScene:
     """Game scene."""
 
+    _KNIGHT_FRAME = 16
+    _KNIGHT_DISPLAY_SCALE = 6  # 16×6 ≈ same on-screen size as old 32×3
+
     def __init__(self, title_font, menu_font, credit_font, sounds=None):
         self.title_font = title_font
         self.menu_font = menu_font
@@ -22,6 +28,20 @@ class GameScene:
         self.sounds = sounds or {}
         self.bg = SharedBackground()
         self.time_seconds = 0.0
+        self._knight_sheet = None
+        knight_path = (
+            Path(__file__).resolve().parent.parent
+            / "assets"
+            / "rpg_assets"
+            / "sprites"
+            / "knight.png"
+        )
+        try:
+            self._knight_sheet = SpriteSheet(
+                knight_path, self._KNIGHT_FRAME, self._KNIGHT_FRAME
+            )
+        except (FileNotFoundError, pygame.error):
+            self._knight_sheet = None
 
     def handle_event(self, event):
         """Handle input events."""
@@ -56,11 +76,22 @@ class GameScene:
             200,
         )
 
+        if self._knight_sheet:
+            col = int(self.time_seconds * 8) % min(8, self._knight_sheet.cols)
+            hero = self._knight_sheet.frame(col, 0)
+            w = hero.get_width() * self._KNIGHT_DISPLAY_SCALE
+            h = hero.get_height() * self._KNIGHT_DISPLAY_SCALE
+            hero = pygame.transform.scale(hero, (max(1, w), max(1, h)))
+            hero_rect = hero.get_rect(
+                center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2 - 10)
+            )
+            screen.blit(hero, hero_rect)
+
         coming = self.menu_font.render(
             "Coming soon!", FONT_ANTIALIAS, (230, 230, 230)
         )
         coming_rect = coming.get_rect(
-            center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2 + 20)
+            center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2 + 70)
         )
         screen.blit(coming, coming_rect)
 
