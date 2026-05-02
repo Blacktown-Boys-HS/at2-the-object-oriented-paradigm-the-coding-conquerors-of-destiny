@@ -18,8 +18,9 @@ from .aesthetic import (
 class GameScene:
     """Game scene."""
 
-    _KNIGHT_FRAME = 16
-    _KNIGHT_DISPLAY_SCALE = 6  # 16×6 ≈ same on-screen size as old 32×3
+    _KNIGHT_FRAME_WIDTH = 16
+    _KNIGHT_FRAME_HEIGHT = 16
+    _KNIGHT_DISPLAY_SCALE = 4  # 16×4 = 64 pixels
 
     def __init__(self, title_font, menu_font, credit_font, sounds=None):
         self.title_font = title_font
@@ -38,7 +39,7 @@ class GameScene:
         )
         try:
             self._knight_sheet = SpriteSheet(
-                knight_path, self._KNIGHT_FRAME, self._KNIGHT_FRAME
+                knight_path, self._KNIGHT_FRAME_WIDTH, self._KNIGHT_FRAME_HEIGHT
             )
         except (FileNotFoundError, pygame.error):
             self._knight_sheet = None
@@ -83,7 +84,7 @@ class GameScene:
             h = hero.get_height() * self._KNIGHT_DISPLAY_SCALE
             hero = pygame.transform.scale(hero, (max(1, w), max(1, h)))
             hero_rect = hero.get_rect(
-                center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2 - 10)
+                center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2 + 30)
             )
             screen.blit(hero, hero_rect)
 
