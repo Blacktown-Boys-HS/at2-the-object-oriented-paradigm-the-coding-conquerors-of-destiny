@@ -30,6 +30,7 @@ SCENE_SETTINGS = "settings"
 TITLE_FONT_SIZE = 72
 MENU_FONT_SIZE = 48
 CREDIT_FONT_SIZE = 24
+DEBUG_FONT_SIZE = 16
 
 # pygame.font.Font.render(…, antialias, …) — False keeps pixel fonts crisp
 FONT_ANTIALIAS = False
@@ -47,9 +48,11 @@ def load_fonts():
         title_font = pygame.font.Font(str(font_path), TITLE_FONT_SIZE)
         menu_font = pygame.font.Font(str(font_path), MENU_FONT_SIZE)
         credit_font = pygame.font.Font(str(font_path), CREDIT_FONT_SIZE)
+        debug_font = pygame.font.Font(str(font_path), DEBUG_FONT_SIZE)
     except (StopIteration, FileNotFoundError, pygame.error):
         title_font = pygame.font.SysFont("monospace", TITLE_FONT_SIZE, bold=False)
         menu_font = pygame.font.SysFont("monospace", MENU_FONT_SIZE, bold=False)
         credit_font = pygame.font.SysFont("monospace", CREDIT_FONT_SIZE, bold=False)
+        debug_font = pygame.font.SysFont("monospace", DEBUG_FONT_SIZE, bold=False)
     
-    return title_font, menu_font, credit_font
+    return title_font, menu_font, credit_font, debug_font

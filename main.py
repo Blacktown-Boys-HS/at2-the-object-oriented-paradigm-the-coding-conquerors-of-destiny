@@ -7,7 +7,7 @@ import sys
 from globals import (
     SCREEN_WIDTH, SCREEN_HEIGHT, FPS,
     SCENE_MENU, SCENE_CREDITS, SCENE_GAME, SCENE_SETTINGS,
-    load_fonts
+    load_fonts, YELLOW
 )
 from scenes.menu import MenuScene
 from scenes.credits import CreditsScene
@@ -45,7 +45,7 @@ def main():
     clock = pygame.time.Clock()
     
     # Load fonts
-    title_font, menu_font, credit_font = load_fonts()
+    title_font, menu_font, credit_font, debug_font = load_fonts()
 
     sound_manager = SoundManager()
 
@@ -220,6 +220,10 @@ def main():
             cursor_surface = pygame.transform.smoothscale(custom_cursor, scaled_size)
             cursor_rect = cursor_surface.get_rect(topleft=mouse_pos)
             screen.blit(cursor_surface, cursor_rect)
+        
+        # Display FPS in top left
+        fps_text = debug_font.render(f"FPS: {clock.get_fps():.0f}", False, YELLOW)
+        screen.blit(fps_text, (10, 10))
         
         pygame.display.update()
     
