@@ -221,9 +221,33 @@ def main():
             cursor_rect = cursor_surface.get_rect(topleft=mouse_pos)
             screen.blit(cursor_surface, cursor_rect)
         
-        # Display FPS in top left
+        # Display debug stats in top left
+        debug_y = 10
         fps_text = debug_font.render(f"FPS: {clock.get_fps():.0f}", False, YELLOW)
-        screen.blit(fps_text, (10, 10))
+        screen.blit(fps_text, (10, debug_y))
+        
+        debug_y += 40
+        scene_text = debug_font.render(f"Scene: {current_scene}", False, YELLOW)
+        screen.blit(scene_text, (10, debug_y))
+        
+        # Display player stats if in game scene
+        if current_scene == SCENE_GAME and hasattr(scenes[current_scene], "player"):
+            player = scenes[current_scene].player
+            debug_y += 40
+            pos_text = debug_font.render(
+                f"Pos: ({player.position.x:.0f}, {player.position.y:.0f})",
+                False,
+                YELLOW
+            )
+            screen.blit(pos_text, (10, debug_y))
+            
+            debug_y += 40
+            frame_text = debug_font.render(
+                f"Frame: {player.current_frame}",
+                False,
+                YELLOW
+            )
+            screen.blit(frame_text, (10, debug_y))
         
         pygame.display.update()
     
