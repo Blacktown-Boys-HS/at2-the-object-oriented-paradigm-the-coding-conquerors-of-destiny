@@ -5,6 +5,7 @@ import pygame
 from pathlib import Path
 from globals import SCREEN_WIDTH, SCREEN_HEIGHT, SCENE_MENU, FPS, FONT_ANTIALIAS, BLACK
 from sprite_sheet import SpriteSheet
+from camera import Camera
 from player import Player
 
 from .aesthetic import (
@@ -26,6 +27,7 @@ class GameScene:
         self.sounds = sounds or {}
         self.time_seconds = 0.0
         self.player = Player()
+        self.camera = Camera()
         self.keys_pressed = {"up": False, "down": False, "left": False, "right": False}
 
     def handle_event(self, event):
@@ -78,11 +80,16 @@ class GameScene:
                 self.player.set_state("idle")
 
         self.player.update(dt)
+        self.camera.update(
+            self.player,
+            SCREEN_WIDTH,
+            SCREEN_HEIGHT
+        )
 
     def render(self, screen):
         """Render the game scene."""
         screen.fill(BLACK)
-        self.player.render(screen)
+        self.player.render(screen, self.camera)
 
         # Movement hint
         hint = self.credit_font.render("WASD or Arrow Keys to move · ESC for menu", False, (200, 200, 200))

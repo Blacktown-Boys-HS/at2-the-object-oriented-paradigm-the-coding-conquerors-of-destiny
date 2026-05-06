@@ -59,7 +59,7 @@ class Player:
         frame_index = int(self.animation_time * anim["speed"])
         self.current_frame = frame_index % len(anim["frames"])
     
-    def render(self, screen) -> None: 
+    def render(self, screen, camera) -> None: 
         """Render the player sprite."""
         if self.sprite_sheet:
             # Try row 0 for the idle animation
@@ -81,7 +81,12 @@ class Player:
             
             # Draw sprite
             x, y = self.position.to_int_tuple()
-            sprite_rect = scaled_sprite.get_rect(center=(x, y))
+            
+            screen_x = x - camera.x
+            screen_y = y - camera.y
+            sprite_rect = scaled_sprite.get_rect(
+                center=(screen_x, screen_y)
+            )
             screen.blit(scaled_sprite, sprite_rect)
 
     def set_state(self, state):
