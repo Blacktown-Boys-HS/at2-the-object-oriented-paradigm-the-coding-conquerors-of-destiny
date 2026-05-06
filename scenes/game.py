@@ -1,9 +1,10 @@
 """
 Placeholder game scene for the RPG game.
 """
+import math
 import pygame
 from pathlib import Path
-from globals import SCREEN_WIDTH, SCREEN_HEIGHT, SCENE_MENU, FPS, FONT_ANTIALIAS, BLACK
+from globals import SCREEN_WIDTH, SCREEN_HEIGHT, SCENE_MENU, SCENE_SETTINGS, FPS, FONT_ANTIALIAS, BLACK, BACKGROUND, BLUE, GRAY, WHITE
 from sprite_sheet import SpriteSheet
 from camera import Camera
 from player import Player
@@ -13,6 +14,7 @@ from .aesthetic import (
     draw_pulsing_title,
     draw_subtitle_centered,
     draw_footer_hint,
+    safe_scale_surface,
 )
 
 class GameScene:
@@ -30,12 +32,40 @@ class GameScene:
         self.camera = Camera()
         self.keys_pressed = {"up": False, "down": False, "left": False, "right": False}
 
+        # Pause menu state
+        self.paused = False
+        self.pause_items = ["Resume", "Settings", "Main Menu"]
+        self.pause_selected = 0
+        self.pause_item_rects = []
+        self.pause_hover_scale = [1.0 for _ in self.pause_items]
+        self.pause_selection_y = 0
+        self.pause_activation_item = None
+        self.pause_activation_progress = 0.0
+        self.pause_activation_duration = 0.18
+        self.pause_pending_scene = None
+        self.pause_last_selected = self.pause_selected
+
     def handle_event(self, event):
         """Handle input events."""
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_ESCAPE:
-                return SCENE_MENU
-            elif event.key in (pygame.K_UP, pygame.K_w):
+                self.paused = not self.paused
+                # Clear movement keys when pausing
+                if self.paused:
+                    for k in self.keys_pressed:
+                        self.keys_pressed[k] = False
+                return None
+
+            if self.paused:
+                if event.key == pygame.K_UP:
+                    self.pause_selected = (self.pause_selected - 1) % len(self.pause_items)
+                elif event.key == pygame.K_DOWN:
+                    self.pause_selected = (self.pause_selected + 1) % len(self.pause_items)
+                elif event.key in (pygame.K_RETURN, pygame.K_SPACE):
+                    self._start_pause_activate()
+                return None
+
+            if event.key in (pygame.K_UP, pygame.K_w):
                 self.keys_pressed["up"] = True
             elif event.key in (pygame.K_DOWN, pygame.K_s):
                 self.keys_pressed["down"] = True
@@ -52,12 +82,83 @@ class GameScene:
                 self.keys_pressed["left"] = False
             elif event.key in (pygame.K_RIGHT, pygame.K_d):
                 self.keys_pressed["right"] = False
+        elif event.type == pygame.MOUSEBUTTONDOWN and self.paused:
+            mouse_pos = pygame.mouse.get_pos()
+            for i, rect in enumerate(self.pause_item_rects):
+                if rect.collidepoint(mouse_pos):
+                    self.pause_selected = i
+                    self._start_pause_activate()
+                    break
         return None
+
+    def _start_pause_activate(self):
+        """Play a short confirm animation before pause menu action."""
+        if self.pause_activation_item is None:
+            confirm_sound = self.sounds.get("confirm")
+            if confirm_sound:
+                confirm_sound.play()
+            self.pause_activation_item = self.pause_selected
+            self.pause_activation_progress = 0.0
+
+    def _get_pause_action(self):
+        """Get the action for the selected pause item."""
+        item = self.pause_items[self.pause_selected]
+        if item == "Resume":
+            self.paused = False
+            return None
+        if item == "Settings":
+            return SCENE_SETTINGS
+        if item == "Main Menu":
+            self.paused = False
+            return SCENE_MENU
+        return None
+
+    def consume_requested_scene(self):
+        """Return and clear a deferred scene transition request."""
+        scene = self.pause_pending_scene
+        self.pause_pending_scene = None
+        return scene
 
     def update(self, mouse_pos):
         """Update game state."""
         self.time_seconds = pygame.time.get_ticks() / 1000.0
         dt = 1.0 / FPS
+
+        # Check for mouse hover on pause items
+        if self.paused:
+            for i, rect in enumerate(self.pause_item_rects):
+                if rect.collidepoint(mouse_pos):
+                    self.pause_selected = i
+                    break
+            if self.pause_selected != self.pause_last_selected:
+                hover_sound = self.sounds.get("button_hover")
+                if hover_sound:
+                    hover_sound.play()
+                self.pause_last_selected = self.pause_selected
+
+            # Update hover scales
+            for i in range(len(self.pause_items)):
+                activation_bonus = 0.0
+                if self.pause_activation_item == i:
+                    activation_bonus = 0.10 * (1.0 - self.pause_activation_progress)
+                if i == self.pause_selected:
+                    self.pause_hover_scale[i] = min(self.pause_hover_scale[i] + 0.05, 1.10 + activation_bonus)
+                else:
+                    self.pause_hover_scale[i] = max(self.pause_hover_scale[i] - 0.05, 1.0)
+
+            # Smoothly move selection box
+            target_y = 320 + self.pause_selected * 80
+            if self.pause_selection_y == 0:
+                self.pause_selection_y = target_y
+            self.pause_selection_y += (target_y - self.pause_selection_y) * 0.20
+
+            if self.pause_activation_item is not None:
+                self.pause_activation_progress += dt / self.pause_activation_duration
+                if self.pause_activation_progress >= 1.0:
+                    self.pause_pending_scene = self._get_pause_action()
+                    self.pause_activation_item = None
+                    self.pause_activation_progress = 0.0
+            return
 
         dx = 0
         dy = 0
@@ -86,11 +187,106 @@ class GameScene:
             SCREEN_HEIGHT
         )
 
+    def _safe_scale_text(self, surface, scale_factor):
+        """Scale text surfaces safely."""
+        return safe_scale_surface(surface, scale_factor)
+
+    def _draw_pause_title(self, screen, center_xy, pulse):
+        """Draw paused title with blue shimmer."""
+        title_str = "PAUSED"
+        shimmer = 0.5 + 0.5 * math.sin(self.time_seconds * 2.8)
+        main_color = (
+            int(100 + 26 * shimmer),
+            int(160 + 33 * shimmer),
+            int(220 + 25 * shimmer),
+        )
+        shadow_deep = (14, 10, 32)
+        rim = (72, 58, 120)
+
+        base = self.title_font.render(title_str, FONT_ANTIALIAS, WHITE)
+        w, h = base.get_width(), base.get_height()
+        pad = 10
+        composite = pygame.Surface((w + pad * 2, h + pad * 2), pygame.SRCALPHA)
+        ox, oy = pad, pad
+
+        for d in (5, 4, 3, 2, 1):
+            layer = self.title_font.render(title_str, FONT_ANTIALIAS, shadow_deep)
+            composite.blit(layer, (ox + d, oy + d))
+
+        for dx, dy in ((-1, 0), (1, 0), (0, -1), (0, 1), (-1, -1), (1, -1), (-1, 1), (1, 1)):
+            layer = self.title_font.render(title_str, FONT_ANTIALIAS, rim)
+            composite.blit(layer, (ox + dx, oy + dy))
+
+        composite.blit(
+            self.title_font.render(title_str, FONT_ANTIALIAS, main_color),
+            (ox, oy),
+        )
+
+        scaled = self._safe_scale_text(composite, pulse)
+        rect = scaled.get_rect(center=center_xy)
+        screen.blit(scaled, rect)
+
     def render(self, screen):
         """Render the game scene."""
         screen.fill(BLACK)
         self.player.render(screen, self.camera)
 
-        # Movement hint
-        hint = self.credit_font.render("WASD or Arrow Keys to move · ESC for menu", False, (200, 200, 200))
+        if not self.paused:
+            # Movement hint
+            hint = self.credit_font.render("WASD or Arrow Keys to move · ESC to pause", False, (200, 200, 200))
+            screen.blit(hint, hint.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT - 40)))
+            return
+
+        # --- PAUSE OVERLAY ---
+        # Darken the game behind
+        overlay = pygame.Surface((SCREEN_WIDTH, SCREEN_HEIGHT), pygame.SRCALPHA)
+        overlay.fill((0, 0, 0, 180))
+        screen.blit(overlay, (0, 0))
+
+        # Pause title with blue shimmer
+        pulse = 1.0 + (math.sin(self.time_seconds * 2.2) * 0.02)
+        self._draw_pause_title(screen, (SCREEN_WIDTH // 2, 200), pulse)
+
+        # Selection highlight box
+        selection_rect = pygame.Rect(SCREEN_WIDTH // 2 - 180, int(self.pause_selection_y) - 8, 360, 60)
+        box_surface = pygame.Surface((selection_rect.width, selection_rect.height), pygame.SRCALPHA)
+        box_alpha = 22
+        if self.pause_activation_item == self.pause_selected:
+            box_alpha = 22 + int(70 * (1.0 - self.pause_activation_progress))
+        box_surface.fill((255, 255, 255, box_alpha))
+        screen.blit(box_surface, selection_rect.topleft)
+        border_color = (130, 130, 130)
+        if self.pause_activation_item == self.pause_selected:
+            border_color = (220, 200, 120)
+        pygame.draw.rect(screen, border_color, selection_rect, width=2, border_radius=8)
+
+        # Pause menu items
+        menu_start_x = SCREEN_WIDTH // 2 - 120
+        menu_start_y = 320
+        self.pause_item_rects = []
+        for i, item in enumerate(self.pause_items):
+            if i == self.pause_selected:
+                arrow_text = self.menu_font.render("> ", FONT_ANTIALIAS, BLUE)
+                item_text = self.menu_font.render(item, FONT_ANTIALIAS, WHITE)
+                item_pos = (menu_start_x, menu_start_y + i * 80)
+                if self.pause_hover_scale[i] != 1.0:
+                    arrow_text = self._safe_scale_text(arrow_text, self.pause_hover_scale[i])
+                    item_text = self._safe_scale_text(item_text, self.pause_hover_scale[i])
+                arrow_rect = arrow_text.get_rect(topleft=item_pos)
+                item_rect = item_text.get_rect(topleft=(arrow_rect.right, item_pos[1]))
+                self.pause_item_rects.append(arrow_rect.union(item_rect))
+                screen.blit(arrow_text, arrow_rect)
+                screen.blit(item_text, item_rect)
+            else:
+                color = GRAY
+                text = self.menu_font.render(item, FONT_ANTIALIAS, color)
+                if self.pause_hover_scale[i] != 1.0:
+                    text = self._safe_scale_text(text, self.pause_hover_scale[i])
+                item_pos = (menu_start_x, menu_start_y + i * 80)
+                text_rect = text.get_rect(topleft=item_pos)
+                self.pause_item_rects.append(text_rect)
+                screen.blit(text, text_rect)
+
+        # Footer hint
+        hint = self.credit_font.render("UP/DOWN or mouse to select, ENTER/SPACE to confirm", False, (215, 215, 215))
         screen.blit(hint, hint.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT - 40)))
