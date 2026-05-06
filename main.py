@@ -7,7 +7,7 @@ import sys
 from globals import (
     SCREEN_WIDTH, SCREEN_HEIGHT, FPS,
     SCENE_MENU, SCENE_CREDITS, SCENE_GAME, SCENE_SETTINGS,
-    load_fonts, YELLOW
+    load_fonts, BLUE
 )
 from scenes.menu import MenuScene
 from scenes.credits import CreditsScene
@@ -223,11 +223,11 @@ def main():
         
         # Display debug stats in top left
         debug_y = 10
-        fps_text = debug_font.render(f"FPS: {clock.get_fps():.0f}", False, YELLOW)
+        fps_text = debug_font.render(f"FPS: {clock.get_fps():.0f}", False, BLUE)
         screen.blit(fps_text, (10, debug_y))
         
         debug_y += 40
-        scene_text = debug_font.render(f"Scene: {current_scene}", False, YELLOW)
+        scene_text = debug_font.render(f"Scene: {current_scene}", False, BLUE)
         screen.blit(scene_text, (10, debug_y))
         
         pygame.display.update()

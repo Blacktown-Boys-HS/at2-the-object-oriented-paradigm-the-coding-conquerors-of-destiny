@@ -3,7 +3,7 @@ Credits scene for the RPG game.
 """
 import pygame
 from pathlib import Path
-from globals import SCREEN_WIDTH, SCREEN_HEIGHT, WHITE, SCENE_MENU, FPS, FONT_ANTIALIAS, YELLOW
+from globals import SCREEN_WIDTH, SCREEN_HEIGHT, WHITE, SCENE_MENU, FPS, FONT_ANTIALIAS, BLUE
 
 from pos import Position
 
@@ -73,7 +73,7 @@ class CreditsScene:
 
         # Draw group photo with fancy border first
         if self.group_photo:
-            # Draw outer glow border (yellow/gold with pulsing effect)
+            # Draw outer glow border (BLUE/gold with pulsing effect)
             border_width = 8
             border_color_intensity = int(200 + 55 * (0.5 + 0.5 * __import__("math").sin(self.time_seconds * 3)))
             border_color = (min(255, border_color_intensity), min(255, border_color_intensity), 0)
@@ -122,6 +122,6 @@ class CreditsScene:
             star_x = SCREEN_WIDTH // 2 + math.cos(angle) * star_radius
             star_y = names_start_y + math.sin(angle) * (star_radius // 2)
             star_size = int(3 + 2 * math.sin(self.time_seconds * 3 + i))
-            pygame.draw.circle(screen, YELLOW, (int(star_x), int(star_y)), max(1, star_size))
+            pygame.draw.circle(screen, BLUE, (int(star_x), int(star_y)), max(1, star_size))
 
         draw_footer_hint(screen, self.credit_font, "Press ESC to return to menu")

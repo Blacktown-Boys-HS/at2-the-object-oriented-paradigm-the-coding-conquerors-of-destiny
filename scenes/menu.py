@@ -4,13 +4,12 @@ Menu scene for the RPG game.
 import math
 import pygame
 from globals import (
-    SCREEN_WIDTH, SCREEN_HEIGHT, WHITE, GRAY, YELLOW, FPS,
+    SCREEN_WIDTH, WHITE, GRAY, BLUE, FPS,
     SCENE_CREDITS, SCENE_GAME, SCENE_SETTINGS, FONT_ANTIALIAS,
 )
 from pos import Position
 
 from .aesthetic import SharedBackground, draw_footer_hint, safe_scale_surface
-
 
 class MenuScene:
     """Main menu scene."""
@@ -233,8 +232,8 @@ class MenuScene:
         self.menu_item_rects = []
         for i, item in enumerate(self.menu_items):
             if i == self.selected_item:
-                # Render ">" in yellow, item in white
-                arrow_text = self.menu_font.render("> ", FONT_ANTIALIAS, YELLOW)
+                # Render ">" in Blue, item in white
+                arrow_text = self.menu_font.render("> ", FONT_ANTIALIAS, BLUE)
                 item_text = self.menu_font.render(item, FONT_ANTIALIAS, WHITE)
                 
                 item_pos = menu_start_pos.add(Position(0, i * 100))

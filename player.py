@@ -19,7 +19,6 @@ class Player:
         self.sprite_sheet = None
         self.current_frame = 0
         self.animation_time = 0.0
-        
         # Load sprite sheet
         knight_path = (
             Path(__file__).resolve().parent

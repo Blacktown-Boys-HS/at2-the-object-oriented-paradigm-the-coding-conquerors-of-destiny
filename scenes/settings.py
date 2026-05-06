@@ -10,7 +10,7 @@ from globals import (
     WHITE,
     GRAY,
     LIGHT_GRAY,
-    YELLOW,
+    BLUE,
     FONT_ANTIALIAS,
 )
 
@@ -130,7 +130,7 @@ class SettingsScene:
 
             thumb_cx = track.left + int(track.width * val)
             thumb_cy = track.centery
-            pygame.draw.circle(screen, YELLOW, (thumb_cx, thumb_cy), self._THUMB_R)
+            pygame.draw.circle(screen, BLUE, (thumb_cx, thumb_cy), self._THUMB_R)
             pygame.draw.circle(screen, WHITE, (thumb_cx, thumb_cy), self._THUMB_R, width=2)
 
             pct = int(round(val * 100))
