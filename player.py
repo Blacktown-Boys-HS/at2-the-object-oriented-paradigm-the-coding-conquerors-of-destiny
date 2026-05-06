@@ -12,8 +12,7 @@ class Player:
     
     FRAME_WIDTH = 32
     FRAME_HEIGHT = 32
-    DISPLAY_SCALE = 4  # 16×3 = 48 pixels
-    ANIMATION_SPEED = 3  # frames per second (slower for idle)
+    DISPLAY_SCALE = 3  # 16×3 = 48 pixels
     
     def __init__(self, x=600, y=400):
         self.position = Position(x, y)
@@ -36,16 +35,17 @@ class Player:
 
             #load animations
             self.animations = {
-                "idle": self.sprite_sheet.get_animation(0, 0, 4),
-                "run": self.sprite_sheet.get_animation(1, 0, 8),
-                "roll": self.sprite_sheet.get_animation(2, 0, 6),
-                "hit": self.sprite_sheet.get_animation(3, 0, 4),
-                "death": self.sprite_sheet.get_animation(4, 0, 6),
+                "idle": {"frames": self.sprite_sheet.get_animation(0, 0, 4), "speed": 3},
+                "run":  {"frames": self.sprite_sheet.get_animation(1, 0, 8), "speed": 8},
+                "roll": {"frames": self.sprite_sheet.get_animation(2, 0, 6), "speed": 10},
+                "hit":  {"frames": self.sprite_sheet.get_animation(3, 0, 4), "speed": 5},
+                "death":{"frames": self.sprite_sheet.get_animation(4, 0, 6), "speed": 4},
             }
 
             self.state = "idle"
             self.current_frame = 0
             self.animation_time = 0.0
+
         except (FileNotFoundError, pygame.error):
             self.sprite_sheet = None
     
@@ -53,18 +53,18 @@ class Player:
         if not self.sprite_sheet:
             return
 
+        anim = self.animations[self.state]
         self.animation_time += dt
 
-        frames = self.animations[self.state]
-        frame_index = int(self.animation_time * self.ANIMATION_SPEED)
-
-        self.current_frame = frame_index % len(frames)
+        frame_index = int(self.animation_time * anim["speed"])
+        self.current_frame = frame_index % len(anim["frames"])
     
     def render(self, screen):
         """Render the player sprite."""
         if self.sprite_sheet:
             # Try row 0 for the idle animation
-            sprite = self.animations[self.state][self.current_frame]
+            anim = self.animations[self.state]
+            sprite = anim["frames"][self.current_frame]
             
             # Create a new surface to ensure clean rendering
             clean_sprite = pygame.Surface((sprite.get_width(), sprite.get_height()), pygame.SRCALPHA)
