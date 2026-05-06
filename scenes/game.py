@@ -62,3 +62,5 @@ class GameScene:
         # Draw knight sprite in top left
         if self.knight_sprite:
             screen.blit(self.knight_sprite, (20, 20))
+        else:
+            print("error")

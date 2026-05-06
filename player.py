@@ -12,7 +12,7 @@ class Player:
     
     FRAME_WIDTH = 64
     FRAME_HEIGHT = 64
-    DISPLAY_SCALE = 4  # 16×3 = 48 pixels
+    DISPLAY_SCALE = 10  # 16×3 = 48 pixels
     ANIMATION_SPEED = 4  # frames per second (slower for idle)
     
     def __init__(self, x=600, y=400):
