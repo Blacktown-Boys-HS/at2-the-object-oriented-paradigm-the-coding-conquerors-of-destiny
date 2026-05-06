@@ -35,7 +35,7 @@ class Player:
             #load animations
             self.animations = {
                 "idle": {"frames": self.sprite_sheet.get_animation(0, 0, 4), "speed": 5},
-                "run":  {"frames": self.sprite_sheet.get_animation(3, 0, 8), "speed": 8},
+                "run":  {"frames": self.sprite_sheet.get_animation(2, 0, 8) + self.sprite_sheet.get_animation(3, 0, 8), "speed": 8},
                 "roll": {"frames": self.sprite_sheet.get_animation(5, 0, 8), "speed": 10},
                 "hit":  {"frames": self.sprite_sheet.get_animation(6, 0, 4), "speed": 5},
                 "death":{"frames": self.sprite_sheet.get_animation(7, 0, 4), "speed": 4},
