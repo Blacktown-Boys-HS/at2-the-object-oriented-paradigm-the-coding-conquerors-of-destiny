@@ -36,6 +36,7 @@ class SettingsScene:
         self.bg = SharedBackground()
         self.time_seconds = 0.0
         self._drag_key = None
+        self.previous_scene = SCENE_MENU
 
         cx = SCREEN_WIDTH // 2
         self._sliders = {
@@ -80,7 +81,7 @@ class SettingsScene:
         """Handle input events."""
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_ESCAPE:
-                return SCENE_MENU
+                return self.previous_scene
 
         if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
             key = self._hit_slider(event.pos)

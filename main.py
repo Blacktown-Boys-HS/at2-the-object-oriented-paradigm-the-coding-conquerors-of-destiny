@@ -135,6 +135,9 @@ def main():
             if not is_transitioning:
                 next_scene = scenes[current_scene].handle_event(event)
                 if next_scene and next_scene != current_scene:
+                    # Track where we came from before entering settings
+                    if next_scene == SCENE_SETTINGS:
+                        scenes[SCENE_SETTINGS].previous_scene = current_scene
                     pending_scene = next_scene
                     is_transitioning = True
                     transition_direction = 1
@@ -185,6 +188,9 @@ def main():
         if hasattr(scenes[current_scene], "consume_requested_scene"):
             deferred_next_scene = scenes[current_scene].consume_requested_scene()
         if (not is_transitioning) and deferred_next_scene and deferred_next_scene != current_scene:
+            # Track where we came from before entering settings
+            if deferred_next_scene == SCENE_SETTINGS:
+                scenes[SCENE_SETTINGS].previous_scene = current_scene
             pending_scene = deferred_next_scene
             is_transitioning = True
             transition_direction = 1
