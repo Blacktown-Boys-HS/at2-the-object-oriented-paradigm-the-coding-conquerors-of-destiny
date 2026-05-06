@@ -26,18 +26,17 @@ class SpriteSheet:
         surf.blit(self.sheet, (0, 0), rect)
         return surf
 
-    def get_row(self, col: int, row: int):
+    def get_row(self, row: int):
         """Get all frames in a row"""
         frames = []
         for col in range(self.cols):
-            frames.append(self.frame((col, row)))
+            frames.append(self.frame(col, row))
 
-            return frames
+        return frames
         
-    def get_animation(self, row: int, col: int, num_frames):
-        """Get a sequence of frames from a row"""
+    def get_animation(self, row: int, start_col: int, num_frames):
         frames = []
         for i in range(num_frames):
-            frames.append(self.frame(col + i, row))
-
+            frames.append(self.frame(start_col + i, row))
+            
         return frames

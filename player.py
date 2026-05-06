@@ -10,8 +10,8 @@ from pos import Position
 class Player:
     """Player character with sprite animation."""
     
-    FRAME_WIDTH = 64
-    FRAME_HEIGHT = 64
+    FRAME_WIDTH = 32
+    FRAME_HEIGHT = 32
     DISPLAY_SCALE = 4  # 16×3 = 48 pixels
     ANIMATION_SPEED = 3  # frames per second (slower for idle)
     
@@ -38,9 +38,9 @@ class Player:
             self.animations = {
                 "idle": self.sprite_sheet.get_animation(0, 0, 4),
                 "run": self.sprite_sheet.get_animation(1, 0, 8),
-                "roll": self.sprite_sheet.get_animation(3, 0, 8),
-                "hit": self.sprite_sheet.get_animation(5, 0, 4),
-                "death": self.sprite_sheet.get_animation(6, 0, 4),
+                "roll": self.sprite_sheet.get_animation(2, 0, 6),
+                "hit": self.sprite_sheet.get_animation(3, 0, 4),
+                "death": self.sprite_sheet.get_animation(4, 0, 6),
             }
 
             self.state = "idle"
@@ -79,7 +79,7 @@ class Player:
             x, y = self.position.to_int_tuple()
             sprite_rect = scaled_sprite.get_rect(center=(x, y))
             screen.blit(scaled_sprite, sprite_rect)
-    
+
     def set_state(self, state):
         if state != self.state:
             self.state = state
