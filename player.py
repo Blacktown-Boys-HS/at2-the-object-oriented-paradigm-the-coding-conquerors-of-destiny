@@ -41,7 +41,8 @@ class Player:
                 "death":{"frames": self.sprite_sheet.get_animation(7, 0, 4), "speed": 4},
             }
 
-            self.state = "hit"
+            self.state = "idle"
+            self.facing_right = True
             self.current_frame = 0
             self.animation_time = 0.0
 
@@ -74,6 +75,10 @@ class Player:
             scaled_height = int(clean_sprite.get_height() * self.DISPLAY_SCALE)
             scaled_sprite = pygame.transform.scale(clean_sprite, (max(1, scaled_width), max(1, scaled_height)))
             
+            # Flip if facing left
+            if not self.facing_right:
+                scaled_sprite = pygame.transform.flip(scaled_sprite, True, False)
+            
             # Draw sprite
             x, y = self.position.to_int_tuple()
             sprite_rect = scaled_sprite.get_rect(center=(x, y))
@@ -84,6 +89,29 @@ class Player:
             self.state = state
             self.current_frame = 0
             self.animation_time = 0
+
+    def move(self, dx, dy, speed):
+        """Move the player by (dx, dy) direction with given speed."""
+        import math
+        if dx != 0 or dy != 0:
+            length = math.sqrt(dx * dx + dy * dy)
+            dx /= length
+            dy /= length
+        self.position.x += dx * speed
+        self.position.y += dy * speed
+
+        # Update facing direction
+        if dx > 0:
+            self.facing_right = True
+        elif dx < 0:
+            self.facing_right = False
+
+        # Clamp to screen bounds
+        from globals import SCREEN_WIDTH, SCREEN_HEIGHT
+        half_w = (self.FRAME_WIDTH * self.DISPLAY_SCALE) // 2
+        half_h = (self.FRAME_HEIGHT * self.DISPLAY_SCALE) // 2
+        self.position.x = max(half_w, min(SCREEN_WIDTH - half_w, self.position.x))
+        self.position.y = max(half_h, min(SCREEN_HEIGHT - half_h, self.position.y))
 
     def set_position(self, x, y):
         """Set player position."""
