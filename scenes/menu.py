@@ -76,13 +76,13 @@ class MenuScene:
         return safe_scale_surface(surface, scale_factor)
 
     def _draw_menu_title(self, screen, center_xy, pulse):
-        """Styled main title: depth, outline, warm shimmer, accent rule."""
+        """Styled main title: depth, outline, blue shimmer, accent rule."""
         title_str = "Pixel Warriors: Revenge of the Missing Semicolon"
         shimmer = 0.5 + 0.5 * math.sin(self.time_seconds * 2.8)
         main_color = (
-            255,
-            int(215 + 40 * shimmer),
-            int(110 + 70 * shimmer),
+            int(100 + 26 * shimmer),
+            int(160 + 33 * shimmer),
+            int(220 + 25 * shimmer),
         )
         shadow_deep = (14, 10, 32)
         rim = (72, 58, 120)
@@ -126,7 +126,7 @@ class MenuScene:
         )
         pygame.draw.line(
             screen,
-            (220, 175, 90),
+            (126, 193, 245),
             (bar_x0, bar_y),
             (bar_x1, bar_y),
             2,
@@ -135,7 +135,7 @@ class MenuScene:
         rh = 5 + int(2 * (0.5 + 0.5 * math.sin(self.time_seconds * 3.2)))
         pygame.draw.polygon(
             screen,
-            (255, 200, 100),
+            (126, 193, 245),
             [
                 (cx, mid_y - rh),
                 (cx + rh, mid_y),
