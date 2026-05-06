@@ -24,6 +24,15 @@ class GameScene:
         self.sounds = sounds or {}
         self.time_seconds = 0.0
         self.player = Player()
+        
+        # Create animation preview players for each state
+        self.animations = {}
+        if self.player.sprite_sheet:
+            for state_name in self.player.animations.keys():
+                preview = Player()
+                preview.set_state(state_name)
+                preview.set_position(0, 0)
+                self.animations[state_name] = preview
 
     def handle_event(self, event):
         """Handle input events."""
@@ -35,11 +44,30 @@ class GameScene:
     def update(self, mouse_pos):
         """Update game state."""
         self.time_seconds = pygame.time.get_ticks() / 1000.0
-        self.player.update(1.0 / FPS)
+        dt = 1.0 / FPS
+        self.player.update(dt)
+        
+        # Update all animation previews
+        for preview in self.animations.values():
+            preview.update(dt)
 
     def render(self, screen):
         """Render the game scene."""
         screen.fill(BLACK)
-        self.player.render(screen)
-    
-        # Draw knight sprite in top left
+        
+        # Draw all animations horizontally across the screen
+        if self.animations:
+            spacing = SCREEN_WIDTH // (len(self.animations) + 1)
+            y_pos = SCREEN_HEIGHT // 2
+            
+            for i, (state_name, preview) in enumerate(self.animations.items()):
+                x_pos = spacing * (i + 1)
+                preview.set_position(x_pos, y_pos)
+                preview.render(screen)
+                
+                # Draw state name label below each animation
+                label = self.credit_font.render(state_name.upper(), False, (255, 255, 255))
+                label_rect = label.get_rect(center=(x_pos, y_pos + 80))
+                screen.blit(label, label_rect)
+        else:
+            self.player.render(screen)
