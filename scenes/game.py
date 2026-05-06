@@ -35,6 +35,7 @@ class GameScene:
     def update(self, mouse_pos):
         """Update game state."""
         self.time_seconds = pygame.time.get_ticks() / 1000.0
+        self.player.update(1.0 / FPS)
 
     def render(self, screen):
         """Render the game scene."""

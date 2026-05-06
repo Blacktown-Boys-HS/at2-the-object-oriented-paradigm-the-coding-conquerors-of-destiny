@@ -17,7 +17,6 @@ FOOTER_HINT_COLOR = (190, 190, 190)
 SUBTITLE_COLOR = (215, 215, 215)
 BODY_MUTED = (200, 200, 200)
 
-
 def safe_scale_surface(surface, scale_factor):
     """Scale surfaces with nearest neighbor so text stays crisp (no smooth blur)."""
     target_width = max(1, int(surface.get_width() * scale_factor))
@@ -52,21 +51,7 @@ class SharedBackground:
                 dot["x"] = random.randint(0, self.width)
 
     def draw(self, screen):
-        screen.fill(BACKGROUND)
-        for y in range(0, self.height, 4):
-            shade = 30 + int((y / self.height) * 20)
-            pygame.draw.rect(screen, (shade, shade, shade + 8), (0, y, self.width, 4))
-
-        dot_surface = pygame.Surface((self.width, self.height), pygame.SRCALPHA)
-        for dot in self.dots:
-            color = (255, 255, 255, dot["alpha"])
-            pygame.draw.circle(
-                dot_surface,
-                color,
-                (int(dot["x"]), int(dot["y"])),
-                dot["radius"],
-            )
-        screen.blit(dot_surface, (0, 0))
+        screen.fill((30, 30, 30))
 
 
 def draw_pulsing_title(screen, font, text, center_x, center_y, time_seconds):
