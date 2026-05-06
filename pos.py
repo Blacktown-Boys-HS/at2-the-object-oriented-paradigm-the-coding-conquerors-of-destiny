@@ -18,7 +18,7 @@ class Position:
         if isinstance(other, Position):
             return Position(self.x - other.x, self.y - other.y)
         raise TypeError("Can only subtract Position objects")
-    
+
     def distance_to(self, other):
         if isinstance(other, Position):
             dx = self.x - other.x

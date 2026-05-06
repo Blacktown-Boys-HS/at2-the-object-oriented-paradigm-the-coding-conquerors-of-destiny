@@ -59,7 +59,7 @@ class Player:
         frame_index = int(self.animation_time * anim["speed"])
         self.current_frame = frame_index % len(anim["frames"])
     
-    def render(self, screen):
+    def render(self, screen) -> None: 
         """Render the player sprite."""
         if self.sprite_sheet:
             # Try row 0 for the idle animation
