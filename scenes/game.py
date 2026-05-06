@@ -2,9 +2,16 @@
 Placeholder game scene for the RPG game.
 """
 import pygame
-from globals import SCREEN_WIDTH, SCREEN_HEIGHT, SCENE_MENU, FPS, FONT_ANTIALIAS
-from player import Player
+from pathlib import Path
+from globals import SCREEN_WIDTH, SCREEN_HEIGHT, SCENE_MENU, FPS, FONT_ANTIALIAS, BLACK
+from sprite_sheet import SpriteSheet
 
+from .aesthetic import (
+    SharedBackground,
+    draw_pulsing_title,
+    draw_subtitle_centered,
+    draw_footer_hint,
+)
 from .aesthetic import (
     SharedBackground,
     draw_pulsing_title,
@@ -21,9 +28,21 @@ class GameScene:
         self.menu_font = menu_font
         self.credit_font = credit_font
         self.sounds = sounds or {}
-        self.bg = SharedBackground()
         self.time_seconds = 0.0
-        self.player = Player(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2 + 30)
+        
+        # Load knight sprite
+        self.knight_sprite = None
+        knight_path = (
+            Path(__file__).resolve().parent.parent
+            / "assets"
+            / "rpg_assets"
+            / "sprites"
+            / "knight.png"
+        )
+        try:
+            self.knight_sprite = pygame.image.load(str(knight_path)).convert_alpha()
+        except (FileNotFoundError, pygame.error):
+            self.knight_sprite = None
 
     def handle_event(self, event):
         """Handle input events."""
@@ -35,38 +54,11 @@ class GameScene:
     def update(self, mouse_pos):
         """Update game state."""
         self.time_seconds = pygame.time.get_ticks() / 1000.0
-        self.bg.update(1.0 / FPS)
-        self.player.update(self.time_seconds)
 
     def render(self, screen):
         """Render the game scene."""
-        self.bg.draw(screen)
-
-        draw_pulsing_title(
-            screen,
-            self.title_font,
-            "Game",
-            SCREEN_WIDTH // 2,
-            115,
-            self.time_seconds,
-        )
-
-        draw_subtitle_centered(
-            screen,
-            self.credit_font,
-            "Placeholder — full adventure coming later",
-            SCREEN_WIDTH // 2,
-            200,
-        )
-
-        self.player.render(screen)
-
-        coming = self.menu_font.render(
-            "Coming soon!", FONT_ANTIALIAS, (230, 230, 230)
-        )
-        coming_rect = coming.get_rect(
-            center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2 + 70)
-        )
-        screen.blit(coming, coming_rect)
-
-        draw_footer_hint(screen, self.credit_font, "Press ESC to return to menu")
+        screen.fill(BLACK)
+        
+        # Draw knight sprite in top left
+        if self.knight_sprite:
+            screen.blit(self.knight_sprite, (20, 20))
