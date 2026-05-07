@@ -34,6 +34,18 @@ class GameScene:
         self.camera = Camera(self.player.position.x, self.player.position.y)
         self.keys_pressed = {"up": False, "down": False, "left": False, "right": False}
 
+        # Loading screen state
+        self.loading = True
+        self.loading_time = 0.0
+        self.loading_duration = 0.6
+        self.loading_hints = [
+            "Sharpening swords...",
+            "Lighting torches...",
+            "Spawning enemies...",
+            "Polishing armour...",
+            "Unlocking dungeon...",
+        ]
+
         # Pause menu state
         self.paused = False
         self.pause_items = ["Resume", "Settings", "Main Menu"]
@@ -68,6 +80,8 @@ class GameScene:
 
     def handle_event(self, event):
         """Handle input events."""
+        if self.loading:
+            return None
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_ESCAPE:
                 self.paused = not self.paused
@@ -144,6 +158,13 @@ class GameScene:
         """Update game state."""
         self.time_seconds = pygame.time.get_ticks() / 1000.0
         dt = 1.0 / FPS
+
+        # Loading screen timer
+        if self.loading:
+            self.loading_time += dt
+            if self.loading_time >= self.loading_duration:
+                self.loading = False
+            return
 
         # Check for mouse hover on pause items
         if self.paused:
@@ -258,6 +279,26 @@ class GameScene:
     def render(self, screen):
         """Render the game scene."""
         screen.fill(BLACK)
+
+        # Loading screen — cover the game until map is fully buffered
+        if self.loading:
+            overlay = pygame.Surface((SCREEN_WIDTH, SCREEN_HEIGHT), pygame.SRCALPHA)
+            overlay.fill((0, 0, 0, 220))
+            screen.blit(overlay, (0, 0))
+
+            pulse = 1.0 + 0.08 * math.sin(self.loading_time * 10)
+            loading_text = self.menu_font.render("Loading...", FONT_ANTIALIAS, BLUE)
+            scaled = self._safe_scale_text(loading_text, pulse)
+            rect = scaled.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2))
+            screen.blit(scaled, rect)
+
+            # Rotating hint at bottom
+            hint_index = int(self.loading_time * 2) % len(self.loading_hints)
+            hint_text = self.credit_font.render(self.loading_hints[hint_index], False, GRAY)
+            hint_rect = hint_text.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT - 50))
+            screen.blit(hint_text, hint_rect)
+            return
+
         if self.map_layer:
             self.map_layer.draw(screen, screen.get_rect())
         zoom = self.map_layer.zoom if self.map_layer else 1
@@ -318,7 +359,3 @@ class GameScene:
                 text_rect = text.get_rect(topleft=item_pos)
                 self.pause_item_rects.append(text_rect)
                 screen.blit(text, text_rect)
-
-        # Footer hint
-        hint = self.credit_font.render("UP/DOWN or mouse to select, ENTER/SPACE to confirm", False, (215, 215, 215))
-        screen.blit(hint, hint.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT - 40)))
