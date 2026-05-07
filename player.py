@@ -12,7 +12,7 @@ class Player:
     
     FRAME_WIDTH = 32
     FRAME_HEIGHT = 32
-    DISPLAY_SCALE = 3  # 16×3 = 48 pixels
+    DISPLAY_SCALE = 2  # 16×3 = 48 pixels
     
     def __init__(self, x=600, y=400):
         self.position = Position(x, y)
