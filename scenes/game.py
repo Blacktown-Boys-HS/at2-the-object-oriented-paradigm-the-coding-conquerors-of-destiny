@@ -205,40 +205,42 @@ class GameScene:
                     self.pause_pending_scene = self._get_pause_action()
                     self.pause_activation_item = None
                     self.pause_activation_progress = 0.0
-            return
 
-        dx = 0
-        dy = 0
-        if self.keys_pressed["up"]:
-            dy -= 1
-        if self.keys_pressed["down"]:
-            dy += 1
-        if self.keys_pressed["left"]:
-            dx -= 1
-        if self.keys_pressed["right"]:
-            dx += 1
+        # Only update player movement / camera when not paused
+        if not self.paused:
+            dx = 0
+            dy = 0
+            if self.keys_pressed["up"]:
+                dy -= 1
+            if self.keys_pressed["down"]:
+                dy += 1
+            if self.keys_pressed["left"]:
+                dx -= 1
+            if self.keys_pressed["right"]:
+                dx += 1
 
-        moving = dx != 0 or dy != 0
-        if moving:
-            self.player.move(dx, dy, self.MOVE_SPEED * dt)
-            if self.player.state != "run":
-                self.player.set_state("run")
-        else:
-            if self.player.state != "idle":
-                self.player.set_state("idle")
+            moving = dx != 0 or dy != 0
+            if moving:
+                self.player.move(dx, dy, self.MOVE_SPEED * dt)
+                if self.player.state != "run":
+                    self.player.set_state("run")
+            else:
+                if self.player.state != "idle":
+                    self.player.set_state("idle")
 
-        # Clamp player to map bounds to prevent showing black edges
-        # Map is 100x50 tiles at 16px = 1600x800, zoom=2
-        if self.map_layer:
-            map_w, map_h = 1600, 800
-            half_view_w = SCREEN_WIDTH / (2 * self.map_layer.zoom)
-            half_view_h = SCREEN_HEIGHT / (2 * self.map_layer.zoom)
-            self.player.position.x = max(half_view_w, min(map_w - half_view_w, self.player.position.x))
-            self.player.position.y = max(half_view_h, min(map_h - half_view_h, self.player.position.y))
+            # Clamp player to map bounds to prevent showing black edges
+            # Map is 100x50 tiles at 16px = 1600x800, zoom=2
+            if self.map_layer:
+                map_w, map_h = 1600, 800
+                half_view_w = SCREEN_WIDTH / (2 * self.map_layer.zoom)
+                half_view_h = SCREEN_HEIGHT / (2 * self.map_layer.zoom)
+                self.player.position.x = max(half_view_w, min(map_w - half_view_w, self.player.position.x))
+                self.player.position.y = max(half_view_h, min(map_h - half_view_h, self.player.position.y))
 
-        self.player.update(dt)
-        self.camera.update(self.player, dt)
+            self.player.update(dt)
+            self.camera.update(self.player, dt)
 
+        # Always center map so pyscroll buffer stays valid (even when paused)
         if self.map_layer:
             self.map_layer.center((self.camera.x, self.camera.y))
 
