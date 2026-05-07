@@ -208,6 +208,8 @@ def main():
                         current_scene = pending_scene
                         pending_scene = None
                         sound_manager.update_music_for_scene(current_scene)
+                        if hasattr(scenes[current_scene], "on_enter"):
+                            scenes[current_scene].on_enter()
                     transition_direction = -1
             elif transition_direction == -1:
                 transition_alpha = max(transition_alpha - transition_speed, 0)

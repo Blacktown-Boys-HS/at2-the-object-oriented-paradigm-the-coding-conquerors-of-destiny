@@ -154,6 +154,11 @@ class GameScene:
         self.pause_pending_scene = None
         return scene
 
+    def on_enter(self):
+        """Reset loading screen when transitioning into game scene."""
+        self.loading = True
+        self.loading_time = 0.0
+
     def update(self, mouse_pos):
         """Update game state."""
         self.time_seconds = pygame.time.get_ticks() / 1000.0
@@ -305,9 +310,6 @@ class GameScene:
         self.player.render(screen, self.camera, zoom)
 
         if not self.paused:
-            # Movement hint
-            hint = self.credit_font.render("WASD or Arrow Keys to move · ESC to pause", False, (200, 200, 200))
-            screen.blit(hint, hint.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT - 40)))
             return
 
         # --- PAUSE OVERLAY ---
