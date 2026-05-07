@@ -67,21 +67,22 @@ class Player:
             sprite = anim["frames"][self.current_frame]
             
             # Create a new surface to ensure clean rendering
-            clean_sprite = pygame.Surface((sprite.get_width(), sprite.get_height()), pygame.SRCALPHA)
-            clean_sprite.blit(sprite, (0, 0))
-            
-            # Scale the sprite
-            scaled_width = int(clean_sprite.get_width() * self.DISPLAY_SCALE)
-            scaled_height = int(clean_sprite.get_height() * self.DISPLAY_SCALE)
-            scaled_sprite = pygame.transform.scale(clean_sprite, (max(1, scaled_width), max(1, scaled_height)))
+            scaled_width = int(sprite.get_width() * self.DISPLAY_SCALE)
+            scaled_height = int(sprite.get_height() * self.DISPLAY_SCALE)
+
+            scaled_sprite = pygame.transform.scale(
+                sprite,
+                (scaled_width, scaled_height)
+            )
             
             # Flip if facing left
             if not self.facing_right:
                 scaled_sprite = pygame.transform.flip(scaled_sprite, True, False)
             
             # Draw sprite using float position for smooth camera sync
-            screen_x = self.position.x - camera.x
-            screen_y = self.position.y - camera.y
+            screen_x = self.position.x 
+            screen_y = self.position.y 
+
             sprite_rect = scaled_sprite.get_rect(
                 center=(round(screen_x), round(screen_y))
             )

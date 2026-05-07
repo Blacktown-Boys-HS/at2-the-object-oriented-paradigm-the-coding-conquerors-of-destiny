@@ -51,7 +51,12 @@ class GameScene:
         self.map_layer = None
         try:
             tmx_path = Path(__file__).resolve().parent.parent / "assets" / "maps" / "Tiled_files" / "Dungeon1.tmx"
-            tmx_data = pytmx.load_pygame(str(tmx_path))
+
+            tmx_data = pytmx.load_pygame(
+                str(tmx_path),
+                pixelalpha=True
+            )
+            
             map_data = pyscroll.data.TiledMapData(tmx_data)
             self.map_layer = pyscroll.orthographic.BufferedRenderer(
                 map_data,
