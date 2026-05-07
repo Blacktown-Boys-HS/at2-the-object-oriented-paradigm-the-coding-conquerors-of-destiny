@@ -58,7 +58,8 @@ def main():
     custom_cursor = None
     cursor_path = Path(__file__).resolve().parent / "assets" / "cursor" / "8_white.png"
     try:
-        custom_cursor = pygame.image.load(str(cursor_path)).convert_alpha()
+        custom_cursor = pygame.image.load(str(cursor_path)).convert()
+        custom_cursor.set_colorkey(custom_cursor.get_at((0, 0)))
         pygame.mouse.set_visible(False)
     except (FileNotFoundError, pygame.error):
         pygame.mouse.set_visible(True)

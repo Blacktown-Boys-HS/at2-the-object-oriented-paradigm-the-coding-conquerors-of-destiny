@@ -10,7 +10,8 @@ class SpriteSheet:
     """Fixed-size grid frames (e.g. Brackeys RPG knight sheet)."""
 
     def __init__(self, path, frame_width: int, frame_height: int):
-        self.sheet = pygame.image.load(str(Path(path))).convert_alpha()
+        self.sheet = pygame.image.load(str(Path(path))).convert()
+        self.sheet.set_colorkey(self.sheet.get_at((0, 0)))
         self.fw = frame_width
         self.fh = frame_height
         sw, sh = self.sheet.get_size()

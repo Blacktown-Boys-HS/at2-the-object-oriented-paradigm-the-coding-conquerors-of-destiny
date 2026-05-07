@@ -79,13 +79,11 @@ class Player:
             if not self.facing_right:
                 scaled_sprite = pygame.transform.flip(scaled_sprite, True, False)
             
-            # Draw sprite
-            x, y = self.position.to_int_tuple()
-            
-            screen_x = x - camera.x
-            screen_y = y - camera.y
+            # Draw sprite using float position for smooth camera sync
+            screen_x = self.position.x - camera.x
+            screen_y = self.position.y - camera.y
             sprite_rect = scaled_sprite.get_rect(
-                center=(screen_x, screen_y)
+                center=(round(screen_x), round(screen_y))
             )
             screen.blit(scaled_sprite, sprite_rect)
 
@@ -110,13 +108,6 @@ class Player:
             self.facing_right = True
         elif dx < 0:
             self.facing_right = False
-
-        # Clamp to screen bounds
-        from globals import SCREEN_WIDTH, SCREEN_HEIGHT
-        half_w = (self.FRAME_WIDTH * self.DISPLAY_SCALE) // 2
-        half_h = (self.FRAME_HEIGHT * self.DISPLAY_SCALE) // 2
-        self.position.x = max(half_w, min(SCREEN_WIDTH - half_w, self.position.x))
-        self.position.y = max(half_h, min(SCREEN_HEIGHT - half_h, self.position.y))
 
     def set_position(self, x, y):
         """Set player position."""

@@ -196,6 +196,15 @@ class GameScene:
             if self.player.state != "idle":
                 self.player.set_state("idle")
 
+        # Clamp player to map bounds to prevent showing black edges
+        # Map is 100x50 tiles at 16px = 1600x800, zoom=2
+        if self.map_layer:
+            map_w, map_h = 1600, 800
+            half_view_w = SCREEN_WIDTH / (2 * self.map_layer.zoom)
+            half_view_h = SCREEN_HEIGHT / (2 * self.map_layer.zoom)
+            self.player.position.x = max(half_view_w, min(map_w - half_view_w, self.player.position.x))
+            self.player.position.y = max(half_view_h, min(map_h - half_view_h, self.player.position.y))
+
         self.player.update(dt)
         self.camera.update(
             self.player,
@@ -254,7 +263,7 @@ class GameScene:
         """Render the game scene."""
         screen.fill(BLACK)
         if self.map_layer:
-            self.map_layer.draw(screen)
+            self.map_layer.draw(screen, screen.get_rect())
         self.player.render(screen, self.camera)
 
         if not self.paused:
