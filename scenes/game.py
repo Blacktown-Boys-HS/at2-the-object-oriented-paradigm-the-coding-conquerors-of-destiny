@@ -22,7 +22,7 @@ from .aesthetic import (
 class GameScene:
     """Game scene."""
 
-    MOVE_SPEED = 200  # pixels per second
+    MOVE_SPEED = 100  # pixels per second
 
     def __init__(self, title_font, menu_font, credit_font, sounds=None):
         self.title_font = title_font
@@ -31,7 +31,7 @@ class GameScene:
         self.sounds = sounds or {}
         self.time_seconds = 0.0
         self.player = Player()
-        self.camera = Camera()
+        self.camera = Camera(self.player.position.x, self.player.position.y)
         self.keys_pressed = {"up": False, "down": False, "left": False, "right": False}
 
         # Pause menu state
@@ -56,7 +56,7 @@ class GameScene:
                 str(tmx_path),
                 pixelalpha=True
             )
-            
+
             map_data = pyscroll.data.TiledMapData(tmx_data)
             self.map_layer = pyscroll.orthographic.BufferedRenderer(
                 map_data,
@@ -211,19 +211,10 @@ class GameScene:
             self.player.position.y = max(half_view_h, min(map_h - half_view_h, self.player.position.y))
 
         self.player.update(dt)
-        self.camera.update(
-            self.player,
-            SCREEN_WIDTH,
-            SCREEN_HEIGHT
-        )
+        self.camera.update(self.player, dt)
 
         if self.map_layer:
-            self.map_layer.center(
-                (
-                    self.player.position.x,
-                    self.player.position.y
-                )
-            )
+            self.map_layer.center((self.camera.x, self.camera.y))
 
     def _safe_scale_text(self, surface, scale_factor):
         """Scale text surfaces safely."""
@@ -269,7 +260,8 @@ class GameScene:
         screen.fill(BLACK)
         if self.map_layer:
             self.map_layer.draw(screen, screen.get_rect())
-        self.player.render(screen, self.camera)
+        zoom = self.map_layer.zoom if self.map_layer else 1
+        self.player.render(screen, self.camera, zoom)
 
         if not self.paused:
             # Movement hint

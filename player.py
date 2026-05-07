@@ -59,14 +59,12 @@ class Player:
         frame_index = int(self.animation_time * anim["speed"])
         self.current_frame = frame_index % len(anim["frames"])
     
-    def render(self, screen, camera) -> None: 
-        """Render the player sprite."""
+    def render(self, screen, camera, zoom=1) -> None:
+        """Render the player sprite relative to the camera."""
         if self.sprite_sheet:
-            # Try row 0 for the idle animation
             anim = self.animations[self.state]
             sprite = anim["frames"][self.current_frame]
-            
-            # Create a new surface to ensure clean rendering
+
             scaled_width = int(sprite.get_width() * self.DISPLAY_SCALE)
             scaled_height = int(sprite.get_height() * self.DISPLAY_SCALE)
 
@@ -74,14 +72,15 @@ class Player:
                 sprite,
                 (scaled_width, scaled_height)
             )
-            
+
             # Flip if facing left
             if not self.facing_right:
                 scaled_sprite = pygame.transform.flip(scaled_sprite, True, False)
-            
-            # Draw sprite using float position for smooth camera sync
-            screen_x = self.position.x 
-            screen_y = self.position.y 
+
+            # Convert world position to screen position using camera center and zoom
+            from globals import SCREEN_WIDTH, SCREEN_HEIGHT
+            screen_x = (self.position.x - camera.x) * zoom + SCREEN_WIDTH / 2
+            screen_y = (self.position.y - camera.y) * zoom + SCREEN_HEIGHT / 2
 
             sprite_rect = scaled_sprite.get_rect(
                 center=(round(screen_x), round(screen_y))
