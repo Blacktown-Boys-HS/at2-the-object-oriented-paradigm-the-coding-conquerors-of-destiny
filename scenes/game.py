@@ -8,6 +8,8 @@ from globals import SCREEN_WIDTH, SCREEN_HEIGHT, SCENE_MENU, SCENE_SETTINGS, FPS
 from sprite_sheet import SpriteSheet
 from camera import Camera
 from player import Player
+import pytmx
+import pyscroll
 
 from .aesthetic import (
     SharedBackground,
@@ -44,6 +46,20 @@ class GameScene:
         self.pause_activation_duration = 0.18
         self.pause_pending_scene = None
         self.pause_last_selected = self.pause_selected
+
+        #load tmx file
+        self.map_layer = None
+        try:
+            tmx_path = Path(__file__).resolve().parent.parent / "assets" / "maps" / "Tiled_files" / "Dungeon1.tmx"
+            tmx_data = pytmx.load_pygame(str(tmx_path))
+            map_data = pyscroll.data.TiledMapData(tmx_data)
+            self.map_layer = pyscroll.orthographic.BufferedRenderer(
+                map_data,
+                (SCREEN_WIDTH, SCREEN_HEIGHT)
+            )
+            self.map_layer.zoom = 2
+        except Exception as e:
+            print(f"Warning: Could not load map: {e}")
 
     def handle_event(self, event):
         """Handle input events."""
@@ -187,6 +203,14 @@ class GameScene:
             SCREEN_HEIGHT
         )
 
+        if self.map_layer:
+            self.map_layer.center(
+                (
+                    self.player.position.x,
+                    self.player.position.y
+                )
+            )
+
     def _safe_scale_text(self, surface, scale_factor):
         """Scale text surfaces safely."""
         return safe_scale_surface(surface, scale_factor)
@@ -229,6 +253,8 @@ class GameScene:
     def render(self, screen):
         """Render the game scene."""
         screen.fill(BLACK)
+        if self.map_layer:
+            self.map_layer.draw(screen)
         self.player.render(screen, self.camera)
 
         if not self.paused:
