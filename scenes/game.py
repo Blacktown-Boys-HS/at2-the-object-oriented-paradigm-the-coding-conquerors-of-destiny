@@ -94,6 +94,9 @@ class GameScene:
             self.map_layer.zoom = 4.0
         except Exception as e:
             print(f"Warning: Could not load map: {e}")
+        
+        self.map_width = tmx_data.width * tmx_data.tilewidth
+        self.map_height = tmx_data.height * tmx_data.tileheight
 
         # Center player on map
         if self.map_layer:
@@ -273,17 +276,16 @@ class GameScene:
                 if self.player.state != "idle":
                     self.player.set_state("idle")
 
-            # Clamp player to map bounds to prevent showing black edges
-            # Map is 100x50 tiles at 16px = 1600x800, zoom=2
-            if self.map_layer:
-                map_w, map_h = 1600, 800
-                half_view_w = SCREEN_WIDTH / (2 * self.map_layer.zoom)
-                half_view_h = SCREEN_HEIGHT / (2 * self.map_layer.zoom)
-                self.player.position.x = max(half_view_w, min(map_w - half_view_w, self.player.position.x))
-                self.player.position.y = max(half_view_h, min(map_h - half_view_h, self.player.position.y))
-
             self.player.update(dt)
-            self.camera.update(self.player, dt)
+            self.camera.update(
+                self.player,
+                dt,
+                self.map_width,
+                self.map_height,
+                SCREEN_WIDTH,
+                SCREEN_HEIGHT,
+                self.map_layer.zoom if self.map_layer else 1.0
+            )
 
         # Zoom transition (starts zoomed in, pulls back to normal)
         if self.map_layer and self.map_layer.zoom > self.target_zoom:
@@ -357,7 +359,7 @@ class GameScene:
 
         if self.map_layer:
             self.map_layer.draw(screen, screen.get_rect())
-        zoom = self.map_layer.zoom if self.map_layer else 1
+        zoom = self.map_layer.zoom if self.map_layer else 1.0
         self.player.render(screen, self.camera, zoom)
 
         # --- PAUSE OVERLAY ---
