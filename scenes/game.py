@@ -78,6 +78,8 @@ class GameScene:
 
         #load tmx file
         self.map_layer = None
+        self.map_width = 0
+        self.map_height = 0
         try:
             tmx_path = Path(__file__).resolve().parent.parent / "assets" / "maps" / "Tiled_files" / "Dungeon1.tmx"
 
@@ -92,11 +94,10 @@ class GameScene:
                 (SCREEN_WIDTH, SCREEN_HEIGHT)
             )
             self.map_layer.zoom = 4.0
+            self.map_width = tmx_data.width * tmx_data.tilewidth
+            self.map_height = tmx_data.height * tmx_data.tileheight
         except Exception as e:
             print(f"Warning: Could not load map: {e}")
-        
-        self.map_width = tmx_data.width * tmx_data.tilewidth
-        self.map_height = tmx_data.height * tmx_data.tileheight
 
         # Center player on map
         if self.map_layer:
@@ -276,6 +277,19 @@ class GameScene:
                 if self.player.state != "idle":
                     self.player.set_state("idle")
 
+            # Clamp player to camera viewport so they never walk past where
+            # the camera can follow (prevents drifting off-screen at edges)
+            if self.map_width > 0 and self.map_height > 0 and self.map_layer:
+                z = self.map_layer.zoom
+                half_view_w = SCREEN_WIDTH / (2 * z)
+                half_view_h = SCREEN_HEIGHT / (2 * z)
+                self.player.position.x = max(
+                    half_view_w, min(self.map_width - half_view_w, self.player.position.x)
+                )
+                self.player.position.y = max(
+                    half_view_h, min(self.map_height - half_view_h, self.player.position.y)
+                )
+
             self.player.update(dt)
             self.camera.update(
                 self.player,
@@ -337,6 +351,14 @@ class GameScene:
     def render(self, screen):
         """Render the game scene."""
         screen.fill(BLACK)
+
+        # Debug: player coordinates overlay (top-left)
+        debug_text = self.credit_font.render(
+            f"x:{self.player.position.x:.1f}  y:{self.player.position.y:.1f}",
+            FONT_ANTIALIAS,
+            WHITE,
+        )
+        screen.blit(debug_text, (10, 10))
 
         # Loading screen — cover the game until map is fully buffered
         if self.loading:
