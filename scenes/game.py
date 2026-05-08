@@ -352,14 +352,6 @@ class GameScene:
         """Render the game scene."""
         screen.fill(BLACK)
 
-        # Debug: player coordinates overlay (top-left)
-        debug_text = self.credit_font.render(
-            f"x:{self.player.position.x:.1f}  y:{self.player.position.y:.1f}",
-            FONT_ANTIALIAS,
-            WHITE,
-        )
-        screen.blit(debug_text, (10, 10))
-
         # Loading screen — cover the game until map is fully buffered
         if self.loading:
             overlay = pygame.Surface((SCREEN_WIDTH, SCREEN_HEIGHT), pygame.SRCALPHA)
@@ -437,3 +429,11 @@ class GameScene:
 
         # --- FIRST-TIME DIALOGUE OVERLAY ---
         self.dialogue.render(screen, self.time_seconds)
+
+        # Debug: player coordinates (drawn last so it stays on top)
+        coord_text = self.credit_font.render(
+            f"x:{self.player.position.x:.1f}  y:{self.player.position.y:.1f}",
+            FONT_ANTIALIAS,
+            (255, 255, 0),
+        )
+        screen.blit(coord_text, (10, 90))
