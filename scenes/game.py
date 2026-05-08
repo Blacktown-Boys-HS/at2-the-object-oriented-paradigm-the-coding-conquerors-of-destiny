@@ -18,6 +18,7 @@ from .aesthetic import (
     draw_footer_hint,
     safe_scale_surface,
 )
+from .dialogue import DialogueBox
 
 class GameScene:
     """Game scene."""
@@ -46,14 +47,21 @@ class GameScene:
             "Unlocking dungeon...",
         ]
 
-        # First-time dialogue state
+        # First-time dialogue
         self.first_dialogue_shown = False
-        self.dialogue_active = False
-        self.dialogue_text = "Huh... Where am I? What is this place?"
-        self.dialogue_chars_shown = 0
-        self.dialogue_speed = 35  # chars per second
-        self.dialogue_timer = 0.0
-        self.dialogue_skipped = False
+        font_path = None
+        for candidate in [
+            Path(__file__).resolve().parent.parent / "assets" / "fonts" / "Kenney Pixel.ttf",
+            Path(__file__).resolve().parent.parent / "assets" / "font" / "Kenney Pixel.ttf",
+        ]:
+            if candidate.exists():
+                font_path = str(candidate)
+                break
+        self.dialogue = DialogueBox(
+            "Huh... Where am I? What is this place?",
+            speed=35,
+            font_path=font_path,
+        )
 
         # Pause menu state
         self.paused = False
@@ -83,22 +91,31 @@ class GameScene:
                 map_data,
                 (SCREEN_WIDTH, SCREEN_HEIGHT)
             )
-            self.map_layer.zoom = 2
+            self.map_layer.zoom = 4.0
         except Exception as e:
             print(f"Warning: Could not load map: {e}")
+
+        # Center player on map
+        if self.map_layer:
+            self.player.position.x = 800.0
+            self.player.position.y = 400.0
+            self.camera.x = self.player.position.x
+            self.camera.y = self.player.position.y
+        else:
+            self.player.position.x = SCREEN_WIDTH / 2
+            self.player.position.y = SCREEN_HEIGHT / 2
+
+        # Camera zoom transition (starts zoomed in, pulls back to normal)
+        self.target_zoom = 2.0
+        self.zoom_transition_speed = 1.2  # zoom units per second
 
     def handle_event(self, event):
         """Handle input events."""
         if self.loading:
             return None
-        if self.dialogue_active:
+        if self.dialogue.active:
             if event.type in (pygame.KEYDOWN, pygame.MOUSEBUTTONDOWN):
-                if self.dialogue_chars_shown < len(self.dialogue_text):
-                    self.dialogue_chars_shown = len(self.dialogue_text)
-                    self.dialogue_skipped = True
-                else:
-                    self.dialogue_active = False
-                    self.first_dialogue_shown = True
+                self.dialogue.skip_or_dismiss()
             return None
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_ESCAPE:
@@ -188,19 +205,16 @@ class GameScene:
             if self.loading_time >= self.loading_duration:
                 self.loading = False
                 if not self.first_dialogue_shown:
-                    self.dialogue_active = True
-                    self.dialogue_chars_shown = 0
-                    self.dialogue_timer = 0.0
-                    self.dialogue_skipped = False
+                    self.dialogue.start()
             return
 
-        # First-time dialogue typewriter
-        if self.dialogue_active:
-            if not self.dialogue_skipped:
-                self.dialogue_timer += dt
-                target_chars = int(self.dialogue_timer * self.dialogue_speed)
-                self.dialogue_chars_shown = min(target_chars, len(self.dialogue_text))
-            return
+        # Update dialogue (typewriter + close animation); block movement while open
+        if self.dialogue.active:
+            self.dialogue.update(dt)
+            if self.dialogue.is_finished():
+                self.first_dialogue_shown = True
+            elif not self.dialogue.closing:
+                return
 
         # Check for mouse hover on pause items
         if self.paused:
@@ -237,8 +251,8 @@ class GameScene:
                     self.pause_activation_item = None
                     self.pause_activation_progress = 0.0
 
-        # Only update player movement / camera when not paused
-        if not self.paused:
+        # Only update player movement / camera when not paused and not in dialogue
+        if not self.paused and not self.dialogue.active:
             dx = 0
             dy = 0
             if self.keys_pressed["up"]:
@@ -270,6 +284,10 @@ class GameScene:
 
             self.player.update(dt)
             self.camera.update(self.player, dt)
+
+        # Zoom transition (starts zoomed in, pulls back to normal)
+        if self.map_layer and self.map_layer.zoom > self.target_zoom:
+            self.map_layer.zoom = max(self.target_zoom, self.map_layer.zoom - self.zoom_transition_speed * dt)
 
         # Always center map so pyscroll buffer stays valid (even when paused)
         if self.map_layer:
@@ -394,30 +412,4 @@ class GameScene:
                     screen.blit(text, text_rect)
 
         # --- FIRST-TIME DIALOGUE OVERLAY ---
-        if self.dialogue_active:
-            # Dialogue box background
-            box_margin = 40
-            box_height = 100
-            box_rect = pygame.Rect(
-                box_margin,
-                SCREEN_HEIGHT - box_height - 30,
-                SCREEN_WIDTH - box_margin * 2,
-                box_height
-            )
-            box_surface = pygame.Surface((box_rect.width, box_rect.height), pygame.SRCALPHA)
-            box_surface.fill((20, 20, 24, 230))
-            screen.blit(box_surface, box_rect.topleft)
-            pygame.draw.rect(screen, (100, 100, 110), box_rect, width=2, border_radius=6)
-
-            # Typewriter text
-            shown_text = self.dialogue_text[:self.dialogue_chars_shown]
-            text_surface = self.credit_font.render(shown_text, FONT_ANTIALIAS, WHITE)
-            text_rect = text_surface.get_rect(midleft=(box_rect.left + 20, box_rect.centery))
-            screen.blit(text_surface, text_rect)
-
-            # Blinking "continue" prompt when fully typed
-            if self.dialogue_chars_shown >= len(self.dialogue_text):
-                if int(self.time_seconds * 3) % 2 == 0:
-                    prompt = self.credit_font.render("▼", FONT_ANTIALIAS, BLUE)
-                    prompt_rect = prompt.get_rect(midright=(box_rect.right - 20, box_rect.centery))
-                    screen.blit(prompt, prompt_rect)
+        self.dialogue.render(screen, self.time_seconds)
