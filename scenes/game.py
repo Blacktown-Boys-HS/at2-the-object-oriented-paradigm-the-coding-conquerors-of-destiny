@@ -46,6 +46,15 @@ class GameScene:
             "Unlocking dungeon...",
         ]
 
+        # First-time dialogue state
+        self.first_dialogue_shown = False
+        self.dialogue_active = False
+        self.dialogue_text = "Huh... Where am I? What is this place?"
+        self.dialogue_chars_shown = 0
+        self.dialogue_speed = 35  # chars per second
+        self.dialogue_timer = 0.0
+        self.dialogue_skipped = False
+
         # Pause menu state
         self.paused = False
         self.pause_items = ["Resume", "Settings", "Main Menu"]
@@ -81,6 +90,15 @@ class GameScene:
     def handle_event(self, event):
         """Handle input events."""
         if self.loading:
+            return None
+        if self.dialogue_active:
+            if event.type in (pygame.KEYDOWN, pygame.MOUSEBUTTONDOWN):
+                if self.dialogue_chars_shown < len(self.dialogue_text):
+                    self.dialogue_chars_shown = len(self.dialogue_text)
+                    self.dialogue_skipped = True
+                else:
+                    self.dialogue_active = False
+                    self.first_dialogue_shown = True
             return None
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_ESCAPE:
@@ -169,6 +187,19 @@ class GameScene:
             self.loading_time += dt
             if self.loading_time >= self.loading_duration:
                 self.loading = False
+                if not self.first_dialogue_shown:
+                    self.dialogue_active = True
+                    self.dialogue_chars_shown = 0
+                    self.dialogue_timer = 0.0
+                    self.dialogue_skipped = False
+            return
+
+        # First-time dialogue typewriter
+        if self.dialogue_active:
+            if not self.dialogue_skipped:
+                self.dialogue_timer += dt
+                target_chars = int(self.dialogue_timer * self.dialogue_speed)
+                self.dialogue_chars_shown = min(target_chars, len(self.dialogue_text))
             return
 
         # Check for mouse hover on pause items
@@ -311,55 +342,82 @@ class GameScene:
         zoom = self.map_layer.zoom if self.map_layer else 1
         self.player.render(screen, self.camera, zoom)
 
-        if not self.paused:
-            return
-
         # --- PAUSE OVERLAY ---
-        # Darken the game behind
-        overlay = pygame.Surface((SCREEN_WIDTH, SCREEN_HEIGHT), pygame.SRCALPHA)
-        overlay.fill((0, 0, 0, 180))
-        screen.blit(overlay, (0, 0))
+        if self.paused:
+            # Darken the game behind
+            overlay = pygame.Surface((SCREEN_WIDTH, SCREEN_HEIGHT), pygame.SRCALPHA)
+            overlay.fill((0, 0, 0, 180))
+            screen.blit(overlay, (0, 0))
 
-        # Pause title with blue shimmer
-        pulse = 1.0 + (math.sin(self.time_seconds * 2.2) * 0.02)
-        self._draw_pause_title(screen, (SCREEN_WIDTH // 2, 200), pulse)
+            # Pause title with blue shimmer
+            pulse = 1.0 + (math.sin(self.time_seconds * 2.2) * 0.02)
+            self._draw_pause_title(screen, (SCREEN_WIDTH // 2, 200), pulse)
 
-        # Selection highlight box
-        selection_rect = pygame.Rect(SCREEN_WIDTH // 2 - 180, int(self.pause_selection_y) - 8, 360, 60)
-        box_surface = pygame.Surface((selection_rect.width, selection_rect.height), pygame.SRCALPHA)
-        box_alpha = 22
-        if self.pause_activation_item == self.pause_selected:
-            box_alpha = 22 + int(70 * (1.0 - self.pause_activation_progress))
-        box_surface.fill((255, 255, 255, box_alpha))
-        screen.blit(box_surface, selection_rect.topleft)
-        border_color = (130, 130, 130)
-        if self.pause_activation_item == self.pause_selected:
-            border_color = (220, 200, 120)
-        pygame.draw.rect(screen, border_color, selection_rect, width=2, border_radius=8)
+            # Selection highlight box
+            selection_rect = pygame.Rect(SCREEN_WIDTH // 2 - 180, int(self.pause_selection_y) - 8, 360, 60)
+            box_surface = pygame.Surface((selection_rect.width, selection_rect.height), pygame.SRCALPHA)
+            box_alpha = 22
+            if self.pause_activation_item == self.pause_selected:
+                box_alpha = 22 + int(70 * (1.0 - self.pause_activation_progress))
+            box_surface.fill((255, 255, 255, box_alpha))
+            screen.blit(box_surface, selection_rect.topleft)
+            border_color = (130, 130, 130)
+            if self.pause_activation_item == self.pause_selected:
+                border_color = (220, 200, 120)
+            pygame.draw.rect(screen, border_color, selection_rect, width=2, border_radius=8)
 
-        # Pause menu items
-        menu_start_x = SCREEN_WIDTH // 2 - 120
-        menu_start_y = 320
-        self.pause_item_rects = []
-        for i, item in enumerate(self.pause_items):
-            if i == self.pause_selected:
-                arrow_text = self.menu_font.render("> ", FONT_ANTIALIAS, BLUE)
-                item_text = self.menu_font.render(item, FONT_ANTIALIAS, WHITE)
-                item_pos = (menu_start_x, menu_start_y + i * 80)
-                if self.pause_hover_scale[i] != 1.0:
-                    arrow_text = self._safe_scale_text(arrow_text, self.pause_hover_scale[i])
-                    item_text = self._safe_scale_text(item_text, self.pause_hover_scale[i])
-                arrow_rect = arrow_text.get_rect(topleft=item_pos)
-                item_rect = item_text.get_rect(topleft=(arrow_rect.right, item_pos[1]))
-                self.pause_item_rects.append(arrow_rect.union(item_rect))
-                screen.blit(arrow_text, arrow_rect)
-                screen.blit(item_text, item_rect)
-            else:
-                color = GRAY
-                text = self.menu_font.render(item, FONT_ANTIALIAS, color)
-                if self.pause_hover_scale[i] != 1.0:
-                    text = self._safe_scale_text(text, self.pause_hover_scale[i])
-                item_pos = (menu_start_x, menu_start_y + i * 80)
-                text_rect = text.get_rect(topleft=item_pos)
-                self.pause_item_rects.append(text_rect)
-                screen.blit(text, text_rect)
+            # Pause menu items
+            menu_start_x = SCREEN_WIDTH // 2 - 120
+            menu_start_y = 320
+            self.pause_item_rects = []
+            for i, item in enumerate(self.pause_items):
+                if i == self.pause_selected:
+                    arrow_text = self.menu_font.render("> ", FONT_ANTIALIAS, BLUE)
+                    item_text = self.menu_font.render(item, FONT_ANTIALIAS, WHITE)
+                    item_pos = (menu_start_x, menu_start_y + i * 80)
+                    if self.pause_hover_scale[i] != 1.0:
+                        arrow_text = self._safe_scale_text(arrow_text, self.pause_hover_scale[i])
+                        item_text = self._safe_scale_text(item_text, self.pause_hover_scale[i])
+                    arrow_rect = arrow_text.get_rect(topleft=item_pos)
+                    item_rect = item_text.get_rect(topleft=(arrow_rect.right, item_pos[1]))
+                    self.pause_item_rects.append(arrow_rect.union(item_rect))
+                    screen.blit(arrow_text, arrow_rect)
+                    screen.blit(item_text, item_rect)
+                else:
+                    color = GRAY
+                    text = self.menu_font.render(item, FONT_ANTIALIAS, color)
+                    if self.pause_hover_scale[i] != 1.0:
+                        text = self._safe_scale_text(text, self.pause_hover_scale[i])
+                    item_pos = (menu_start_x, menu_start_y + i * 80)
+                    text_rect = text.get_rect(topleft=item_pos)
+                    self.pause_item_rects.append(text_rect)
+                    screen.blit(text, text_rect)
+
+        # --- FIRST-TIME DIALOGUE OVERLAY ---
+        if self.dialogue_active:
+            # Dialogue box background
+            box_margin = 40
+            box_height = 100
+            box_rect = pygame.Rect(
+                box_margin,
+                SCREEN_HEIGHT - box_height - 30,
+                SCREEN_WIDTH - box_margin * 2,
+                box_height
+            )
+            box_surface = pygame.Surface((box_rect.width, box_rect.height), pygame.SRCALPHA)
+            box_surface.fill((20, 20, 24, 230))
+            screen.blit(box_surface, box_rect.topleft)
+            pygame.draw.rect(screen, (100, 100, 110), box_rect, width=2, border_radius=6)
+
+            # Typewriter text
+            shown_text = self.dialogue_text[:self.dialogue_chars_shown]
+            text_surface = self.credit_font.render(shown_text, FONT_ANTIALIAS, WHITE)
+            text_rect = text_surface.get_rect(midleft=(box_rect.left + 20, box_rect.centery))
+            screen.blit(text_surface, text_rect)
+
+            # Blinking "continue" prompt when fully typed
+            if self.dialogue_chars_shown >= len(self.dialogue_text):
+                if int(self.time_seconds * 3) % 2 == 0:
+                    prompt = self.credit_font.render("▼", FONT_ANTIALIAS, BLUE)
+                    prompt_rect = prompt.get_rect(midright=(box_rect.right - 20, box_rect.centery))
+                    screen.blit(prompt, prompt_rect)
