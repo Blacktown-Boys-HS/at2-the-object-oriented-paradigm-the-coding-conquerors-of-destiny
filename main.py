@@ -215,6 +215,11 @@ def main():
                 transition_alpha = max(transition_alpha - transition_speed, 0)
                 if transition_alpha <= 0:
                     is_transitioning = False
+
+                    #tell game it can start loading timer
+                    if current_scene == SCENE_GAME and hasattr(scenes[current_scene], "loading_ready"):
+                        scenes[current_scene].loading_ready = True
+                        print("loading_ready set to True")
             
             transition_surface.set_alpha(transition_alpha)
             screen.blit(transition_surface, (0, 0))

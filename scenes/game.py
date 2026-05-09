@@ -196,8 +196,10 @@ class GameScene:
 
     def on_enter(self):
         """Reset loading screen when transitioning into game scene."""
+        print("on_enter called")
         self.loading = True
         self.loading_time = 0.0
+        self.loading_ready = False
 
         if self.map_layer:
             self.map_layer.center((self.player.position.x, self.player.position.y))
@@ -211,12 +213,14 @@ class GameScene:
 
         # Loading screen timer
         if self.loading:
+            if not self.loading_ready:
+                return
             self.loading_time += dt
+            print(f"loading_time={self.loading_time:.2f} / {self.loading_duration}")
             if self.loading_time >= self.loading_duration:
                 self.loading = False
                 if not self.first_dialogue_shown:
                     self.dialogue.start()
-            return
 
         # Update dialogue (typewriter + close animation); block movement while open
         if self.dialogue.active:
@@ -357,6 +361,8 @@ class GameScene:
     def render(self, screen):
         """Render the game scene."""
         screen.fill(BLACK)
+        if self.loading:
+            print(f"rendering loading screen, ready={self.loading_ready}, time={self.loading_time:.2f}")
 
         # Loading screen — cover the game until map is fully buffered
         if self.loading:
