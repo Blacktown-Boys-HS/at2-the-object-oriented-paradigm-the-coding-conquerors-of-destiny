@@ -26,6 +26,7 @@ class GameScene:
     MOVE_SPEED = 100  # pixels per second
 
     def __init__(self, title_font, menu_font, credit_font, sounds=None):
+        self._clock = pygame.time.Clock()
         self.title_font = title_font
         self.menu_font = menu_font
         self.credit_font = credit_font
@@ -198,10 +199,15 @@ class GameScene:
         self.loading = True
         self.loading_time = 0.0
 
+        if self.map_layer:
+            self.map_layer.center((self.player.position.x, self.player.position.y))
+            self.camera.x = self.player.position.x
+            self.camera.y = self.player.position.y
+
     def update(self, mouse_pos):
         """Update game state."""
         self.time_seconds = pygame.time.get_ticks() / 1000.0
-        dt = 1.0 / FPS
+        dt = self._clock.tick(FPS) / 1000.0
 
         # Loading screen timer
         if self.loading:
