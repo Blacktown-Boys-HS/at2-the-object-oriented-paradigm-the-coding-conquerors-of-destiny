@@ -94,7 +94,7 @@ class GameScene:
                 map_data,
                 (SCREEN_WIDTH, SCREEN_HEIGHT)
             )
-            self.map_layer.zoom = 2.5
+            self.map_layer.zoom = 3.5
             self.map_width = tmx_data.width * tmx_data.tilewidth
             self.map_height = tmx_data.height * tmx_data.tileheight
         except Exception as e:
@@ -114,7 +114,7 @@ class GameScene:
             self.player.position.y = SCREEN_HEIGHT / 2
 
         # Camera zoom transition (starts zoomed in, pulls back to normal)
-        self.target_zoom = 2.0
+        self.target_zoom = 3.0
         self.zoom_transition_speed = 1.2  # zoom units per second
 
     def handle_event(self, event):
