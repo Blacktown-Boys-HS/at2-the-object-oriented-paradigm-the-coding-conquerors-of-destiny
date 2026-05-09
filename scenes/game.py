@@ -103,6 +103,13 @@ class GameScene:
         #check map width and height
         print(f"map_width={self.map_width} map_height={self.map_height} tile_width={tmx_data.tilewidth} tile_height={tmx_data.tileheight}") 
 
+        #check map layers
+        for layer in tmx_data.layers:
+            print(f"layer: {layer.name}, type: {type(layer).__name__}")
+        
+        for obj in tmx_data.objects:
+            print(f"object: {obj.name}, type: {type(obj.type)}, x: {obj.x}, y: {obj.y}")
+
         # Center player on map
         if self.map_layer:
             self.player.position.x = (27 * 16) / 2
@@ -199,7 +206,6 @@ class GameScene:
 
     def on_enter(self):
         """Reset loading screen when transitioning into game scene."""
-        print("on_enter called")
         self.loading = True
         self.loading_time = 0.0
         self.loading_ready = False
@@ -356,9 +362,6 @@ class GameScene:
 
     def render(self, screen):
         """Render the game scene."""
-        screen.fill(BLACK)
-        if self.loading:
-            print(f"rendering loading screen, ready={self.loading_ready}, time={self.loading_time:.2f}")
 
         # Loading screen — cover the game until map is fully buffered
         if self.loading:
