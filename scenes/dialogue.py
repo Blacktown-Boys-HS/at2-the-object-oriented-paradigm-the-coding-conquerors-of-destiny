@@ -7,7 +7,7 @@ from globals import SCREEN_WIDTH, SCREEN_HEIGHT, FONT_ANTIALIAS, BLUE, GRAY, WHI
 class DialogueBox:
     """Animated typewriter dialogue that fades/shrinks out when dismissed."""
 
-    def __init__(self, text, speed=35, font_path=None):
+    def __init__(self, text, speed=30, font_path=None):
         self.text = text
         self.speed = speed
         self.active = False

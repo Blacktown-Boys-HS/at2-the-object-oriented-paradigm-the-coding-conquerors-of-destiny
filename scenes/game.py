@@ -59,7 +59,7 @@ class GameScene:
                 break
         self.dialogue = DialogueBox(
             "Huh... Where am I? What is this place?",
-            speed=35,
+            speed=30,
             font_path=font_path,
         )
 
