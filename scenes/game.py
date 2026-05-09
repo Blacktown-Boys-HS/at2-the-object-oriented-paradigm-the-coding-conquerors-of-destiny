@@ -94,16 +94,19 @@ class GameScene:
                 map_data,
                 (SCREEN_WIDTH, SCREEN_HEIGHT)
             )
-            self.map_layer.zoom = 4.0
+            self.map_layer.zoom = 2.5
             self.map_width = tmx_data.width * tmx_data.tilewidth
             self.map_height = tmx_data.height * tmx_data.tileheight
         except Exception as e:
             print(f"Warning: Could not load map: {e}")
+        
+        #check map width and height
+        print(f"map_width={self.map_width} map_height={self.map_height} tile_width={tmx_data.tilewidth} tile_height={tmx_data.tileheight}") 
 
         # Center player on map
         if self.map_layer:
-            self.player.position.x = 800.0
-            self.player.position.y = 400.0
+            self.player.position.x = (27 * 16) / 2
+            self.player.position.y = (37 * 16) / 2
             self.camera.x = self.player.position.x
             self.camera.y = self.player.position.y
         else:
@@ -289,16 +292,9 @@ class GameScene:
 
             # Clamp player to camera viewport so they never walk past where
             # the camera can follow (prevents drifting off-screen at edges)
-            if self.map_width > 0 and self.map_height > 0 and self.map_layer:
-                z = self.map_layer.zoom
-                half_view_w = SCREEN_WIDTH / (2 * z)
-                half_view_h = SCREEN_HEIGHT / (2 * z)
-                self.player.position.x = max(
-                    half_view_w, min(self.map_width - half_view_w, self.player.position.x)
-                )
-                self.player.position.y = max(
-                    half_view_h, min(self.map_height - half_view_h, self.player.position.y)
-                )
+            if self.map_width > 0 and self.map_height > 0:
+                self.player.position.x = max(0, min(self.map_width, self.player.position.x))
+                self.player.position.y = max(0, min(self.map_height, self.player.position.y))
 
             self.player.update(dt)
             self.camera.update(
