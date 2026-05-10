@@ -2,23 +2,27 @@
 Player character class for the RPG game.
 """
 from pathlib import Path
+from pickletools import pyfloat
+from pydantic import PaymentCardNumber
 import pygame
 from sprite_sheet import SpriteSheet
 from pos import Position
 
 
-class Player:
+class Player(pygame.sprite.Sprite):
     """Player character with sprite animation."""
     
     FRAME_WIDTH = 32
     FRAME_HEIGHT = 32
-    DISPLAY_SCALE = 2.5  # 16×3 = 48 pixels
+    DISPLAY_SCALE = 2 
     
     def __init__(self, x=600, y=400):
+        super().__init__()
         self.position = Position(x, y)
         self.sprite_sheet = None
         self.current_frame = 0
         self.animation_time = 0.0
+
         # Load sprite sheet
         knight_path = (
             Path(__file__).resolve().parent
@@ -48,16 +52,34 @@ class Player:
 
         except (FileNotFoundError, pygame.error):
             self.sprite_sheet = None
+
+        # for pyscroll
+        self.image = pygame.Surface((16, 16), pygame.SRCALPHA) # Placeholder
+        self.rect = pygame.Rect(x, y, 16, 16)
     
-    def update(self, dt):
+    def update(self, dt, zoom=1.0):
         if not self.sprite_sheet:
             return
 
         anim = self.animations[self.state]
         self.animation_time += dt
-
         frame_index = int(self.animation_time * anim["speed"])
         self.current_frame = frame_index % len(anim["frames"])
+
+        # keep rect in sync with position
+        self.rect.center = (int(self.position.x), int(self.position.y))
+
+        # update the image to the current frame
+        anim = self.animations[self.state]
+        sprite = anim["frames"][self.current_frame]
+        scaled = pygame.transform.scale(sprite, (
+            int(sprite.get_width() * self.DISPLAY_SCALE),
+            int(sprite.get_height() * self.DISPLAY_SCALE)
+        ))
+        if not self.facing_right:
+            scaled = pygame.transform.flip(scaled, True, False)
+        self.image = scaled
+        self.rect = self.image.get_rect(center=self.rect.center)
     
     def render(self, screen, camera, zoom=1) -> None:
         """Render the player sprite relative to the camera."""

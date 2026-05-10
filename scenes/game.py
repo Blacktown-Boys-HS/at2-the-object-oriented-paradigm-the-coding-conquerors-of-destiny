@@ -101,6 +101,25 @@ class GameScene:
         except Exception as e:
             print(f"Warning: Could not load map: {e}")
         
+        # Find which layer index is 'Walls' for z-ordering
+        above_layer = 0
+        for i, layer in enumerate(tmx_data.layers):
+            if layer.name == "Walls":
+                above_layer = i
+                break
+        
+        self.map_layer = pyscroll.orthographic.BufferedRenderer(
+            map_data,
+            (SCREEN_WIDTH, SCREEN_HEIGHT)
+        )
+        self.map_layer.zoom = 4
+
+        # create group with player drawn just below walls layer
+        self.group = pyscroll.PyscrollGroup(
+            map_layer=self.map_layer,
+            default_layer=above_layer
+        )
+
         #trying collision
         self.collision_rects = []
         for obj in tmx_data.objects:
@@ -345,10 +364,6 @@ class GameScene:
         if self.map_layer and self.map_layer.zoom > self.target_zoom:
             self.map_layer.zoom = max(self.target_zoom, self.map_layer.zoom - self.zoom_transition_speed * dt)
 
-        # Always center map so pyscroll buffer stays valid (even when paused)
-        if self.map_layer:
-            self.map_layer.center((self.camera.x, self.camera.y))
-
     def _safe_scale_text(self, surface, scale_factor):
         """Scale text surfaces safely."""
         return safe_scale_surface(surface, scale_factor)
@@ -411,7 +426,8 @@ class GameScene:
             return
 
         if self.map_layer:
-            self.map_layer.draw(screen, screen.get_rect())
+            self.group.center(pygame.math.Vector2(self.camera.x, self.camera.y))
+            self.group.draw(screen)
         zoom = self.map_layer.zoom if self.map_layer else 1.0
         self.player.render(screen, self.camera, zoom)
 

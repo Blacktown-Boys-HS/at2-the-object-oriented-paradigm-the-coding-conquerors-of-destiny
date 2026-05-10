@@ -6,7 +6,7 @@ class Camera:
     def __init__(self, x=0.0, y=0.0):
         self.x = float(x)
         self.y = float(y)
-        self.smoothing = 8.0  # higher = stiffer / faster catch-up
+        self.smoothing = 4.0  # higher = stiffer / faster catch-up
 
     def update(self, target, dt, map_w, map_h, screen_w, screen_h, zoom):
         """Lerp toward target position using dt for frame-rate independence."""
