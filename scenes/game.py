@@ -2,6 +2,7 @@
 Placeholder game scene for the RPG game.
 """
 import math
+from pydantic import InstanceOf
 import pygame
 from pathlib import Path
 from globals import SCREEN_WIDTH, SCREEN_HEIGHT, SCENE_MENU, SCENE_SETTINGS, FPS, FONT_ANTIALIAS, BLACK, BACKGROUND, BLUE, GRAY, WHITE
@@ -100,6 +101,18 @@ class GameScene:
         except Exception as e:
             print(f"Warning: Could not load map: {e}")
         
+        #trying collision
+        self.collision_rects = []
+        for obj in tmx_data.objects:
+            if obj.x is not None:
+                try:
+                    self.collision_rects.append(
+                        pygame.Rect(int(obj.x), int(obj.y), int(obj.width), int(obj.height))
+                )
+                except Exception:
+                    pass
+
+
         #check map width and height
         print(f"map_width={self.map_width} map_height={self.map_height} tile_width={tmx_data.tilewidth} tile_height={tmx_data.tileheight}") 
 
@@ -225,7 +238,6 @@ class GameScene:
             if not self.loading_ready:
                 return
             self.loading_time += dt
-            print(f"loading_time={self.loading_time:.2f} / {self.loading_duration}")
             if self.loading_time >= self.loading_duration:
                 self.loading = False
                 if not self.first_dialogue_shown:
@@ -288,6 +300,10 @@ class GameScene:
                 dx += 1
 
             moving = dx != 0 or dy != 0
+
+            old_x = self.player.position.x
+            old_y = self.player.position.y
+
             if moving:
                 self.player.move(dx, dy, self.MOVE_SPEED * dt)
                 if self.player.state != "run":
@@ -295,6 +311,18 @@ class GameScene:
             else:
                 if self.player.state != "idle":
                     self.player.set_state("idle")
+
+            # Collision detection
+            player_rect = pygame.Rect(
+                self.player.position.x - 4,
+                self.player.position.y + 4,
+                8, 4
+            )
+
+            for rect in self.collision_rects:
+                if player_rect.colliderect(rect):
+                    self.player.position.x = old_x
+                    self.player.position.y = old_y
 
             # Clamp player to camera viewport so they never walk past where
             # the camera can follow (prevents drifting off-screen at edges)
@@ -386,6 +414,13 @@ class GameScene:
             self.map_layer.draw(screen, screen.get_rect())
         zoom = self.map_layer.zoom if self.map_layer else 1.0
         self.player.render(screen, self.camera, zoom)
+
+        # debugging tiles
+        for rect in self.collision_rects:
+            screen_x = (rect.x - self.camera.x) * zoom + SCREEN_WIDTH / 2 
+            screen_y = (rect.y - self.camera.y) * zoom + SCREEN_HEIGHT / 2
+            debug_rect = pygame.Rect(screen_x, screen_y, rect.width * zoom, rect.height * zoom)
+            pygame.draw.rect(screen, (255, 0, 0), debug_rect, 1)
 
         # --- PAUSE OVERLAY ---
         if self.paused:

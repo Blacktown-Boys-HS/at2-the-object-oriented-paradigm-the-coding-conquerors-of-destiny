@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.12.1" orientation="orthogonal" renderorder="right-down" width="37" height="27" tilewidth="16" tileheight="16" infinite="0" nextlayerid="35" nextobjectid="1">
+<map version="1.10" tiledversion="1.12.1" orientation="orthogonal" renderorder="right-down" width="37" height="27" tilewidth="16" tileheight="16" infinite="0" nextlayerid="36" nextobjectid="20">
  <tileset firstgid="1" name="cracked_tiles" tilewidth="16" tileheight="16" tilecount="256" columns="8">
   <image source="../../../../../../Desktop/Map1/assetpack/Tiled_files/decorative_cracks_walls.png" width="128" height="512"/>
  </tileset>
@@ -4802,4 +4802,10 @@
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
 </data>
  </layer>
+ <objectgroup id="35" name="collision">
+  <object id="13" x="205.838" y="271.766" width="69.9547" height="9.05888"/>
+  <object id="14" x="276.548" y="272.018" width="7.8007" height="67.4383"/>
+  <object id="18" x="189.23" y="280.07" width="16.608" height="52.8435"/>
+  <object id="19" x="180.926" y="332.914" width="8.30398" height="9.05888"/>
+ </objectgroup>
 </map>
