@@ -156,6 +156,13 @@ class GameScene:
         self.target_zoom = 3.0
         self.zoom_transition_speed = 1.2  # zoom units per second
 
+        # Vignette effect
+        self.vignette = pygame.Surface((SCREEN_WIDTH, SCREEN_HEIGHT), pygame.SRCALPHA)
+        for i in range(120):
+            alpha = int((1- i / 120) ** 2 * 180)
+            rect = pygame.Rect(i, i, SCREEN_WIDTH - i * 2, SCREEN_HEIGHT - i * 2)
+            pygame.draw.rect(self.vignette, (0, 0, 0, alpha), rect, 4)
+
     def handle_event(self, event):
         """Handle input events."""
         if self.loading:
@@ -438,7 +445,7 @@ class GameScene:
             debug_rect = pygame.Rect(screen_x, screen_y, rect.width * zoom, rect.height * zoom)
             pygame.draw.rect(screen, (255, 0, 0), debug_rect, 1)
 
-        # --- PAUSE OVERLAY ---
+        # PAUSE OVERLAY 
         if self.paused:
             # Darken the game behind
             overlay = pygame.Surface((SCREEN_WIDTH, SCREEN_HEIGHT), pygame.SRCALPHA)
@@ -488,6 +495,9 @@ class GameScene:
                     text_rect = text.get_rect(topleft=item_pos)
                     self.pause_item_rects.append(text_rect)
                     screen.blit(text, text_rect)
+            
+        # Vignette effect
+        screen.blit(self.vignette, (0, 0))
 
         # --- FIRST-TIME DIALOGUE OVERLAY ---
         self.dialogue.render(screen, self.time_seconds)
