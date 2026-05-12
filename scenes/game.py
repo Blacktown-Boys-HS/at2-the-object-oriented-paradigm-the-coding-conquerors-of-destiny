@@ -488,7 +488,7 @@ class GameScene:
                     screen.blit(text, text_rect)
             
         # Vignette effect
-        screen.blit(self.vignette, (0, 0))
+        #screen.blit(self.vignette, (0, 0))
 
         # --- FIRST-TIME DIALOGUE OVERLAY ---
         self.dialogue.render(screen, self.time_seconds)
