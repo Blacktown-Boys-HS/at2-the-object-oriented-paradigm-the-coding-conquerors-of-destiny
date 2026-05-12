@@ -7,6 +7,7 @@ import pygame
 from pathlib import Path
 from globals import SCREEN_WIDTH, SCREEN_HEIGHT, SCENE_MENU, SCENE_SETTINGS, FPS, FONT_ANTIALIAS, BLACK, BACKGROUND, BLUE, GRAY, WHITE
 from sprite_sheet import SpriteSheet
+from vignette import create_vignette
 from camera import Camera
 from player import Player
 import pytmx
@@ -138,21 +139,7 @@ class GameScene:
         self.zoom_transition_speed = 1.2  # zoom units per second
 
         # Vignette effect
-        self.vignette = pygame.Surface((SCREEN_WIDTH,  SCREEN_HEIGHT), pygame.SRCALPHA)
-        cx, cy = SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2
-        max_dist = math.sqrt(cx**2 + cy**2)
-        for y in range(0, SCREEN_HEIGHT, 2):
-            for x in range(0, SCREEN_WIDTH, 2):
-                dist = math.sqrt((x - cx)**2 + (y - cy)**2)
-                alpha = int((dist / max_dist) ** 2 * 180)
-                alpha = min(255, alpha)
-                self.vignette.set_at((x, y), (0, 0, 0, alpha))
-                if x + 1 < SCREEN_WIDTH:
-                    self.vignette.set_at((x + 1, y), (0, 0, 0, alpha))
-                if y + 1 < SCREEN_HEIGHT:
-                    self.vignette.set_at((x, y + 1), (0, 0, 0, alpha))
-                if x + 1 < SCREEN_WIDTH and y + 1 < SCREEN_HEIGHT:
-                    self.vignette.set_at((x + 1, y + 1), (0, 0, 0, alpha))
+        self.vignette = create_vignette(SCREEN_WIDTH, SCREEN_HEIGHT, strength=120)
 
     def handle_event(self, event):
         """Handle input events."""
@@ -488,7 +475,7 @@ class GameScene:
                     screen.blit(text, text_rect)
             
         # Vignette effect
-        #screen.blit(self.vignette, (0, 0))
+        screen.blit(self.vignette, (0, 0))
 
         # --- FIRST-TIME DIALOGUE OVERLAY ---
         self.dialogue.render(screen, self.time_seconds)
