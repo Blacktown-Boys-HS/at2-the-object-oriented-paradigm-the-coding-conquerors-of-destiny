@@ -98,39 +98,20 @@ class GameScene:
             self.map_layer.zoom = 3.5
             self.map_width = tmx_data.width * tmx_data.tilewidth
             self.map_height = tmx_data.height * tmx_data.tileheight
+
+            self.collision_rects = []
+
+            # Collisions
+            for obj in tmx_data.objects:
+                if obj.x is not None:
+                    try:
+                        self.collision_rects.append(
+                            pygame.Rect(int(obj.x), int(obj.y), int(obj.width), int(obj.height))
+                    )
+                    except Exception:
+                        pass
         except Exception as e:
             print(f"Warning: Could not load map: {e}")
-        
-        # Find which layer index is 'Walls' for z-ordering
-        above_layer = 0
-        for i, layer in enumerate(tmx_data.layers):
-            if layer.name == "Walls":
-                above_layer = i
-                break
-        
-        self.map_layer = pyscroll.orthographic.BufferedRenderer(
-            map_data,
-            (SCREEN_WIDTH, SCREEN_HEIGHT)
-        )
-        self.map_layer.zoom = 4
-
-        # create group with player drawn just below walls layer
-        self.group = pyscroll.PyscrollGroup(
-            map_layer=self.map_layer,
-            default_layer=above_layer
-        )
-
-        #trying collision
-        self.collision_rects = []
-        for obj in tmx_data.objects:
-            if obj.x is not None:
-                try:
-                    self.collision_rects.append(
-                        pygame.Rect(int(obj.x), int(obj.y), int(obj.width), int(obj.height))
-                )
-                except Exception:
-                    pass
-
 
         #check map width and height
         print(f"map_width={self.map_width} map_height={self.map_height} tile_width={tmx_data.tilewidth} tile_height={tmx_data.tileheight}") 
@@ -157,11 +138,21 @@ class GameScene:
         self.zoom_transition_speed = 1.2  # zoom units per second
 
         # Vignette effect
-        self.vignette = pygame.Surface((SCREEN_WIDTH, SCREEN_HEIGHT), pygame.SRCALPHA)
-        for i in range(120):
-            alpha = int((1- i / 120) ** 2 * 180)
-            rect = pygame.Rect(i, i, SCREEN_WIDTH - i * 2, SCREEN_HEIGHT - i * 2)
-            pygame.draw.rect(self.vignette, (0, 0, 0, alpha), rect, 4)
+        self.vignette = pygame.Surface((SCREEN_WIDTH,  SCREEN_HEIGHT), pygame.SRCALPHA)
+        cx, cy = SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2
+        max_dist = math.sqrt(cx**2 + cy**2)
+        for y in range(0, SCREEN_HEIGHT, 2):
+            for x in range(0, SCREEN_WIDTH, 2):
+                dist = math.sqrt((x - cx)**2 + (y - cy)**2)
+                alpha = int((dist / max_dist) ** 2 * 180)
+                alpha = min(255, alpha)
+                self.vignette.set_at((x, y), (0, 0, 0, alpha))
+                if x + 1 < SCREEN_WIDTH:
+                    self.vignette.set_at((x + 1, y), (0, 0, 0, alpha))
+                if y + 1 < SCREEN_HEIGHT:
+                    self.vignette.set_at((x, y + 1), (0, 0, 0, alpha))
+                if x + 1 < SCREEN_WIDTH and y + 1 < SCREEN_HEIGHT:
+                    self.vignette.set_at((x + 1, y + 1), (0, 0, 0, alpha))
 
     def handle_event(self, event):
         """Handle input events."""
@@ -433,8 +424,8 @@ class GameScene:
             return
 
         if self.map_layer:
-            self.group.center(pygame.math.Vector2(self.camera.x, self.camera.y))
-            self.group.draw(screen)
+            self.map_layer.center((self.camera.x, self.camera.y))
+            self.map_layer.draw(screen, screen.get_rect())
         zoom = self.map_layer.zoom if self.map_layer else 1.0
         self.player.render(screen, self.camera, zoom)
 
