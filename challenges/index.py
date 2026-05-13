@@ -9,5 +9,9 @@ dungeon.set_description("A large cave with a rack")
 grotto = Cave("grotto")
 grotto.set_description("A small cave with ancient graffiti.")
 
+# Linking
+cavern.link_cave(dungeon, "south")
+grotto.link_cave(dungeon, "east")
+dungeon.link_cave(grotto, "west")
 
-cavern.describe()
+cavern.get_details()
