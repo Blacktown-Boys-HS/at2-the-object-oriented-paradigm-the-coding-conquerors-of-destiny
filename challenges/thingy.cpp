@@ -24,6 +24,12 @@ int main() {
 
         Plans for a house are like a class because they serve as a blueprint that defines the structure and features of something without being the actual thing itself. The house plans describe attributes like the number of rooms, the dimensions, and the layout, but the plans themselves are not a physical house.
 
+        Getters and setters are methods defined in a class that are used to access and modify an object's attributes in a controlled way.
+
+        A getter method retrieves the value of a private or encapsulated attribute and returns it to the caller. For example, get_description() returns the value stored in self.description. A setter method assigns or updates the value of an attribute by accepting a parameter and storing it inside the object. For example, set_description(cave_description) takes the provided value and assigns it to self.description.
+
+        The first parameter of every method must always be self, which is a reference to the specific object that is invoking the method. This allows the method to access and modify the attributes and other methods of that particular object instance. When calling a method on an object, Python automatically passes self behind the scenes, so it does not need to be provided explicitly by the programmer.
+
     "   
     return 0
 }
