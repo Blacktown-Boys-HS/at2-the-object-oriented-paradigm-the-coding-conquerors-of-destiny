@@ -30,6 +30,10 @@ int main() {
 
         The first parameter of every method must always be self, which is a reference to the specific object that is invoking the method. This allows the method to access and modify the attributes and other methods of that particular object instance. When calling a method on an object, Python automatically passes self behind the scenes, so it does not need to be provided explicitly by the programmer.
 
+        Nothing appears because get_description() is a getter method that uses the return keyword to send the value of self.description() back to the caller. However, simply returning a value does not automatically display it in the console.
+
+        For output to be
+
     "   
     return 0
 }
