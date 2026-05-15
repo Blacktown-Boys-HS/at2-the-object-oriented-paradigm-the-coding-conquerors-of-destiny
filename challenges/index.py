@@ -3,7 +3,11 @@ from cave import Cave
 from character import Character
 
 cavern = Cave("Cavern")
+
 angad = Character("Angad", "Sigma")
+angad.describe()
+angad.set_conversation("Hi")
+angad.talk()
 
 cavern.set_description("A damp and dity cave.")
 
