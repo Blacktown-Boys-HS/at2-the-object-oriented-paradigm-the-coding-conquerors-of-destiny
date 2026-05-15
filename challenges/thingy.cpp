@@ -14,7 +14,15 @@ int main() {
 
         This uses a for loop as its primary control structure to iterate over key stored in the linked_caves dictionary. In Python, iterating over a dictionary by default loops through its keys, so on each iteration the variable direction is assigned the next key in the dictionary, which in this case is a directional string such as "south" or "north".
 
-        Inside the for loop, self.linked_caves[direction] uses the current direction key to look up and retrieve the corresponding cave object from the dictionary, storing it in the local variable cave. The getter method get_name() is then called on that object to retrieve its name attribute, and a print 
+        Inside the for loop, self.linked_caves[direction] uses the current direction key to look up and retrieve the corresponding cave object from the dictionary, storing it in the local variable cave. The getter method get_name() is then called on that object to retrieve its name attribute, and a print statement concatenates the name and direction together to produce a formatted output line such as "The dungeon is south".
+
+        This process repeats for every key-value pair in the linked_caves dictionary, meaning every cave linked to the current cave gets printed to the console. This is an example of how iteration over a data structure combined with method calls on stored objects allow complex information to be retrieved and display efficiently in an OOP program.
+
+        A move method would take a direction as a parameter, which is the command inputted by the player during gameplay. It would then check whether that direction exists as a key inside the current cave object's linked_caves dictionary using an if statement.
+
+        If the direction is found in the dictionary, the method retrieves the cave object stored at that key and returns it. This returned cave objet then becomes the new current_cave in the main game loop, effectively moving the player into that cave and triggering its details to be displayed to the console.
+
+        If the direction is not found in the dictionary, the else branch executes, printing a message to inform the player that they cannot travel in that direction. The method then returns self, which is a reference to the current cave object, meaning the players stays in the same cave and the game loop continues from their current position without any changes in location.
 
         "   
     return 0
