@@ -30,6 +30,12 @@ int main() {
 
         The third attribute self.conversation is automatically initialised to None inside the constructor without requiring any input from the programmer. This means the character has no dialogue by default, but the set_conversation() setter method can be called later to assign one. This is an example of encapsulation, where the object is initialised in a controlled, predictable state and attributes are modified through defined methods rather than being set arbitrarly from outside the class.
 
+        This line calls the constructor of the superclass, which in this case is the Character class, super() is a built-in Python function that returns a reference to the parent class of the current subclass, allowing the subclass to access and invoke methods defined in that parent class.
+
+        When the Enemy class defines it own __init__ constructor, it overrides the Character class constructor, meaning the Character constructor no longer runs automatically. This is a problem because the Character constructor is responsible for initialising the name, description, and conversation attributes that the enemy object still needs to function correctly.
+
+        By calling super().__init__(char_name, char_description), the Enemy constructor explicitly triggers the Character constructor, passing through the char_name and char_description arguments so that those attributes are initialised on the Enemy object before any Enemy-specific attributes like self.weakness are set.
+
         "   
     return 0
 }
