@@ -16,7 +16,19 @@ class Character():
             print("[" + self.name + " says]: " + self.conversation)
         else:
             print(self.name + " doesn't want to talk to you")
-    
+
     def fight(self, combat_item):
         print(self.name + " doesn't want to fight with you")
         return True
+
+
+class Enemy(Character):
+    def __init__(self, char_name, char_description):
+        super().__init__(char_name, char_description)
+        self.weakness = None
+
+    def get_weakness(self):
+        return self.weakness
+
+    def set_weakness(self, weakness):
+        self.weakness = weakness

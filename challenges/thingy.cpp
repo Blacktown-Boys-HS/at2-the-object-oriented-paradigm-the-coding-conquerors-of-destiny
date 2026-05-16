@@ -24,6 +24,12 @@ int main() {
 
         If the direction is not found in the dictionary, the else branch executes, printing a message to inform the player that they cannot travel in that direction. The method then returns self, which is a reference to the current cave object, meaning the players stays in the same cave and the game loop continues from their current position without any changes in location.
 
+        To create a Character object, two arguments must be provided at the point of instantiation: char_name and char_description. These are the required parameters defined in the constructor, meaning Python will raise an error if either is missing when the object is created.
+
+        Here "Harry" is passed as char_name and "A smelly Wumpus" is passed as char_description. When the constructor executes, these values are assigned to self.name and self.description respectively, storing them as attributes on the object instance.
+
+        The third attribute self.conversation is automatically initialised to None inside the constructor without requiring any input from the programmer. This means the character has no dialogue by default, but the set_conversation() setter method can be called later to assign one. This is an example of encapsulation, where the object is initialised in a controlled, predictable state and attributes are modified through defined methods rather than being set arbitrarly from outside the class.
+
         "   
     return 0
 }
