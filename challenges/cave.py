@@ -3,6 +3,7 @@ class Cave:
         self.name = cave_name
         self.description = None
         self.linked_caves = {}
+        self.character = None
 
       def move(self, direction):
             if direction in self.linked_caves:

@@ -36,6 +36,10 @@ int main() {
 
         By calling super().__init__(char_name, char_description), the Enemy constructor explicitly triggers the Character constructor, passing through the char_name and char_description arguments so that those attributes are initialised on the Enemy object before any Enemy-specific attributes like self.weakness are set.
 
+        Harry the Wumpus is vulnerable to vegemite. This means that if the player attempts to fight Harry using vegemite as the combat item, the fight() method inside the Enemy class will compare the combat_item parameter against self.weakness, find that they match, return True to indicate the player won the fight.
+
+        If the player then inputs "vegemite" when prompted to
+
         "   
     return 0
 }
