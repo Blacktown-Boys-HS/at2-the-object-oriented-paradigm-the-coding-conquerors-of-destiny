@@ -38,7 +38,9 @@ int main() {
 
         Harry the Wumpus is vulnerable to vegemite. This means that if the player attempts to fight Harry using vegemite as the combat item, the fight() method inside the Enemy class will compare the combat_item parameter against self.weakness, find that they match, return True to indicate the player won the fight.
 
-        If the player then inputs "vegemite" when prompted to
+        If the player then inputs "vegemite" when prompted to choose a fight item, the following condition inside the fight() method evaluates to True:
+
+        This is an example of how the weakness attribute, combined with the overridden fight() method, allows each Enemy object to have a unique vulnerability that the player must discover and exploit to win the game. It also demonstrates polymorphism, as the Enemy class implements its own version of fight() that behaves differently to the base Character class version, which simply prints that the character does not want to fight and always returns True.
 
         "   
     return 0
