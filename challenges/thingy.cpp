@@ -42,6 +42,12 @@ int main() {
 
         This is an example of how the weakness attribute, combined with the overridden fight() method, allows each Enemy object to have a unique vulnerability that the player must discover and exploit to win the game. It also demonstrates polymorphism, as the Enemy class implements its own version of fight() that behaves differently to the base Character class version, which simply prints that the character does not want to fight and always returns True.
 
+        This step implemented the fighting mechanic for the Enemy class by adding an overridden fight() method that uses polymorphism to behave differently from the base Character class version.
+
+        The set_weakness() setter method was used to assign "vegemite" as Harry's weakness attribute. When the player inputs a combat item, the fight() method compares input against self.weakness using a conditional if statement. If the input matches the weakness, the method prints a victory message and returns True to indicate the player won. If it doesn't match, prints a loss message and returns False to indicate the player lost.
+
+        This step also demonstrated how the overridden fight() method in the Enemy subclass produces different behaviour compared to the fight() method in the Character superclass. The Character version simply prints that the character does not want to fight and always returns True, whereas the Enemy version introduces actual win and lose scenarios based on the player's input being compared against a stored attribute. This is a practical example of polymorphism in action, where the same method name produces different outcomes depending on which class is invoking it.
+
         "   
     return 0
 }
