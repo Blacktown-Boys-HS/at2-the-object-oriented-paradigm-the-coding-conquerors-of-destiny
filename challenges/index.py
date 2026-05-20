@@ -33,4 +33,25 @@ while dead == False:
         inhabitant.describe()
 
     command = input("> ")
-    current_cave = current_cave.move(command)
+
+    if command == "talk":
+        if inhabitant is not None:
+            inhabitant.talk()
+    elif command == "fight":
+        if inhabitant is not None and isinstance(inhabitant, Enemy):
+            print("What will you fight with?")
+            fight_with = input()
+            if inhabitant.fight(fight_with) == True:
+                print("Bravo, hero you won the fight!")
+                dungeon.set_character(None)
+                if Enemy.enemies_to_defeat == 0:
+                    print("Congratulations, you have survived another adventure!")
+                    dead = True
+            else:
+                print("Scurry home, you lost the fight.")
+                print("That's the end of the game")
+                dead = True
+        else:
+            print("There is no one here to fight with")
+    else:
+        current_cave = current_cave.move(command)
