@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <map version="1.10" tiledversion="1.12.1" orientation="orthogonal" renderorder="right-down" width="37" height="27" tilewidth="16" tileheight="16" infinite="0" nextlayerid="36" nextobjectid="71">
  <tileset firstgid="1" name="cracked_tiles" tilewidth="16" tileheight="16" tilecount="256" columns="8">
-  <image source="../../../../../../Desktop/Map1/assetpack/Tiled_files/decorative_cracks_walls.png" width="128" height="512"/>
+  <image source="decorative_cracks_walls.png" width="128" height="512"/>
  </tileset>
  <tileset firstgid="257" name="cracked_tiles_floor" tilewidth="16" tileheight="16" tilecount="120" columns="8">
-  <image source="../../../../../../Desktop/Map1/assetpack/Tiled_files/decorative_cracks_floor.png" width="128" height="240"/>
+  <image source="decorative_cracks_floor.png" width="128" height="240"/>
  </tileset>
  <tileset firstgid="377" name="walls_floor" tilewidth="16" tileheight="16" tilecount="493" columns="17">
-  <image source="../../../../../../Desktop/Map1/assetpack/Tiled_files/walls_floor.png" width="272" height="464"/>
+  <image source="walls_floor.png" width="272" height="464"/>
  </tileset>
  <tileset firstgid="870" name="Water_coasts_animation" tilewidth="16" tileheight="16" tilecount="928" columns="29">
-  <image source="../../../../../../Desktop/Map1/assetpack/Tiled_files/Water_coasts_animation.png" width="464" height="512"/>
+  <image source="Water_coasts_animation.png" width="464" height="512"/>
   <tile id="30">
    <animation>
     <frame tileid="30" duration="150"/>
@@ -583,7 +583,7 @@
   </tile>
  </tileset>
  <tileset firstgid="1798" name="Water_detilazation" tilewidth="16" tileheight="16" tilecount="2886" columns="37">
-  <image source="../../../../../../Desktop/Map1/assetpack/Tiled_files/water_details_animation.png" width="592" height="1248"/>
+  <image source="water_details_animation.png" width="592" height="1248"/>
   <tile id="40">
    <animation>
     <frame tileid="40" duration="150"/>
@@ -2506,7 +2506,7 @@
   </tile>
  </tileset>
  <tileset firstgid="4684" name="Water_coasts_animation_decorative_cracks" tilewidth="16" tileheight="16" tilecount="475" columns="19">
-  <image source="../../../../../../Desktop/Map1/assetpack/Tiled_files/decorative_cracks_coasts_animation.png" width="304" height="400"/>
+  <image source="decorative_cracks_coasts_animation.png" width="304" height="400"/>
   <tile id="20">
    <animation>
     <frame tileid="20" duration="150"/>
@@ -3069,7 +3069,7 @@
   </tile>
  </tileset>
  <tileset firstgid="5159" name="fire_animation" tilewidth="16" tileheight="16" tilecount="198" columns="11">
-  <image source="../../../../../../Desktop/Map1/assetpack/Tiled_files/fire_animation.png" width="176" height="288"/>
+  <image source="fire_animation.png" width="176" height="288"/>
   <tile id="0">
    <animation>
     <frame tileid="0" duration="150"/>
@@ -3402,7 +3402,7 @@
   </tile>
  </tileset>
  <tileset firstgid="5357" name="fire_animation2" tilewidth="16" tileheight="16" tilecount="72" columns="6">
-  <image source="../../../../../../Desktop/Map1/assetpack/Tiled_files/fire_animation2.png" width="96" height="192"/>
+  <image source="fire_animation2.png" width="96" height="192"/>
   <tile id="0">
    <animation>
     <frame tileid="0" duration="150"/>
@@ -3573,7 +3573,7 @@
   </tile>
  </tileset>
  <tileset firstgid="5429" name="doors_lever_chest_animation" tilewidth="16" tileheight="16" tilecount="150" columns="10">
-  <image source="../../../../../../Desktop/Map1/assetpack/Tiled_files/doors_lever_chest_animation.png" width="160" height="240"/>
+  <image source="doors_lever_chest_animation.png" width="160" height="240"/>
   <tile id="0">
    <animation>
     <frame tileid="0" duration="450"/>
@@ -3852,10 +3852,10 @@
   </tile>
  </tileset>
  <tileset firstgid="5579" name="Objects" tilewidth="16" tileheight="16" tilecount="216" columns="24">
-  <image source="../../../../../../Desktop/Map1/assetpack/Tiled_files/Objects.png" width="384" height="144"/>
+  <image source="Objects.png" width="384" height="144"/>
  </tileset>
  <tileset firstgid="5795" name="trap_animation" tilewidth="16" tileheight="16" tilecount="403" columns="13">
-  <image source="../../../../../../Desktop/Map1/assetpack/Tiled_files/trap_animation.png" width="208" height="496"/>
+  <image source="trap_animation.png" width="208" height="496"/>
   <tile id="14">
    <animation>
     <frame tileid="14" duration="450"/>
