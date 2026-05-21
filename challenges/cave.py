@@ -44,3 +44,9 @@ class Cave:
 
     def set_character(self, character):
         self.character = character
+
+    def get_item(self):
+        return self.item
+
+    def set_item(self, item):
+        self.item = item
