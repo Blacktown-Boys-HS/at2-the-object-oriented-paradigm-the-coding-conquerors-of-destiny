@@ -14,7 +14,7 @@ class Player(pygame.sprite.Sprite):
     
     FRAME_WIDTH = 32
     FRAME_HEIGHT = 32
-    DISPLAY_SCALE = 2 
+    DISPLAY_SCALE = 1
     
     def __init__(self, x=600, y=400):
         super().__init__()
@@ -57,20 +57,15 @@ class Player(pygame.sprite.Sprite):
         self.image = pygame.Surface((16, 16), pygame.SRCALPHA) # Placeholder
         self.rect = pygame.Rect(x, y, 16, 16)
     
-    def update(self, dt, zoom=1.0):
+    def update(self, dt):
         if not self.sprite_sheet:
             return
-
+        
         anim = self.animations[self.state]
         self.animation_time += dt
         frame_index = int(self.animation_time * anim["speed"])
         self.current_frame = frame_index % len(anim["frames"])
 
-        # keep rect in sync with position
-        self.rect.center = (int(self.position.x), int(self.position.y))
-
-        # update the image to the current frame
-        anim = self.animations[self.state]
         sprite = anim["frames"][self.current_frame]
         scaled = pygame.transform.scale(sprite, (
             int(sprite.get_width() * self.DISPLAY_SCALE),
@@ -79,7 +74,7 @@ class Player(pygame.sprite.Sprite):
         if not self.facing_right:
             scaled = pygame.transform.flip(scaled, True, False)
         self.image = scaled
-        self.rect = self.image.get_rect(center=self.rect.center)
+        self.rect = self.image.get_rect(center=(int(self.position.x), int(self.position.y)))
     
     def render(self, screen, camera, zoom=1) -> None:
         """Render the player sprite relative to the camera."""

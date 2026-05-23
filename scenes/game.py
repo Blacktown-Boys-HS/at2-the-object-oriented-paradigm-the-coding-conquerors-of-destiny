@@ -6,6 +6,7 @@ from pydantic import InstanceOf
 import pygame
 from pathlib import Path
 from globals import SCREEN_WIDTH, SCREEN_HEIGHT, SCENE_MENU, SCENE_SETTINGS, FPS, FONT_ANTIALIAS, BLACK, BACKGROUND, BLUE, GRAY, WHITE
+import scenes
 from sprite_sheet import SpriteSheet
 from vignette import create_vignette
 from camera import Camera
@@ -101,6 +102,22 @@ class GameScene:
             self.map_height = tmx_data.height * tmx_data.tileheight
 
             self.collision_rects = []
+
+            # Find walls above layer index
+            self.above_layer_index = 0
+            for i, layer in enumerate(tmx_data.layers):
+                if layer.name == "Walls":
+                    self.above_layer_index = i + 1
+                    break
+            
+            print(f"above_layer_index: {self.above_layer_index}")
+            
+            # create pyscroll group
+            self.group = pyscroll.PyscrollGroup(
+                map_layer=self.map_layer,
+                default_layer=8 
+            )
+            self.group.add((self.player))
 
             # Collisions
             for obj in tmx_data.objects:
@@ -411,10 +428,10 @@ class GameScene:
             return
 
         if self.map_layer:
-            self.map_layer.center((self.camera.x, self.camera.y))
-            self.map_layer.draw(screen, screen.get_rect())
-        zoom = self.map_layer.zoom if self.map_layer else 1.0
-        self.player.render(screen, self.camera, zoom)
+            self.group.center(pygame.math.Vector2(self.camera.x, self.camera.y))
+            self.group.draw(screen)
+        zoom = self.map_layer.zoom if self.map_width else 1.0
+
 
         # debugging tiles
         for rect in self.collision_rects:
@@ -477,7 +494,7 @@ class GameScene:
         # Vignette effect
         #screen.blit(self.vignette, (0, 0))
 
-        # --- FIRST-TIME DIALOGUE OVERLAY ---
+        # First-time dialogue overlay
         self.dialogue.render(screen, self.time_seconds)
 
         # Debug: player coordinates (drawn last so it stays on top)
