@@ -56,6 +56,9 @@ class Player(pygame.sprite.Sprite):
         # for pyscroll
         self.image = pygame.Surface((16, 16), pygame.SRCALPHA) # Placeholder
         self.rect = pygame.Rect(x, y, 16, 16)
+
+        self.max_health = 100
+        self.health = 100
     
     def update(self, dt):
         if not self.sprite_sheet:

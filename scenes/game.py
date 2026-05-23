@@ -432,6 +432,22 @@ class GameScene:
             self.group.draw(screen)
         zoom = self.map_layer.zoom if self.map_width else 1.0
 
+        # Draw health bar above player
+        screen_x = (self.player.position.x - self.camera.x) * zoom + SCREEN_WIDTH / 2
+        screen_y = (self.player.position.y - self.camera.y) * zoom + SCREEN_HEIGHT / 2
+
+        bar_width = 40
+        bar_height = 10
+        bar_x = int(screen_x - bar_width / 2)
+        bar_y = int(screen_y - 40) # so that it is above the player
+
+        # Background
+        pygame.draw.rect(screen, (60, 0, 0), (bar_x, bar_y, bar_width, bar_height))
+        # Health fill
+        fill_width = int(bar_width * (self.player.health / self.player.max_health))
+        pygame.draw.rect(screen, (0, 200, 0), (bar_x, bar_y, fill_width, bar_height))
+        # Border
+        pygame.draw.rect(screen, (0, 0, 0), (bar_x, bar_y, bar_width, bar_height), 1)
 
         # debugging tiles
         for rect in self.collision_rects:
