@@ -6,7 +6,6 @@ from pydantic import InstanceOf
 import pygame
 from pathlib import Path
 from globals import SCREEN_WIDTH, SCREEN_HEIGHT, SCENE_MENU, SCENE_SETTINGS, FPS, FONT_ANTIALIAS, BLACK, BACKGROUND, BLUE, GRAY, WHITE
-import scenes
 from sprite_sheet import SpriteSheet
 from vignette import create_vignette
 from camera import Camera
