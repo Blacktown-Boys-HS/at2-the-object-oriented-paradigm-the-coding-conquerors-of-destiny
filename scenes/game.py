@@ -25,6 +25,7 @@ from .hud import (
     draw_debug_coords,
     draw_debug_collision
 )
+from .pause_menu import PauseMenu
 
 class GameScene:
     """Game scene."""
@@ -71,17 +72,9 @@ class GameScene:
         )
 
         # Pause menu state
-        self.paused = False
-        self.pause_items = ["Resume", "Settings", "Main Menu"]
-        self.pause_selected = 0
-        self.pause_item_rects = []
-        self.pause_hover_scale = [1.0 for _ in self.pause_items]
-        self.pause_selection_y = 0
-        self.pause_activation_item = None
-        self.pause_activation_progress = 0.0
-        self.pause_activation_duration = 0.18
+        self.pause_menu = PauseMenu(title_font, menu_font, sounds)
         self.pause_pending_scene = None
-        self.pause_last_selected = self.pause_selected
+        self.paused = False
 
         #load tmx file
         self.map_layer = None
@@ -179,12 +172,7 @@ class GameScene:
                 return None
 
             if self.paused:
-                if event.key == pygame.K_UP:
-                    self.pause_selected = (self.pause_selected - 1) % len(self.pause_items)
-                elif event.key == pygame.K_DOWN:
-                    self.pause_selected = (self.pause_selected + 1) % len(self.pause_items)
-                elif event.key in (pygame.K_RETURN, pygame.K_SPACE):
-                    self._start_pause_activate()
+                self.pause_menu.handle_event(event)
                 return None
 
             if event.key in (pygame.K_UP, pygame.K_w):
@@ -277,38 +265,15 @@ class GameScene:
 
         # Check for mouse hover on pause items
         if self.paused:
-            for i, rect in enumerate(self.pause_item_rects):
-                if rect.collidepoint(mouse_pos):
-                    self.pause_selected = i
-                    break
-            if self.pause_selected != self.pause_last_selected:
-                hover_sound = self.sounds.get("button_hover")
-                if hover_sound:
-                    hover_sound.play()
-                self.pause_last_selected = self.pause_selected
-
-            # Update hover scales
-            for i in range(len(self.pause_items)):
-                activation_bonus = 0.0
-                if self.pause_activation_item == i:
-                    activation_bonus = 0.10 * (1.0 - self.pause_activation_progress)
-                if i == self.pause_selected:
-                    self.pause_hover_scale[i] = min(self.pause_hover_scale[i] + 0.05, 1.10 + activation_bonus)
-                else:
-                    self.pause_hover_scale[i] = max(self.pause_hover_scale[i] - 0.05, 1.0)
-
-            # Smoothly move selection box
-            target_y = 320 + self.pause_selected * 80
-            if self.pause_selection_y == 0:
-                self.pause_selection_y = target_y
-            self.pause_selection_y += (target_y - self.pause_selection_y) * 0.20
-
-            if self.pause_activation_item is not None:
-                self.pause_activation_progress += dt / self.pause_activation_duration
-                if self.pause_activation_progress >= 1.0:
-                    self.pause_pending_scene = self._get_pause_action()
-                    self.pause_activation_item = None
-                    self.pause_activation_progress = 0.0
+            self.pause_menu.update(dt, mouse_pos, self.time_seconds)
+            action = self.pause_menu.consume_action()
+            if action == "Resume":
+                self.paused = False
+            elif action == "Settings":
+                self.pause_pending_scene = SCENE_SETTINGS
+            elif action == "Main Menu":
+                self.paused = False
+                self.pause_pending_scene = SCENE_MENU
 
         # Only update player movement / camera when not paused and not in dialogue
         if not self.paused and not self.dialogue.active:
@@ -411,7 +376,7 @@ class GameScene:
     def render(self, screen):
         """Render the game scene."""
 
-        # Loading screen — cover the game until map is fully buffered
+        # Loading screen - cover the game until map is fully buffered
         if self.loading:
             overlay = pygame.Surface((SCREEN_WIDTH, SCREEN_HEIGHT), pygame.SRCALPHA)
             overlay.fill((0, 0, 0, 220))
@@ -443,54 +408,7 @@ class GameScene:
 
         # PAUSE OVERLAY 
         if self.paused:
-            # Darken the game behind
-            overlay = pygame.Surface((SCREEN_WIDTH, SCREEN_HEIGHT), pygame.SRCALPHA)
-            overlay.fill((0, 0, 0, 180))
-            screen.blit(overlay, (0, 0))
-
-            # Pause title with blue shimmer
-            pulse = 1.0 + (math.sin(self.time_seconds * 2.2) * 0.02)
-            self._draw_pause_title(screen, (SCREEN_WIDTH // 2, 200), pulse)
-
-            # Selection highlight box
-            selection_rect = pygame.Rect(SCREEN_WIDTH // 2 - 180, int(self.pause_selection_y) - 8, 360, 60)
-            box_surface = pygame.Surface((selection_rect.width, selection_rect.height), pygame.SRCALPHA)
-            box_alpha = 22
-            if self.pause_activation_item == self.pause_selected:
-                box_alpha = 22 + int(70 * (1.0 - self.pause_activation_progress))
-            box_surface.fill((255, 255, 255, box_alpha))
-            screen.blit(box_surface, selection_rect.topleft)
-            border_color = (130, 130, 130)
-            if self.pause_activation_item == self.pause_selected:
-                border_color = (220, 200, 120)
-            pygame.draw.rect(screen, border_color, selection_rect, width=2, border_radius=8)
-
-            # Pause menu items
-            menu_start_x = SCREEN_WIDTH // 2 - 120
-            menu_start_y = 320
-            self.pause_item_rects = []
-            for i, item in enumerate(self.pause_items):
-                if i == self.pause_selected:
-                    arrow_text = self.menu_font.render("> ", FONT_ANTIALIAS, BLUE)
-                    item_text = self.menu_font.render(item, FONT_ANTIALIAS, WHITE)
-                    item_pos = (menu_start_x, menu_start_y + i * 80)
-                    if self.pause_hover_scale[i] != 1.0:
-                        arrow_text = self._safe_scale_text(arrow_text, self.pause_hover_scale[i])
-                        item_text = self._safe_scale_text(item_text, self.pause_hover_scale[i])
-                    arrow_rect = arrow_text.get_rect(topleft=item_pos)
-                    item_rect = item_text.get_rect(topleft=(arrow_rect.right, item_pos[1]))
-                    self.pause_item_rects.append(arrow_rect.union(item_rect))
-                    screen.blit(arrow_text, arrow_rect)
-                    screen.blit(item_text, item_rect)
-                else:
-                    color = GRAY
-                    text = self.menu_font.render(item, FONT_ANTIALIAS, color)
-                    if self.pause_hover_scale[i] != 1.0:
-                        text = self._safe_scale_text(text, self.pause_hover_scale[i])
-                    item_pos = (menu_start_x, menu_start_y + i * 80)
-                    text_rect = text.get_rect(topleft=item_pos)
-                    self.pause_item_rects.append(text_rect)
-                    screen.blit(text, text_rect)
+            self.pause_menu.render(screen, self.time_seconds)
             
         # Vignette effect
         #screen.blit(self.vignette, (0, 0))

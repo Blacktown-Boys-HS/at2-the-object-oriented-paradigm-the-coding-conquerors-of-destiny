@@ -26,13 +26,13 @@ def draw_player_health_bar(screen, player, camera, zoom):
     health_pct = player.health / player.max_health
     fill_width = max(0, int(bar_width * health_pct))
     if health_pct > 0.6:
-        fill_colour = (0, 200, 0)
+        fill_color = (0, 200, 0)
     elif health_pct > 0.3:
-        fill_colour = (220, 180 ,0)
+        fill_color = (220, 180 ,0)
     else:
-        fill_colour = (220, 40, 40)
+        fill_color = (220, 40, 40)
     if fill_width > 0:
-        pygame.draw.rect(screen, fill_colour, (bar_x, bar_y, fill_width, bar_height), border_radius=3) 
+        pygame.draw.rect(screen, fill_color, (bar_x, bar_y, fill_width, bar_height), border_radius=3) 
 
     # Border
     pygame.draw.rect(screen, (0, 0, 0), (bar_x, bar_y, bar_width, bar_height), 1, border_radius=3)
