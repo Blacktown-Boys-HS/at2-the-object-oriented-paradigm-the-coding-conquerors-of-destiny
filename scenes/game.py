@@ -2,7 +2,6 @@
 Placeholder game scene for the RPG game.
 """
 import math
-from pydantic import InstanceOf
 import pygame
 from pathlib import Path
 from globals import SCREEN_WIDTH, SCREEN_HEIGHT, SCENE_MENU, SCENE_SETTINGS, FPS, FONT_ANTIALIAS, BLACK, BACKGROUND, BLUE, GRAY, WHITE
@@ -21,6 +20,11 @@ from .aesthetic import (
     safe_scale_surface,
 )
 from .dialogue import DialogueBox
+from .hud import (
+    draw_player_health_bar,
+    draw_debug_coords,
+    draw_debug_collision
+)
 
 class GameScene:
     """Game scene."""
