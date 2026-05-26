@@ -4,8 +4,7 @@ Placeholder game scene for the RPG game.
 import math
 import pygame
 from pathlib import Path
-from globals import SCREEN_WIDTH, SCREEN_HEIGHT, SCENE_MENU, SCENE_SETTINGS, FPS, FONT_ANTIALIAS, BLACK, BACKGROUND, BLUE, GRAY, WHITE
-from sprite_sheet import SpriteSheet
+from globals import SCREEN_WIDTH, SCREEN_HEIGHT, SCENE_MENU, SCENE_SETTINGS, FPS, FONT_ANTIALIAS, BLUE, GRAY, WHITE
 from vignette import create_vignette
 from camera import Camera
 from player import Player
@@ -13,10 +12,6 @@ import pytmx
 import pyscroll
 
 from .aesthetic import (
-    SharedBackground,
-    draw_pulsing_title,
-    draw_subtitle_centered,
-    draw_footer_hint,
     safe_scale_surface,
 )
 from .dialogue import DialogueBox

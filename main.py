@@ -14,6 +14,7 @@ from scenes.credits import CreditsScene
 from scenes.game import GameScene
 from scenes.settings import SettingsScene
 from sounds import SoundManager
+from cursor import CustomCursor
 
 SPLASH_IMAGE_NAME = "charlie_kirk_engine.png"
 SPLASH_FADE_SPEED = 5
@@ -50,19 +51,7 @@ def main():
     sound_manager = SoundManager()
 
     # Custom cursor setup (with click-scale effect)
-    cursor_pressed = False
-    cursor_scale = 1.25
-    cursor_scale_default = 1.25
-    cursor_scale_pressed = 1.08
-    cursor_scale_speed = 0.35
-    custom_cursor = None
-    cursor_path = Path(__file__).resolve().parent / "assets" / "cursor" / "8_white.png"
-    try:
-        custom_cursor = pygame.image.load(str(cursor_path)).convert()
-        custom_cursor.set_colorkey(custom_cursor.get_at((0, 0)))
-        pygame.mouse.set_visible(False)
-    except (FileNotFoundError, pygame.error):
-        pygame.mouse.set_visible(True)
+    cursor = CustomCursor()
 
     splash_surface = None
     splash_rect = None
@@ -118,10 +107,7 @@ def main():
                 running = False
                 continue
 
-            if event.type == pygame.MOUSEBUTTONDOWN:
-                cursor_pressed = True
-            elif event.type == pygame.MOUSEBUTTONUP:
-                cursor_pressed = False
+            cursor.handle_event(event) 
 
             if showing_splash:
                 if event.type in (pygame.KEYDOWN, pygame.MOUSEBUTTONDOWN):
@@ -169,17 +155,6 @@ def main():
             splash_copy.set_alpha(splash_alpha)
             screen.blit(splash_copy, splash_rect)
 
-            if custom_cursor is not None:
-                target_scale = cursor_scale_pressed if cursor_pressed else cursor_scale_default
-                cursor_scale += (target_scale - cursor_scale) * cursor_scale_speed
-                scaled_size = (
-                    max(1, int(custom_cursor.get_width() * cursor_scale)),
-                    max(1, int(custom_cursor.get_height() * cursor_scale)),
-                )
-                cursor_surface = pygame.transform.smoothscale(custom_cursor, scaled_size)
-                cursor_rect = cursor_surface.get_rect(topleft=mouse_pos)
-                screen.blit(cursor_surface, cursor_rect)
-
             pygame.display.update()
             continue
 
@@ -223,18 +198,7 @@ def main():
             
             transition_surface.set_alpha(transition_alpha)
             screen.blit(transition_surface, (0, 0))
-
-        if custom_cursor is not None:
-            target_scale = cursor_scale_pressed if cursor_pressed else cursor_scale_default
-            cursor_scale += (target_scale - cursor_scale) * cursor_scale_speed
-            scaled_size = (
-                max(1, int(custom_cursor.get_width() * cursor_scale)),
-                max(1, int(custom_cursor.get_height() * cursor_scale)),
-            )
-            cursor_surface = pygame.transform.smoothscale(custom_cursor, scaled_size)
-            cursor_rect = cursor_surface.get_rect(topleft=mouse_pos)
-            screen.blit(cursor_surface, cursor_rect)
-        
+       
         # Display debug stats in top left
         debug_y = 10
         fps_text = debug_font.render(f"FPS: {clock.get_fps():.0f}", False, BLUE)
@@ -243,6 +207,8 @@ def main():
         debug_y += 40
         scene_text = debug_font.render(f"Scene: {current_scene}", False, BLUE)
         screen.blit(scene_text, (10, debug_y))
+
+        cursor.draw(screen, mouse_pos)
         
         pygame.display.update()
     

@@ -2,8 +2,6 @@
 Player character class for the RPG game.
 """
 from pathlib import Path
-from pickletools import pyfloat
-from pydantic import PaymentCardNumber
 import pygame
 from sprite_sheet import SpriteSheet
 from pos import Position
