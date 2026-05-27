@@ -88,7 +88,7 @@ class GameScene:
                 map_data,
                 (SCREEN_WIDTH, SCREEN_HEIGHT)
             )
-            self.map_layer.zoom = 3.5
+            self.map_layer.zoom = 3.0
             self.map_width = tmx_data.width * tmx_data.tilewidth
             self.map_height = tmx_data.height * tmx_data.tileheight
 
