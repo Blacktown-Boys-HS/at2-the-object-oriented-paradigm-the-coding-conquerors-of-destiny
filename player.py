@@ -57,11 +57,15 @@ class Player(pygame.sprite.Sprite):
 
         self.max_health = 100
         self.health = 100
+        self.damage_cooldown = 0.0
     
     def update(self, dt):
         if not self.sprite_sheet:
             return
         
+        # damage
+        self.damage_cooldown = max(0, self.damage_cooldown - dt)
+
         anim = self.animations[self.state]
         self.animation_time += dt
         frame_index = int(self.animation_time * anim["speed"])
@@ -134,3 +138,10 @@ class Player(pygame.sprite.Sprite):
     def get_position(self):
         """Get player position."""
         return self.position
+
+    def take_damage(self, amount, dt):
+        """Take damage with a cooldown to prevent instant death."""
+        self.damage_cooldown -= dt
+        if self.damage_cooldown <= 0:
+            self.health = max(0, self.health - amount)
+            self.damage_cooldown = 0.5
