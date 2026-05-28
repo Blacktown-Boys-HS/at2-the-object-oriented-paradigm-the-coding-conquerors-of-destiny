@@ -13,10 +13,11 @@ from scenes.menu import MenuScene
 from scenes.credits import CreditsScene
 from scenes.game import GameScene
 from scenes.settings import SettingsScene
+
 from sounds import SoundManager
 from cursor import CustomCursor
 from splash import SplashScreen
-
+from transition import SceneTransition
 
 def main():
     """Main game loop."""
@@ -55,14 +56,8 @@ def main():
     running = True
 
     # Scene transition state
-    transition_surface = pygame.Surface((SCREEN_WIDTH, SCREEN_HEIGHT))
-    transition_surface.fill((0, 0, 0))
-    transition_alpha = 255
-    transition_speed = 12
-    transition_direction = -1
-    is_transitioning = True
-    pending_scene = None
-
+    transition = SceneTransition()
+    
     if not splash.active:
         sound_manager.update_music_for_scene(current_scene)
 
@@ -82,33 +77,25 @@ def main():
 
             if splash.active:
                 if splash.handle_event(event):
-                    is_transitioning = True
-                    transition_direction = -1
-                    transition_alpha = 255
+                    transition.start_fade_in()
                     sound_manager.update_music_for_scene(current_scene)
                 continue
-
-            if not is_transitioning:
+                
+            if not transition.active:
                 next_scene = scenes[current_scene].handle_event(event)
                 if next_scene and next_scene != current_scene:
                     # Track where we came from before entering settings
                     if next_scene == SCENE_SETTINGS:
                         scenes[SCENE_SETTINGS].previous_scene = current_scene
-                    pending_scene = next_scene
-                    is_transitioning = True
-                    transition_direction = 1
-                    transition_alpha = 0
-
+                    transition.start_fade_out(next_scene)
         # Splash screen
         if splash.active:
             screen.fill((0, 0, 0))
 
             finished = splash.update()
             if finished:
-                is_transitioning = True
-                transition_direction = -1
-                transition_alpha = 255
-                sound_manager.update_music_for_scene(current_scene)
+               transition.start_fade_in()
+               sound_manager.update_music_for_scene(current_scene)
 
             splash.draw(screen)
             cursor.draw(screen, mouse_pos)
@@ -123,43 +110,36 @@ def main():
         if hasattr(scenes[current_scene], "consume_requested_scene"):
             deferred_next_scene = scenes[current_scene].consume_requested_scene()
 
-        if (not is_transitioning) and deferred_next_scene and deferred_next_scene != current_scene:
+        if (not transition.active) and deferred_next_scene and deferred_next_scene != current_scene:
             # Track where we came from before entering settings
             if deferred_next_scene == SCENE_SETTINGS:
                 scenes[SCENE_SETTINGS].previous_scene = current_scene
-            pending_scene = deferred_next_scene
-            is_transitioning = True
-            transition_direction = 1
-            transition_alpha = 0
-
+            transition.start_fade_out(deferred_next_scene)
         # Render current scene
         scenes[current_scene].render(screen)
 
         # Scene transition
-        if is_transitioning:
-            if transition_direction == 1:
-                transition_alpha = min(transition_alpha + transition_speed, 255)
-                if transition_alpha >= 255:
-                    if pending_scene:
-                        current_scene = pending_scene
-                        pending_scene = None
-                        sound_manager.update_music_for_scene(current_scene)
-                        if hasattr(scenes[current_scene], "on_enter"):
-                            scenes[current_scene].on_enter()
-                    transition_direction = -1
+        transition_result = transition.update()
 
-            elif transition_direction == -1:
-                transition_alpha = max(transition_alpha - transition_speed, 0)
-                if transition_alpha <= 0:
-                    is_transitioning = False
+        if transition_result == "fade_out_done":
+            if transition.pending_scene:
+                current_scene = transition.pending_scene
+                transition.pending_scene = None
 
-                    # tell game it can start loading timer
-                    if current_scene == SCENE_GAME and hasattr(scenes[current_scene], "loading_ready"):
-                        scenes[current_scene].loading_ready = True
-                        print("loading_ready set to True")
+                sound_manager.update_music_for_scene(current_scene)
 
-            transition_surface.set_alpha(transition_alpha)
-            screen.blit(transition_surface, (0, 0))
+                if hasattr(scenes[current_scene], "on_enter"):
+                    scenes[current_scene].on_enter()
+
+            transition.start_fade_in()
+
+        elif transition_result == "fade_in_done":
+            # tell game it can start loading timer
+            if current_scene == SCENE_GAME and hasattr(scenes[current_scene], "loading_ready"):
+                scenes[current_scene].loading_ready = True
+                print("loading_ready set to True")
+
+        transition.draw(screen)
 
         # Display debug stats in top left
         debug_y = 10
