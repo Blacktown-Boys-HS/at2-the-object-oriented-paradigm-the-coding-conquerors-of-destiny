@@ -63,8 +63,9 @@ class Player(pygame.sprite.Sprite):
         if not self.sprite_sheet:
             return
         
-        # damage
-        self.damage_cooldown = max(0, self.damage_cooldown - dt)
+        # Tick down the invincibility cooldown every frame
+        if self.damage_cooldown > 0:
+            self.damage_cooldown = max(0.0, self.damage_cooldown - dt)
 
         anim = self.animations[self.state]
         self.animation_time += dt
@@ -139,9 +140,15 @@ class Player(pygame.sprite.Sprite):
         """Get player position."""
         return self.position
 
-    def take_damage(self, amount, dt):
-        """Take damage with a cooldown to prevent instant death."""
-        self.damage_cooldown -= dt
-        if self.damage_cooldown <= 0:
-            self.health = max(0, self.health - amount)
-            self.damage_cooldown = 0.5
+    def take_damage(self, amount):
+        """Take damage. Caller must check damage_cooldown <= 0 before calling.
+        Sets a 0.5s invincibility window after each hit."""
+        self.health = max(0, self.health - amount)
+        self.damage_cooldown = 0.5  # seconds of invincibility after a hit
+        # Switch to hit animation if not already dying
+        if self.health > 0 and self.state != "death":
+            self.set_state("hit")
+
+    @property
+    def is_dead(self):
+        return self.health <= 0

@@ -4,18 +4,16 @@ Placeholder game scene for the RPG game.
 import math
 import pygame
 from pathlib import Path
-
-from globals import (
-    SCREEN_WIDTH, SCREEN_HEIGHT, SCENE_MENU, SCENE_SETTINGS,
-    FPS, FONT_ANTIALIAS, BLUE, GRAY, WHITE
-)
+from globals import SCREEN_WIDTH, SCREEN_HEIGHT, SCENE_MENU, SCENE_SETTINGS, FPS, FONT_ANTIALIAS, BLUE, GRAY, WHITE
 from vignette import create_vignette
 from camera import Camera
 from player import Player
 import pytmx
 import pyscroll
 
-from .aesthetic import safe_scale_surface
+from .aesthetic import (
+    safe_scale_surface,
+)
 from .dialogue import DialogueBox
 from .hud import (
     draw_player_health_bar,
@@ -24,7 +22,6 @@ from .hud import (
 )
 from .game_over import GameOverMenu
 from .pause_menu import PauseMenu
-
 
 class GameScene:
     """Game scene."""
@@ -64,7 +61,6 @@ class GameScene:
             if candidate.exists():
                 font_path = str(candidate)
                 break
-
         self.dialogue = DialogueBox(
             "Huh... Where am I? What is this place?",
             speed=30,
@@ -89,12 +85,7 @@ class GameScene:
         self.collision_rects = []
         self.hazard_rects = []
         self.above_layer_index = 0
-
-        # Hazard state
-        self.hazard_damage = 5
-        self.hazard_cooldown = 0.8
-        self.hazard_timer = 0.0
-
+        tmx_data = None
         try:
             tmx_path = Path(__file__).resolve().parent.parent / "assets" / "maps" / "Tiled_files" / "Dungeon1.tmx"
 
@@ -117,13 +108,13 @@ class GameScene:
                 if layer.name == "Walls":
                     self.above_layer_index = i + 1
                     break
-
+            
             print(f"above_layer_index: {self.above_layer_index}")
-
+            
             # create pyscroll group
             self.group = pyscroll.PyscrollGroup(
                 map_layer=self.map_layer,
-                default_layer=8
+                default_layer=8 
             )
             self.group.add(self.player)
 
@@ -137,27 +128,27 @@ class GameScene:
                             int(obj.width),
                             int(obj.height)
                         )
-
-                        if obj.name == "hazard" or obj.type == "hazard":
+                        obj_name = (obj.name or "").lower()
+                        obj_type = (obj.type or "").lower()
+                        if obj_name == "hazard" or obj_type == "hazard":
                             self.hazard_rects.append(rect)
                         else:
                             self.collision_rects.append(rect)
-
                     except Exception:
                         pass
+        except Exception as e:
+            print(f"Warning: Could not load map: {e}")
 
+        if tmx_data:
             #check map width and height
-            print(f"map_width={self.map_width} map_height={self.map_height} tile_width={tmx_data.tilewidth} tile_height={tmx_data.tileheight}")
+            print(f"map_width={self.map_width} map_height={self.map_height} tile_width={tmx_data.tilewidth} tile_height={tmx_data.tileheight}") 
 
             #check map layers
             for layer in tmx_data.layers:
                 print(f"layer: {layer.name}, type: {type(layer).__name__}")
-
+            
             for obj in tmx_data.objects:
                 print(f"object: {obj.name}, type: {obj.type}, x: {obj.x}, y: {obj.y}")
-
-        except Exception as e:
-            print(f"Warning: Could not load map: {e}")
 
         # Center player on map
         if self.map_layer:
@@ -184,16 +175,13 @@ class GameScene:
         """Handle input events."""
         if self.loading:
             return None
-
         if self.game_over:
             self.game_over_menu.handle_event(event)
             return None
-
         if self.dialogue.active:
             if event.type in (pygame.KEYDOWN, pygame.MOUSEBUTTONDOWN):
                 self.dialogue.skip_or_dismiss()
             return None
-
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_ESCAPE:
                 self.paused = not self.paused
@@ -215,7 +203,6 @@ class GameScene:
                 self.keys_pressed["left"] = True
             elif event.key in (pygame.K_RIGHT, pygame.K_d):
                 self.keys_pressed["right"] = True
-
         elif event.type == pygame.KEYUP:
             if event.key in (pygame.K_UP, pygame.K_w):
                 self.keys_pressed["up"] = False
@@ -225,10 +212,8 @@ class GameScene:
                 self.keys_pressed["left"] = False
             elif event.key in (pygame.K_RIGHT, pygame.K_d):
                 self.keys_pressed["right"] = False
-
         elif event.type == pygame.MOUSEBUTTONDOWN and self.paused:
             self.pause_menu.handle_event(event)
-
         return None
 
     def consume_requested_scene(self):
@@ -258,6 +243,7 @@ class GameScene:
         self.player.position.x = self.spawn_x
         self.player.position.y = self.spawn_y
         self.player.health = self.player.max_health
+        self.player.damage_cooldown = 0.0
         self.player.set_state("idle")
         self.player.update(0)
 
@@ -267,7 +253,6 @@ class GameScene:
             self.map_layer.center((self.player.position.x, self.player.position.y))
 
         self.keys_pressed = {"up": False, "down": False, "left": False, "right": False}
-        self.hazard_timer = 0.0
         self.paused = False
         self.game_over = False
         self.dialogue.active = False
@@ -277,9 +262,6 @@ class GameScene:
         """Update game state."""
         self.time_seconds = pygame.time.get_ticks() / 1000.0
         dt = self._clock.tick(FPS) / 1000.0
-
-        if self.hazard_timer > 0:
-            self.hazard_timer -= dt
 
         # Loading screen timer
         if self.loading:
@@ -351,8 +333,7 @@ class GameScene:
             player_rect = pygame.Rect(
                 self.player.position.x - 4,
                 self.player.position.y + 4,
-                8,
-                4
+                8, 4
             )
 
             for rect in self.collision_rects:
@@ -362,13 +343,11 @@ class GameScene:
                     break
 
             # Hazard detection
-            if self.hazard_timer <= 0:
+            if self.player.damage_cooldown <= 0:
                 for rect in self.hazard_rects:
                     if player_rect.colliderect(rect):
-                        self.player.health -= self.hazard_damage
-                        self.player.health = max(0, self.player.health)
-                        self.hazard_timer = self.hazard_cooldown
-                        if self.player.health <= 0:
+                        self.player.take_damage(5)
+                        if self.player.is_dead:
                             self.game_over = True
                             self.paused = False
                             self.keys_pressed = {"up": False, "down": False, "left": False, "right": False}
@@ -394,10 +373,7 @@ class GameScene:
 
         # Zoom transition (starts zoomed in, pulls back to normal)
         if self.map_layer and self.map_layer.zoom > self.target_zoom:
-            self.map_layer.zoom = max(
-                self.target_zoom,
-                self.map_layer.zoom - self.zoom_transition_speed * dt
-            )
+            self.map_layer.zoom = max(self.target_zoom, self.map_layer.zoom - self.zoom_transition_speed * dt)
 
     def _safe_scale_text(self, surface, scale_factor):
         """Scale text surfaces safely."""
@@ -463,7 +439,6 @@ class GameScene:
         if self.map_layer:
             self.group.center(pygame.math.Vector2(self.camera.x, self.camera.y))
             self.group.draw(screen)
-
         zoom = self.map_layer.zoom if self.map_width else 1.0
 
         # Draw health bar above player
@@ -472,14 +447,14 @@ class GameScene:
         # debugging tiles
         draw_debug_collision(screen, self.collision_rects + self.hazard_rects, self.camera, zoom)
 
-        # PAUSE OVERLAY
+        # PAUSE OVERLAY 
         if self.paused:
             self.pause_menu.render(screen, self.time_seconds)
 
         # GAME OVER OVERLAY
         if self.game_over:
             self.game_over_menu.render(screen, self.time_seconds)
-
+            
         # Vignette effect
         #screen.blit(self.vignette, (0, 0))
 
