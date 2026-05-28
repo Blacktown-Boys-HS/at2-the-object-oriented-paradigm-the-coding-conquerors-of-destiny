@@ -22,6 +22,7 @@ from .hud import (
     draw_debug_coords,
     draw_debug_collision
 )
+from .game_over import GameOverMenu
 from .pause_menu import PauseMenu
 
 
@@ -74,6 +75,11 @@ class GameScene:
         self.pause_menu = PauseMenu(title_font, menu_font, sounds)
         self.pause_pending_scene = None
         self.paused = False
+
+        # Game over state
+        self.game_over = False
+        self.game_over_menu = GameOverMenu(title_font, menu_font, credit_font, sounds)
+        self.restart_on_enter = False
 
         #load tmx file
         self.map_layer = None
@@ -157,11 +163,15 @@ class GameScene:
         if self.map_layer:
             self.player.position.x = (27 * 16) / 2
             self.player.position.y = (37 * 16) / 2
+            self.spawn_x = self.player.position.x
+            self.spawn_y = self.player.position.y
             self.camera.x = self.player.position.x
             self.camera.y = self.player.position.y
         else:
             self.player.position.x = SCREEN_WIDTH / 2
             self.player.position.y = SCREEN_HEIGHT / 2
+            self.spawn_x = self.player.position.x
+            self.spawn_y = self.player.position.y
 
         # Camera zoom transition (starts zoomed in, pulls back to normal)
         self.target_zoom = 3.0
@@ -173,6 +183,10 @@ class GameScene:
     def handle_event(self, event):
         """Handle input events."""
         if self.loading:
+            return None
+
+        if self.game_over:
+            self.game_over_menu.handle_event(event)
             return None
 
         if self.dialogue.active:
@@ -228,11 +242,36 @@ class GameScene:
         self.loading = True
         self.loading_time = 0.0
         self.loading_ready = False
+        self.paused = False
+
+        if self.restart_on_enter:
+            self._reset_player()
+            self.restart_on_enter = False
 
         if self.map_layer:
             self.map_layer.center((self.player.position.x, self.player.position.y))
             self.camera.x = self.player.position.x
             self.camera.y = self.player.position.y
+
+    def _reset_player(self):
+        """Respawn the player and clear gameplay state."""
+        self.player.position.x = self.spawn_x
+        self.player.position.y = self.spawn_y
+        self.player.health = self.player.max_health
+        self.player.set_state("idle")
+        self.player.update(0)
+
+        self.camera.x = self.player.position.x
+        self.camera.y = self.player.position.y
+        if self.map_layer:
+            self.map_layer.center((self.player.position.x, self.player.position.y))
+
+        self.keys_pressed = {"up": False, "down": False, "left": False, "right": False}
+        self.hazard_timer = 0.0
+        self.paused = False
+        self.game_over = False
+        self.dialogue.active = False
+        self.game_over_menu.reset()
 
     def update(self, mouse_pos):
         """Update game state."""
@@ -259,6 +298,16 @@ class GameScene:
                 self.first_dialogue_shown = True
             elif not self.dialogue.closing:
                 return
+
+        if self.game_over:
+            self.game_over_menu.update(dt, mouse_pos)
+            action = self.game_over_menu.consume_action()
+            if action == "Retry":
+                self._reset_player()
+            elif action == "Main Menu":
+                self.restart_on_enter = True
+                self.pause_pending_scene = SCENE_MENU
+            return
 
         # Check for mouse hover on pause items
         if self.paused:
@@ -319,6 +368,11 @@ class GameScene:
                         self.player.health -= self.hazard_damage
                         self.player.health = max(0, self.player.health)
                         self.hazard_timer = self.hazard_cooldown
+                        if self.player.health <= 0:
+                            self.game_over = True
+                            self.paused = False
+                            self.keys_pressed = {"up": False, "down": False, "left": False, "right": False}
+                            self.player.set_state("death")
                         break
 
             # Clamp player to camera viewport so they never walk past where
@@ -421,6 +475,10 @@ class GameScene:
         # PAUSE OVERLAY
         if self.paused:
             self.pause_menu.render(screen, self.time_seconds)
+
+        # GAME OVER OVERLAY
+        if self.game_over:
+            self.game_over_menu.render(screen, self.time_seconds)
 
         # Vignette effect
         #screen.blit(self.vignette, (0, 0))
