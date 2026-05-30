@@ -4864,7 +4864,7 @@
  <objectgroup id="37" name="doors">
   <object id="74" name="door" x="248.078" y="368.046" width="17.0815" height="8.73935">
    <properties>
-    <property name="id" value="1"/>
+    <property name="door_id" value="1"/>
    </properties>
   </object>
  </objectgroup>

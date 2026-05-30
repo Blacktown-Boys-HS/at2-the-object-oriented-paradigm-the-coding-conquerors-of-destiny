@@ -48,7 +48,7 @@ class World:
                         self.doors.append({
                             "rect": rect,
                             "open": False,
-                            "id": obj.properties.get("id", 0)
+                            "id": obj.properties.get("door_id", 0)
                         })
                     else:
                         self.collision_rects.append(rect)
