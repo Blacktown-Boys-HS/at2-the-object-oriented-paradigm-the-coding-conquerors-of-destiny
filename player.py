@@ -63,13 +63,20 @@ class Player(pygame.sprite.Sprite):
         if not self.sprite_sheet:
             return
         
-        # Tick down the invincibility cooldown every frame
+        # Tick down the invincibility
         if self.damage_cooldown > 0:
             self.damage_cooldown = max(0.0, self.damage_cooldown - dt)
 
         anim = self.animations[self.state]
         self.animation_time += dt
         frame_index = int(self.animation_time * anim["speed"])
+
+        # Return to idle after animation finishes
+        if self.state == "hit":
+            if frame_index >= len(anim["frames"]):
+                self.set_state("idle")
+                return
+            
         self.current_frame = frame_index % len(anim["frames"])
 
         sprite = anim["frames"][self.current_frame]
@@ -81,7 +88,9 @@ class Player(pygame.sprite.Sprite):
             scaled = pygame.transform.flip(scaled, True, False)
         self.image = scaled
         self.rect = self.image.get_rect(center=(int(self.position.x), int(self.position.y)))
-    
+
+        
+
     def render(self, screen, camera, zoom=1) -> None:
         """Render the player sprite relative to the camera."""
         if self.sprite_sheet:

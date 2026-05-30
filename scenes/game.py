@@ -323,10 +323,10 @@ class GameScene:
 
             if moving:
                 self.player.move(dx, dy, self.MOVE_SPEED * dt)
-                if self.player.state != "run":
+                if self.player.state not in ("run", "hit", "death"):
                     self.player.set_state("run")
             else:
-                if self.player.state != "idle":
+                if self.player.state not in ("idle", "hit", "death"):
                     self.player.set_state("idle")
 
             # Collision detection
@@ -346,7 +346,10 @@ class GameScene:
             if self.player.damage_cooldown <= 0:
                 for rect in self.hazard_rects:
                     if player_rect.colliderect(rect):
-                        self.player.take_damage(5)
+                        self.player.take_damage(10)
+                        hit_sound = self.sounds.get("hit")
+                        if hit_sound:
+                            hit_sound.play()
                         if self.player.is_dead:
                             self.game_over = True
                             self.paused = False
