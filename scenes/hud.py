@@ -54,3 +54,32 @@ def draw_debug_coords(screen, player, font):
         (255, 255, 0),
     )
     screen.blit(coord_text, (10, 90))
+
+def draw_door_prompt(screen, player, camera, zoom, font):
+    """Draw a styled door interaction prompt above the player."""
+    screen_x = (player.position.x - camera.x) * zoom + SCREEN_WIDTH / 2
+    screen_y = (player.position.y - camera.y) * zoom + SCREEN_HEIGHT / 2
+
+    # Render text
+    arrow = font.render("> E ", FONT_ANTIALIAS, (100, 160, 120))
+    label = font.render("Open Door", FONT_ANTIALIAS, (255, 255, 255))
+
+    total_w = arrow.get_width() + label.get_width()
+    pad_x, pad_y = 14, 8
+    box_w = total_w + pad_x * 2
+    box_h = label.get_height() + pad_y * 2
+
+    box_x = int(screen_x - box_w / 2)
+    box_y = int(screen_y - 80)
+
+    # Box background
+    box_surf = pygame.Surface((box_w, box_h), pygame.SRCALPHA)
+    box_surf.fill((30, 30, 30, 200))
+    screen.blit(box_surf, (box_x, box_y))
+
+    # Border
+    pygame.draw.rect(screen, (130, 130, 130), (box_x, box_y, box_w, box_h), 2, border_radius=8)
+
+    # Text
+    screen.blit(arrow, (box_x + pad_x, box_y + pad_y))
+    screen.blit(label, (box_x + pad_x + arrow.get_width(), box_y + pad_y))

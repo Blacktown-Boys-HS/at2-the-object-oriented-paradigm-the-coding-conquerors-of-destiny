@@ -13,7 +13,7 @@ import pyscroll
 
 from .aesthetic import safe_scale_surface
 from .dialogue import DialogueBox
-from .hud import draw_player_health_bar, draw_debug_coords, draw_debug_collision
+from .hud import draw_player_health_bar, draw_debug_coords, draw_debug_collision, draw_door_prompt
 from .game_over import GameOverMenu
 from .pause_menu import PauseMenu
 
@@ -428,10 +428,7 @@ class GameScene:
 
         # Door prompt
         if self.near_door:
-            screen_x = (self.player.position.x - self.camera.x) * zoom + SCREEN_WIDTH / 2
-            screen_y = (self.player.position.y - self.camera.y) * zoom + SCREEN_HEIGHT / 2
-            prompt = self.credit_font.render("[E] Open", FONT_ANTIALIAS, WHITE)
-            screen.blit(prompt, prompt.get_rect(center=(int(screen_x), int(screen_y) - 60)))
+            draw_door_prompt(screen, self.player, self.camera, zoom, self.credit_font)
 
         # Debug
         draw_debug_collision(screen, self.collision_rects + self.hazard_rects, self.camera, zoom)
