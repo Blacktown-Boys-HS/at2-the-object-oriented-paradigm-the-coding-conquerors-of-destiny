@@ -4771,7 +4771,7 @@
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,5693,5758,5759,0,0,0,0,5683
 </data>
  </layer>
- <layer id="31" name="Objects2" width="37" height="27" visible="0">
+ <layer id="31" name="Objects2" width="37" height="27">
   <data encoding="csv">
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
@@ -4874,8 +4874,8 @@
   </object>
  </objectgroup>
  <objectgroup id="38" name="above_layer">
-  <object id="76" name="above" x="221.5" y="378.5" width="85.5" height="21.5"/>
+  <object id="76" name="above" x="221.5" y="377.75" width="85.5" height="21.5"/>
   <object id="78" name="above" x="306.5" y="402" width="10.5" height="6.5"/>
-  <object id="80" name="above" x="207.5" y="281.5" width="68.5" height="53.5"/>
+  <object id="80" name="above" x="210.75" y="281.5" width="60.75" height="53.5"/>
  </objectgroup>
 </map>

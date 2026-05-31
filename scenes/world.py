@@ -106,7 +106,7 @@ class World:
             z.collidepoint(player.position.x, player.position.y)
             for z in self.above_zones
         )
-        target_layer = 12 if in_above_zone else 8
+        target_layer = 15 if in_above_zone else 8
         if self.group.get_layer_of_sprite(player) != target_layer:
             self.group.change_layer(player, target_layer)
 
