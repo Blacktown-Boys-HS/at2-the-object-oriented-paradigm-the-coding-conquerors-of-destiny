@@ -16,6 +16,7 @@ from .dialogue import DialogueBox
 from .hud import draw_player_health_bar, draw_debug_coords, draw_debug_collision, draw_door_prompt
 from .game_over import GameOverMenu
 from .pause_menu import PauseMenu
+from .world import World
 
 
 class GameScene:
@@ -74,68 +75,17 @@ class GameScene:
         self.restart_on_enter = False
 
         # Map
-        self.map_layer = None
-        self.group = None
-        self.map_width = 0
-        self.map_height = 0
-        self.collision_rects = []
-        self.hazard_rects = []
-        self.doors = []
+        self.world = None
         self.near_door = None
-        tmx_data = None
 
         try:
             tmx_path = Path(__file__).resolve().parent.parent / "assets" / "maps" / "Tiled_files" / "Dungeon1.tmx"
-            tmx_data = pytmx.load_pygame(str(tmx_path), pixelalpha=True)
-
-            map_data = pyscroll.data.TiledMapData(tmx_data)
-            self.map_layer = pyscroll.orthographic.BufferedRenderer(
-                map_data,
-                (SCREEN_WIDTH, SCREEN_HEIGHT)
-            )
-            self.map_layer.zoom = 3.0
-            self.map_width = tmx_data.width * tmx_data.tilewidth
-            self.map_height = tmx_data.height * tmx_data.tileheight
-
-            # pyscroll group
-            self.group = pyscroll.PyscrollGroup(
-                map_layer=self.map_layer,
-                default_layer=8
-            )
-            self.group.add(self.player)
-
-            # Load collision, hazard and door rects
-            for obj in tmx_data.objects:
-                if obj.x is not None:
-                    try:
-                        rect = pygame.Rect(int(obj.x), int(obj.y), int(obj.width), int(obj.height))
-                        name = (obj.name or "").lower()
-                        obj_type = (obj.type or "").lower()
-                        if name == "hazard" or obj_type == "hazard":
-                            self.hazard_rects.append(rect)
-                        elif name == "door":
-                            self.doors.append({
-                                "rect": rect,
-                                "open": False,
-                                "id": obj.properties.get("id", 0)
-                            })
-                        else:
-                            self.collision_rects.append(rect)
-                    except Exception:
-                        pass
-
+            self.world = World(tmx_path, self.player, zoom=3.0, default_layer=8)
         except Exception as e:
-            print(f"Warning: Could not load map: {e}")
-
-        if tmx_data:
-            print(f"map_width={self.map_width} map_height={self.map_height} tile_width={tmx_data.tilewidth} tile_height={tmx_data.tileheight}")
-            for layer in tmx_data.layers:
-                print(f"layer: {layer.name}, type: {type(layer).__name__}")
-            for obj in tmx_data.objects:
-                print(f"object: {obj.name}, type: {obj.type}, x: {obj.x}, y: {obj.y}")
+            print(f"Warning: Could not load map : {e}")
 
         # Center player on map
-        if self.map_layer:
+        if self.world and self.world.map_layer:
             self.player.position.x = (27 * 16) / 2
             self.player.position.y = (37 * 16) / 2
         else:
@@ -150,25 +100,6 @@ class GameScene:
         # Camera zoom transition
         self.target_zoom = 3.0
         self.zoom_transition_speed = 1.2
-
-        # Vignette
-        self.vignette = create_vignette(SCREEN_WIDTH, SCREEN_HEIGHT, strength=120)
-
-    def _get_all_collision_rects(self):
-        """Return collision rects plus closed doors."""
-        closed_doors = [d["rect"] for d in self.doors if not d["open"]]
-        return self.collision_rects + closed_doors
-
-    def _get_nearby_door(self):
-        """Return nearest closed door if player is close enough."""
-        for door in self.doors:
-            if door["open"]:
-                continue
-            if door["rect"].inflate(32, 32).collidepoint(
-                self.player.position.x, self.player.position.y
-            ):
-                return door
-        return None
 
     def handle_event(self, event):
         """Handle input events."""
@@ -198,7 +129,7 @@ class GameScene:
 
             if event.key == pygame.K_e:
                 if self.near_door:
-                    self.near_door["open"] = True
+                    self.world.open_door(self.near_door)
                     open_sound = self.sounds.get("door_open")
                     if open_sound:
                         open_sound.play()
@@ -245,8 +176,8 @@ class GameScene:
             self._reset_player()
             self.restart_on_enter = False
 
-        if self.map_layer:
-            self.map_layer.center((self.player.position.x, self.player.position.y))
+        if self.world and self.world.map_layer:
+            self.world.center(self.player.position.x, self.player.position.y)
             self.camera.x = self.player.position.x
             self.camera.y = self.player.position.y
 
@@ -261,8 +192,8 @@ class GameScene:
 
         self.camera.x = self.player.position.x
         self.camera.y = self.player.position.y
-        if self.map_layer:
-            self.map_layer.center((self.player.position.x, self.player.position.y))
+        if self.world and self.world.map_layer:
+            self.world.center(self.player.position.x, self.player.position.y)
 
         self.keys_pressed = {"up": False, "down": False, "left": False, "right": False}
         self.paused = False
@@ -271,8 +202,8 @@ class GameScene:
         self.dialogue.active = False
         self.game_over_menu.reset()
 
-        for door in self.doors:
-            door["open"] = False
+        if self.world:
+            self.world.reset_doors()
 
     def update(self, mouse_pos):
         """Update game state."""
@@ -352,49 +283,51 @@ class GameScene:
             self.player.position.y + 4,
             8, 4
         )
-        for rect in self._get_all_collision_rects():
-            if player_rect.colliderect(rect):
-                self.player.position.x = old_x
-                self.player.position.y = old_y
-                break
+        if self.world:
+            self.world.check_collision(player_rect, old_x, old_y, self.player)
 
         # Hazard detection
-        if self.player.damage_cooldown <= 0:
-            for rect in self.hazard_rects:
-                if player_rect.colliderect(rect):
-                    self.player.take_damage(10)
-                    hit_sound = self.sounds.get("hit")
-                    if hit_sound:
-                        hit_sound.play()
-                    if self.player.is_dead:
-                        self.game_over = True
-                        self.paused = False
-                        self.keys_pressed = {"up": False, "down": False, "left": False, "right": False}
-                        self.player.set_state("death")
-                    break
+        if self.world and self.player.damage_cooldown <= 0:
+            if self.world.check_hazard(player_rect, self.player):
+                hit_sound = self.sounds.get("hit")
+                if hit_sound:
+                    hit_sound.play()
+                if self.player.is_dead:
+                    self.game_over = True
+                    self.paused = False
+                    self.keys_pressed = {"up": False, "down": False, "left": False, "right": False}
+                    self.player.set_state("death")
 
         # Door proximity check
-        self.near_door = self._get_nearby_door()
+        self.near_door = self.world.get_nearby_door(self.player) if self.world else None
 
         # Clamp to map bounds
-        if self.map_width > 0 and self.map_height > 0:
-            self.player.position.x = max(0, min(self.map_width, self.player.position.x))
-            self.player.position.y = max(0, min(self.map_height, self.player.position.y))
+        if self.world and self.world.map_width > 0 and self.world.map_height > 0:
+            self.player.position.x = max(0, min(self.world.map_width, self.player.position.x))
+            self.player.position.y = max(0, min(self.world.map_height, self.player.position.y))
 
         self.player.update(dt)
+
+        # Change layer z index check
+        if self.world:
+            self.world.update_player_layer(self.player)
+
         self.camera.update(
             self.player,
             dt,
-            self.map_width,
-            self.map_height,
+            self.world.map_width if self.world else 0,
+            self.world.map_height if self.world else 0,
             SCREEN_WIDTH,
             SCREEN_HEIGHT,
-            self.map_layer.zoom if self.map_layer else 1.0
+            self.world.map_layer.zoom if self.world and self.world.map_layer else 1.0
         )
 
         # Zoom transition
-        if self.map_layer and self.map_layer.zoom > self.target_zoom:
-            self.map_layer.zoom = max(self.target_zoom, self.map_layer.zoom - self.zoom_transition_speed * dt)
+        if self.world and self.world.map_layer and self.world.map_layer.zoom > self.target_zoom:
+            self.world.map_layer.zoom = max(
+                self.target_zoom,
+                self.world.map_layer.zoom - self.zoom_transition_speed * dt
+            )
 
     def render(self, screen):
         """Render the game scene."""
@@ -418,10 +351,9 @@ class GameScene:
             return
 
         # Map
-        if self.map_layer and self.group:
-            self.group.center(pygame.math.Vector2(self.camera.x, self.camera.y))
-            self.group.draw(screen)
-        zoom = self.map_layer.zoom if self.map_layer else 1.0
+        if self.world:
+            self.world.draw(screen, self.camera.x, self.camera.y)
+        zoom = self.world.map_layer.zoom if self.world and self.world.map_layer else 1.0
 
         # HUD
         draw_player_health_bar(screen, self.player, self.camera, zoom)
@@ -431,7 +363,13 @@ class GameScene:
             draw_door_prompt(screen, self.player, self.camera, zoom, self.credit_font)
 
         # Debug
-        draw_debug_collision(screen, self.collision_rects + self.hazard_rects, self.camera, zoom)
+        if self.world:
+            draw_debug_collision(
+                screen,
+                self.world.collision_rects + self.world.hazard_rects,
+                self.camera,
+                zoom
+            )
         draw_debug_coords(screen, self.player, self.credit_font)
 
         # Pause overlay

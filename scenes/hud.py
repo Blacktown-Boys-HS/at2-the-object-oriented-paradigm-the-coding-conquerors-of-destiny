@@ -65,7 +65,7 @@ def draw_door_prompt(screen, player, camera, zoom, font):
     label = font.render("Open Door", FONT_ANTIALIAS, (255, 255, 255))
 
     total_w = arrow.get_width() + label.get_width()
-    pad_x, pad_y = 14, 8
+    pad_x, pad_y = 20, 12
     box_w = total_w + pad_x * 2
     box_h = label.get_height() + pad_y * 2
 
