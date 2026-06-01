@@ -4874,7 +4874,7 @@
   </object>
  </objectgroup>
  <objectgroup id="38" name="above_layer">
-  <object id="76" name="above" x="221.5" y="377.75" width="85.5" height="21.5"/>
+  <object id="76" name="above" x="219.5" y="375.25" width="87.5" height="24"/>
   <object id="78" name="above" x="306.5" y="402" width="10.5" height="6.5"/>
   <object id="80" name="above" x="210.75" y="281.5" width="60.75" height="53.5"/>
  </objectgroup>

@@ -102,11 +102,16 @@ class World:
 
     def update_player_layer(self, player):
         """Swap player z-layer based on above zone position."""
+        player_rect = pygame.Rect(
+            player.position.x - 4,
+            player.position.y- 4,
+            8, 8
+        )
         in_above_zone = any(
-            z.collidepoint(player.position.x, player.position.y)
+            player_rect.colliderect(z)
             for z in self.above_zones
         )
-        target_layer = 15 if in_above_zone else 8
+        target_layer = 100 if in_above_zone else 8
         if self.group.get_layer_of_sprite(player) != target_layer:
             self.group.change_layer(player, target_layer)
 
