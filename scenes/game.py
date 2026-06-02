@@ -8,8 +8,6 @@ from globals import SCREEN_WIDTH, SCREEN_HEIGHT, SCENE_MENU, SCENE_SETTINGS, FPS
 from vignette import create_vignette
 from camera import Camera
 from player import Player
-import pytmx
-import pyscroll
 
 from .aesthetic import safe_scale_surface
 from .dialogue import DialogueBox
@@ -17,6 +15,7 @@ from .hud import draw_player_health_bar, draw_debug_coords, draw_debug_collision
 from .game_over import GameOverMenu
 from .pause_menu import PauseMenu
 from .world import World
+from .loading_screen import draw_loading_screen
 
 
 class GameScene:
@@ -334,21 +333,7 @@ class GameScene:
 
         # Loading screen
         if self.loading:
-            overlay = pygame.Surface((SCREEN_WIDTH, SCREEN_HEIGHT), pygame.SRCALPHA)
-            overlay.fill((0, 0, 0, 220))
-            screen.blit(overlay, (0, 0))
-
-            pulse = 1.0 + 0.08 * math.sin(self.loading_time * 10)
-            loading_text = self.menu_font.render("Loading...", FONT_ANTIALIAS, BLUE)
-            scaled = safe_scale_surface(loading_text, pulse)
-            rect = scaled.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2))
-            screen.blit(scaled, rect)
-
-            hint_index = int(self.loading_time * 2) % len(self.loading_hints)
-            hint_text = self.credit_font.render(self.loading_hints[hint_index], False, GRAY)
-            hint_rect = hint_text.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT - 50))
-            screen.blit(hint_text, hint_rect)
-            return
+            draw_loading_screen(screen, self.loading_time, self.menu_font, self.credit_font, self.loading_hints)
 
         # Map
         if self.world:
