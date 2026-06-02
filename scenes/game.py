@@ -334,7 +334,8 @@ class GameScene:
         # Loading screen
         if self.loading:
             draw_loading_screen(screen, self.loading_time, self.menu_font, self.credit_font, self.loading_hints)
-
+            return
+        
         # Map
         if self.world:
             self.world.draw(screen, self.camera.x, self.camera.y)
