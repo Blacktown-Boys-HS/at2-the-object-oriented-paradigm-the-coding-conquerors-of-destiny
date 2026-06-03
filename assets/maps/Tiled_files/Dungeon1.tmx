@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.12.1" orientation="orthogonal" renderorder="right-down" width="37" height="27" tilewidth="16" tileheight="16" infinite="0" nextlayerid="39" nextobjectid="105">
+<map version="1.10" tiledversion="1.12.1" orientation="orthogonal" renderorder="right-down" width="37" height="27" tilewidth="16" tileheight="16" infinite="0" nextlayerid="39" nextobjectid="113">
  <tileset firstgid="1" name="cracked_tiles" tilewidth="16" tileheight="16" tilecount="256" columns="8">
   <image source="decorative_cracks_walls.png" width="128" height="512"/>
  </tileset>
@@ -4804,18 +4804,21 @@
  </layer>
  <objectgroup id="35" name="collision" tintcolor="#c6040a">
   <object id="13" x="205.838" y="271.766" width="69.9547" height="9.05888"/>
-  <object id="14" x="276.548" y="272.018" width="7.8007" height="81.3485"/>
+  <object id="14" x="276.548" y="272.018" width="7.8007" height="98.0072"/>
   <object id="101" x="247.482" y="282.121" width="16.3496" height="10.626"/>
   <object id="18" x="189.23" y="280.07" width="16.608" height="52.8435"/>
   <object id="98" x="178.947" y="371.235" width="13.5795" height="18.4557"/>
   <object id="99" x="191.452" y="368.305" width="13.5795" height="18.4557"/>
+  <object id="111" x="115.402" y="396.265" width="7.708" height="5.03513"/>
+  <object id="112" x="68.1645" y="317.763" width="7.708" height="5.03513"/>
   <object id="19" x="180.926" y="332.914" width="8.30398" height="18.561"/>
-  <object id="20" x="212.632" y="352.086" width="34.4741" height="25.1153"/>
+  <object id="20" x="212.632" y="368.06" width="34.4741" height="9.14122"/>
   <object id="21" x="212.632" y="377.705" width="7.54907" height="9.81379"/>
-  <object id="22" x="265.979" y="352.473" width="17.8661" height="24.4767"/>
+  <object id="22" x="265.979" y="367.762" width="17.8661" height="9.18723"/>
+  <object id="107" x="385.925" y="329.267" width="11.4354" height="8.26018"/>
   <object id="23" x="271.012" y="377.957" width="14.8465" height="8.55561"/>
-  <object id="24" x="285.103" y="303.686" width="42.5264" height="25.7055"/>
-  <object id="25" x="346.388" y="303.766" width="25.9185" height="24.7326"/>
+  <object id="24" x="285.103" y="320.573" width="42.5264" height="8.81862"/>
+  <object id="25" x="346.388" y="320.425" width="25.9185" height="8.07392"/>
   <object id="26" x="317.816" y="383.744" width="20.8858" height="32.2094"/>
   <object id="27" x="338.953" y="383.744" width="94.1117" height="16.608"/>
   <object id="28" x="413.689" y="368.395" width="20.1309" height="31.2028"/>
@@ -4863,6 +4866,9 @@
  </objectgroup>
  <objectgroup id="36" name="hazard">
   <object id="71" name="hazard" x="322.668" y="352.125" width="27.6443" height="14.0488"/>
+  <object id="109" name="hazard" x="130.586" y="385.117" width="27.6443" height="14.0488"/>
+  <object id="105" name="hazard" x="386.684" y="273.179" width="27.6443" height="14.0488"/>
+  <object id="106" name="hazard" x="466.089" y="382.5" width="45.5384" height="33.6205"/>
  </objectgroup>
  <objectgroup id="37" name="doors">
   <object id="74" name="door" x="248.078" y="368.046" width="17.0815" height="8.73935">
@@ -4878,6 +4884,7 @@
  </objectgroup>
  <objectgroup id="38" name="above_layer">
   <object id="76" name="above" x="219.5" y="375.25" width="87.5" height="24"/>
+  <object id="108" name="above" x="384.461" y="333.031" width="15.644" height="6.38551"/>
   <object id="103" name="above" x="462.833" y="379.917" width="51.5" height="3.45455"/>
   <object id="84" name="above" x="91.653" y="371.291" width="87.5" height="7.01132"/>
   <object id="90" name="above" x="147.326" y="327.201" width="35.0942" height="7.01132"/>
@@ -4887,6 +4894,7 @@
   <object id="88" name="above" x="0.0868295" y="327.498" width="47.1879" height="7.01132"/>
   <object id="89" name="above" x="42.1266" y="311.933" width="47.1879" height="7.01132"/>
   <object id="85" name="above" x="178.728" y="388.846" width="14.0743" height="7.01132"/>
+  <object id="110" name="above" x="113.023" y="398.632" width="14.0743" height="7.01132"/>
   <object id="86" name="above" x="191.461" y="381.878" width="14.0743" height="7.01132"/>
   <object id="87" name="above" x="205.103" y="374.098" width="14.0743" height="7.01132"/>
   <object id="78" name="above" x="306.682" y="395.455" width="10.5" height="6.5"/>

@@ -18,7 +18,8 @@ class SoundManager:
             "button_hover": pygame.mixer.Sound(str(self.sound_dir / "Button Hover_1.wav")),
             "cancel_back": pygame.mixer.Sound(str(self.sound_dir / "Cancel  Back.wav")),
             "confirm": pygame.mixer.Sound(str(self.sound_dir / "Confirm_1.wav")),
-            "hit": pygame.mixer.Sound(str(self.sound_dir / "hurt.wav"))
+            "hit": pygame.mixer.Sound(str(self.sound_dir / "hurt.mp3")),
+            "death" : pygame.mixer.Sound(str(self.sound_dir / "death.mp3"))
         }
         game_start_path = self.sound_dir / "Game Start Sound FX.mp3"
         try:

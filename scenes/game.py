@@ -179,6 +179,7 @@ class GameScene:
             self.world.center(self.player.position.x, self.player.position.y)
             self.camera.x = self.player.position.x
             self.camera.y = self.player.position.y
+            self.player.update(0)
 
     def _reset_player(self):
         """Respawn the player and reset gameplay state."""
@@ -292,6 +293,9 @@ class GameScene:
                 if hit_sound:
                     hit_sound.play()
                 if self.player.is_dead:
+                    death_sound = self.sounds.get("death")
+                    if death_sound:
+                        death_sound.play()
                     self.game_over = True
                     self.paused = False
                     self.keys_pressed = {"up": False, "down": False, "left": False, "right": False}
