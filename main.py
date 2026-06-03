@@ -3,6 +3,7 @@ Main entry point for the RPG game.
 """
 import pygame
 import sys
+import asyncio
 
 from globals import (
     SCREEN_WIDTH, SCREEN_HEIGHT, FPS,
@@ -19,7 +20,7 @@ from cursor import CustomCursor
 from splash import SplashScreen
 from transition import SceneTransition
 
-def main():
+async def main():
     """Main game loop."""
     pygame.init()
     pygame.mixer.init()
@@ -152,13 +153,11 @@ def main():
 
         cursor.draw(screen, mouse_pos)
 
+        await asyncio.sleep(0)
         pygame.display.update()
 
     pygame.quit()
     sys.exit()
 
 
-if __name__ == "__main__":
-    main()
-
-
+asyncio.run(main())
