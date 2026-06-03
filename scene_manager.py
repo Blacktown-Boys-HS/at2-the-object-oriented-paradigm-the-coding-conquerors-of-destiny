@@ -22,7 +22,7 @@ class SceneManager:
                 title_font, menu_font, credit_font, sound_manager.effects
             ),
             SCENE_SETTINGS: SettingsScene(
-                title_font, menu_font, credit_font, sound_manager.effects
+                title_font, menu_font, credit_font, sound_manager
             ),
         }
         self.current_scene = SCENE_MENU
@@ -76,7 +76,8 @@ class SceneManager:
             scene = self.get_current_scene()
             if hasattr(scene, "on_enter"):
                 scene.on_enter()
-                transition.start_fade_in()
+
+        transition.start_fade_in()
 
     def finish_fade_in(self):
         """Run logic after fading into the current scene."""

@@ -1,19 +1,22 @@
 """
 Player character class for the RPG game.
 """
+
 from pathlib import Path
+
 import pygame
-from sprite_sheet import SpriteSheet
+
 from pos import Position
+from sprite_sheet import SpriteSheet
 
 
 class Player(pygame.sprite.Sprite):
     """Player character with sprite animation."""
-    
+
     FRAME_WIDTH = 32
     FRAME_HEIGHT = 32
     DISPLAY_SCALE = 1
-    
+
     def __init__(self, x=600, y=400):
         super().__init__()
         self.position = Position(x, y)
@@ -34,13 +37,26 @@ class Player(pygame.sprite.Sprite):
                 knight_path, self.FRAME_WIDTH, self.FRAME_HEIGHT
             )
 
-            #load animations
+            # load animations
             self.animations = {
-                "idle": {"frames": self.sprite_sheet.get_animation(0, 0, 4), "speed": 5},
-                "run":  {"frames": self.sprite_sheet.get_animation(2, 0, 8) + self.sprite_sheet.get_animation(3, 0, 8), "speed": 8},
-                "roll": {"frames": self.sprite_sheet.get_animation(5, 0, 8), "speed": 10},
-                "hit":  {"frames": self.sprite_sheet.get_animation(6, 0, 4), "speed": 5},
-                "death":{"frames": self.sprite_sheet.get_animation(7, 0, 4), "speed": 4},
+                "idle": {
+                    "frames": self.sprite_sheet.get_animation(0, 0, 4),
+                    "speed": 5,
+                },
+                "run": {
+                    "frames": self.sprite_sheet.get_animation(2, 0, 8)
+                    + self.sprite_sheet.get_animation(3, 0, 8),
+                    "speed": 8,
+                },
+                "roll": {
+                    "frames": self.sprite_sheet.get_animation(5, 0, 8),
+                    "speed": 10,
+                },
+                "hit": {"frames": self.sprite_sheet.get_animation(6, 0, 4), "speed": 5},
+                "death": {
+                    "frames": self.sprite_sheet.get_animation(7, 0, 4),
+                    "speed": 4,
+                },
             }
 
             self.state = "idle"
@@ -52,17 +68,17 @@ class Player(pygame.sprite.Sprite):
             self.sprite_sheet = None
 
         # for pyscroll
-        self.image = pygame.Surface((16, 16), pygame.SRCALPHA) # Placeholder
+        self.image = pygame.Surface((16, 16), pygame.SRCALPHA)  # Placeholder
         self.rect = pygame.Rect(x, y, 16, 16)
 
         self.max_health = 100
         self.health = 100
         self.damage_cooldown = 0.0
-    
+
     def update(self, dt):
         if not self.sprite_sheet:
             return
-        
+
         # Tick down the invincibility
         if self.damage_cooldown > 0:
             self.damage_cooldown = max(0.0, self.damage_cooldown - dt)
@@ -76,20 +92,23 @@ class Player(pygame.sprite.Sprite):
             if frame_index >= len(anim["frames"]):
                 self.set_state("idle")
                 return
-            
+
         self.current_frame = frame_index % len(anim["frames"])
 
         sprite = anim["frames"][self.current_frame]
-        scaled = pygame.transform.scale(sprite, (
-            int(sprite.get_width() * self.DISPLAY_SCALE),
-            int(sprite.get_height() * self.DISPLAY_SCALE)
-        ))
+        scaled = pygame.transform.scale(
+            sprite,
+            (
+                int(sprite.get_width() * self.DISPLAY_SCALE),
+                int(sprite.get_height() * self.DISPLAY_SCALE),
+            ),
+        )
         if not self.facing_right:
             scaled = pygame.transform.flip(scaled, True, False)
         self.image = scaled
-        self.rect = self.image.get_rect(center=(int(self.position.x), int(self.position.y)))
-
-        
+        self.rect = self.image.get_rect(
+            center=(int(self.position.x), int(self.position.y))
+        )
 
     def render(self, screen, camera, zoom=1) -> None:
         """Render the player sprite relative to the camera."""
@@ -101,8 +120,7 @@ class Player(pygame.sprite.Sprite):
             scaled_height = int(sprite.get_height() * self.DISPLAY_SCALE)
 
             scaled_sprite = pygame.transform.scale(
-                sprite,
-                (scaled_width, scaled_height)
+                sprite, (scaled_width, scaled_height)
             )
 
             # Flip if facing left
@@ -110,7 +128,8 @@ class Player(pygame.sprite.Sprite):
                 scaled_sprite = pygame.transform.flip(scaled_sprite, True, False)
 
             # Convert world position to screen position using camera center and zoom
-            from globals import SCREEN_WIDTH, SCREEN_HEIGHT
+            from globals import SCREEN_HEIGHT, SCREEN_WIDTH
+
             screen_x = (self.position.x - camera.x) * zoom + SCREEN_WIDTH / 2
             screen_y = (self.position.y - camera.y) * zoom + SCREEN_HEIGHT / 2
 
@@ -128,6 +147,7 @@ class Player(pygame.sprite.Sprite):
     def move(self, dx, dy, speed):
         """Move the player by (dx, dy) direction with given speed."""
         import math
+
         if dx != 0 or dy != 0:
             length = math.sqrt(dx * dx + dy * dy)
             dx /= length
@@ -144,7 +164,7 @@ class Player(pygame.sprite.Sprite):
     def set_position(self, x, y):
         """Set player position."""
         self.position = Position(x, y)
-    
+
     def get_position(self):
         """Get player position."""
         return self.position
@@ -161,3 +181,9 @@ class Player(pygame.sprite.Sprite):
     @property
     def is_dead(self):
         return self.health <= 0
+
+    def update_facing(self, dx):
+        if dx > 0:
+            self.facing_right = True
+        elif dx < 0:
+            self.facing_right = False

@@ -267,6 +267,9 @@ class GameScene:
 
         moving = dx != 0 or dy != 0
 
+        # Check player facing
+        self.player.update_facing(dx)
+
 
         if moving:
             # self.player.move(dx, dy, self.MOVE_SPEED * dt)
