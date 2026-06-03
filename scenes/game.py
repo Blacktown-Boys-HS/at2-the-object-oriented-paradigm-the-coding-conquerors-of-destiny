@@ -21,7 +21,7 @@ from .loading_screen import draw_loading_screen
 class GameScene:
     """Game scene."""
 
-    MOVE_SPEED = 100  # pixels per second
+    MOVE_SPEED = 75  # pixels per second
 
     def __init__(self, title_font, menu_font, credit_font, sounds=None):
         self._clock = pygame.time.Clock()
@@ -266,11 +266,10 @@ class GameScene:
             dx += 1
 
         moving = dx != 0 or dy != 0
-        old_x = self.player.position.x
-        old_y = self.player.position.y
+
 
         if moving:
-            self.player.move(dx, dy, self.MOVE_SPEED * dt)
+            # self.player.move(dx, dy, self.MOVE_SPEED * dt)
             if self.player.state not in ("run", "hit", "death"):
                 self.player.set_state("run")
         else:
@@ -278,13 +277,28 @@ class GameScene:
                 self.player.set_state("idle")
 
         # Collision detection
+        old_x = self.player.position.x
+        old_y = self.player.position.y
+
+        # Move and check X axis only
+        self.player.position.x += dx * self.MOVE_SPEED * dt
         player_rect = pygame.Rect(
             self.player.position.x - 4,
             self.player.position.y + 4,
             8, 4
         )
         if self.world:
-            self.world.check_collision(player_rect, old_x, old_y, self.player)
+            self.world.check_collision_x(player_rect, old_x, self.player)
+
+        # Move and check Y axis only
+        self.player.position.y += dy * self.MOVE_SPEED * dt
+        player_rect = pygame.Rect(
+            self.player.position.x - 4,
+            self.player.position.y + 4,
+            8, 4
+        )
+        if self.world:
+            self.world.check_collision_y(player_rect, old_y, self.player)
 
         # Hazard detection
         if self.world and self.player.damage_cooldown <= 0:

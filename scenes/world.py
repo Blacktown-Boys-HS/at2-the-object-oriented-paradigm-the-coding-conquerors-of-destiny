@@ -66,11 +66,17 @@ class World:
         closed_doors = [d["rect"] for d in self.doors if not d["open"]]
         return self.collision_rects + closed_doors
 
-    def check_collision(self, player_rect, old_x, old_y, player):
-        """Check wall and closed door collision."""
+    def check_collision_x(self, player_rect, old_x, player):
+        """Check horizontal collision only."""
         for rect in self.get_collision_rects():
             if player_rect.colliderect(rect):
                 player.position.x = old_x
+                break
+    
+    def check_collision_y(self, player_rect, old_y, player):
+        """Check horizontal collision only."""
+        for rect in self.get_collision_rects():
+            if player_rect.colliderect(rect):
                 player.position.y = old_y
                 break
 
