@@ -5,14 +5,9 @@ import pygame
 import asyncio
 
 from globals import (
-    SCREEN_WIDTH, SCREEN_HEIGHT, FPS,
-    SCENE_MENU, SCENE_CREDITS, SCENE_GAME, SCENE_SETTINGS,
-    load_fonts, BLUE
+    SCREEN_WIDTH, SCREEN_HEIGHT, FPS, load_fonts, BLUE
 )
-from scenes.menu import MenuScene
-from scenes.credits import CreditsScene
-from scenes.game import GameScene
-from scenes.settings import SettingsScene
+from scene_manager import SceneManager
 
 from sounds import SoundManager
 from cursor import CustomCursor
@@ -48,21 +43,15 @@ async def main():
             game_start_fx.play()
 
     # Initialize scenes
-    scenes = {
-        SCENE_MENU: MenuScene(title_font, menu_font, credit_font, sound_manager.effects),
-        SCENE_CREDITS: CreditsScene(title_font, menu_font, credit_font, sound_manager.effects),
-        SCENE_GAME: GameScene(title_font, menu_font, credit_font, sound_manager.effects),
-        SCENE_SETTINGS: SettingsScene(title_font, menu_font, credit_font, sound_manager),
-    }
-
-    current_scene = SCENE_MENU
+    scene_manager = SceneManager(title_font, menu_font, credit_font, sound_manager)
+    
     running = True
 
     # Scene transition state
     transition = SceneTransition()
     
     if not splash.active:
-        sound_manager.update_music_for_scene(current_scene)
+        sound_manager.update_music_for_scene(scene_manager.current_scene)   
 
     while running:
         clock.tick(FPS)
@@ -81,16 +70,12 @@ async def main():
             if splash.active:
                 if splash.handle_event(event):
                     transition.start_fade_in()
-                    sound_manager.update_music_for_scene(current_scene)
+                    sound_manager.update_music_for_scene(scene_manager.current_scene)
                 continue
                 
             if not transition.active:
-                next_scene = scenes[current_scene].handle_event(event)
-                if next_scene and next_scene != current_scene:
-                    # Track where we came from before entering settings
-                    if next_scene == SCENE_SETTINGS:
-                        scenes[SCENE_SETTINGS].previous_scene = current_scene
-                    transition.start_fade_out(next_scene)
+                scene_manager.handle_event(event, transition)
+                
         # Splash screen
         if splash.active:
             screen.fill((0, 0, 0))
@@ -98,7 +83,7 @@ async def main():
             finished = splash.update()
             if finished:
                transition.start_fade_in()
-               sound_manager.update_music_for_scene(current_scene)
+               sound_manager.update_music_for_scene(scene_manager.current_scene)
 
             splash.draw(screen)
             cursor.draw(screen, mouse_pos)
@@ -108,40 +93,20 @@ async def main():
             continue
 
         # Update current scene
-        scenes[current_scene].update(mouse_pos)
-
-        deferred_next_scene = None
-        if hasattr(scenes[current_scene], "consume_requested_scene"):
-            deferred_next_scene = scenes[current_scene].consume_requested_scene()
-
-        if (not transition.active) and deferred_next_scene and deferred_next_scene != current_scene:
-            # Track where we came from before entering settings
-            if deferred_next_scene == SCENE_SETTINGS:
-                scenes[SCENE_SETTINGS].previous_scene = current_scene
-            transition.start_fade_out(deferred_next_scene)
+        scene_manager.update(mouse_pos, transition)
+            
         # Render current scene
-        scenes[current_scene].render(screen)
+        scene_manager.render(screen)
 
         # Scene transition
         transition_result = transition.update()
 
         if transition_result == "fade_out_done":
-            if transition.pending_scene:
-                current_scene = transition.pending_scene
-                transition.pending_scene = None
-
-                sound_manager.update_music_for_scene(current_scene)
-
-                if hasattr(scenes[current_scene], "on_enter"):
-                    scenes[current_scene].on_enter()
-
-            transition.start_fade_in()
+            scene_manager.finish_fade_out(transition)
 
         elif transition_result == "fade_in_done":
             # tell game it can start loading timer
-            if current_scene == SCENE_GAME and hasattr(scenes[current_scene], "loading_ready"):
-                scenes[current_scene].loading_ready = True
-                print("loading_ready set to True")
+            scene_manager.finish_fade_in()
 
         transition.draw(screen)
 
@@ -151,7 +116,7 @@ async def main():
         screen.blit(fps_text, (10, debug_y))
 
         debug_y += 40
-        scene_text = debug_font.render(f"Scene: {current_scene}", False, BLUE)
+        scene_text = debug_font.render(f"Scene: {scene_manager.current_scene}", False, BLUE)
         screen.blit(scene_text, (10, debug_y))
 
         cursor.draw(screen, mouse_pos)
