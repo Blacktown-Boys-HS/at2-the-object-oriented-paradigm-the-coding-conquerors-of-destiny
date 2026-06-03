@@ -2,7 +2,6 @@
 Main entry point for the RPG game.
 """
 import pygame
-import sys
 import asyncio
 
 from globals import (
@@ -23,7 +22,10 @@ from transition import SceneTransition
 async def main():
     """Main game loop."""
     pygame.init()
-    pygame.mixer.init()
+    try:
+        pygame.mixer.init()
+    except pygame.error:
+        pass
 
     screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
     pygame.display.set_caption("RPG Game")
@@ -102,6 +104,7 @@ async def main():
             cursor.draw(screen, mouse_pos)
 
             pygame.display.update()
+            await asyncio.sleep(0)
             continue
 
         # Update current scene
@@ -153,11 +156,11 @@ async def main():
 
         cursor.draw(screen, mouse_pos)
 
-        await asyncio.sleep(0)
         pygame.display.update()
+        await asyncio.sleep(0)
 
     pygame.quit()
-    sys.exit()
 
 
-asyncio.run(main())
+if __name__ == "__main__":
+    asyncio.run(main())
