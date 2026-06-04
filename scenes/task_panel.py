@@ -54,30 +54,42 @@ class TaskPanel:
         # main panel
         gold = (225, 185, 80)
         panel_surface = pygame.Surface((self.width, self.height), pygame.SRCALPHA)
+        panel_outer_rect = panel_surface.get_rect()
+        panel_inner_rect = panel_outer_rect.inflate(-4, -4)
         pygame.draw.rect(
             panel_surface,
-            (16, 16, 24, 210),
-            panel_surface.get_rect(),
+            gold,
+            panel_outer_rect,
             border_radius=8
         )
+        pygame.draw.rect(
+            panel_surface,
+            (16, 16, 24, 235),
+            panel_inner_rect,
+            border_radius=6
+        )
         screen.blit(panel_surface, panel_rect.topleft)
-
-        # Gold border
-        pygame.draw.rect(screen, gold, panel_rect, width=2, border_radius=8)
 
         # Toggle tab
         tab_x = panel_rect.left - self.tab_width
         self.toggle_rect = pygame.Rect(tab_x, self.y + 16, self.tab_width, 42)
 
         tab_surface = pygame.Surface((self.tab_width, 42), pygame.SRCALPHA)
+        tab_outer_rect = tab_surface.get_rect()
+        tab_inner_rect = tab_outer_rect.inflate(-4, -4)
         pygame.draw.rect(
             tab_surface,
-            (20, 20, 28, 230),
-            tab_surface.get_rect(),
+            gold,
+            tab_outer_rect,
             border_radius=8
         )
+        pygame.draw.rect(
+            tab_surface,
+            (20, 20, 28, 245),
+            tab_inner_rect,
+            border_radius=6
+        )
         screen.blit(tab_surface, self.toggle_rect.topleft)
-        pygame.draw.rect(screen, gold, self.toggle_rect, width=2, border_radius=8)
 
         arrow = ">" if self.visible else "<"
         arrow_surf = self.font.render(arrow, FONT_ANTIALIAS, gold)

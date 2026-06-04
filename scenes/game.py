@@ -1,19 +1,29 @@
 """
 Game scene for the RPG game.
 """
-import pygame
+
 from pathlib import Path
-from globals import SCREEN_WIDTH, SCREEN_HEIGHT, SCENE_MENU, SCENE_SETTINGS, FPS
+
+import pygame
+
 from camera import Camera
+from globals import FPS, SCENE_MENU, SCENE_SETTINGS, SCREEN_HEIGHT, SCREEN_WIDTH
 from player import Player
 
 from .dialogue import DialogueBox
-from .hud import draw_player_health_bar, draw_debug_coords, draw_debug_collision, draw_door_prompt
 from .game_over import GameOverMenu
-from .pause_menu import PauseMenu
-from .world import World
+from .hud import (
+    draw_debug_collision,
+    draw_debug_coords,
+    draw_door_prompt,
+    draw_key_prompt,
+    draw_player_health_bar,
+)
+from .inventory_bar import InventoryBar
 from .loading_screen import draw_loading_screen
-from . task_panel import TaskPanel
+from .pause_menu import PauseMenu
+from .task_panel import TaskPanel
+from .world import World
 
 
 class GameScene:
@@ -34,6 +44,7 @@ class GameScene:
 
         # task panel
         self.task_panel = TaskPanel(self.credit_font)
+        self.inventory_bar = InventoryBar(self.credit_font)
 
         # Loading screen state
         self.loading = True
@@ -52,8 +63,14 @@ class GameScene:
         self.first_dialogue_shown = False
         font_path = None
         for candidate in [
-            Path(__file__).resolve().parent.parent / "assets" / "fonts" / "Kenney Pixel.ttf",
-            Path(__file__).resolve().parent.parent / "assets" / "font" / "Kenney Pixel.ttf",
+            Path(__file__).resolve().parent.parent
+            / "assets"
+            / "fonts"
+            / "Kenney Pixel.ttf",
+            Path(__file__).resolve().parent.parent
+            / "assets"
+            / "font"
+            / "Kenney Pixel.ttf",
         ]:
             if candidate.exists():
                 font_path = str(candidate)
@@ -77,9 +94,16 @@ class GameScene:
         # Map
         self.world = None
         self.near_door = None
+        self.near_key = None
 
         try:
-            tmx_path = Path(__file__).resolve().parent.parent / "assets" / "maps" / "Tiled_files" / "Dungeon1.tmx"
+            tmx_path = (
+                Path(__file__).resolve().parent.parent
+                / "assets"
+                / "maps"
+                / "Tiled_files"
+                / "Dungeon1.tmx"
+            )
             self.world = World(tmx_path, self.player, zoom=3.0, default_layer=8)
         except Exception as e:
             print(f"Warning: Could not load map : {e}")
@@ -111,6 +135,7 @@ class GameScene:
             return None
 
         self.task_panel.handle_event(event)
+        self.inventory_bar.handle_event(event)
 
         if self.dialogue.active:
             if event.type in (pygame.KEYDOWN, pygame.MOUSEBUTTONDOWN):
@@ -135,6 +160,12 @@ class GameScene:
                     open_sound = self.sounds.get("door_open")
                     if open_sound:
                         open_sound.play()
+                elif self.near_key:
+                    self.world.collect_key(self.near_key)
+                    self.inventory_bar.set_slot(0, self.near_key["id"])
+                    pickup_sound = self.sounds.get("pickup")
+                    if pickup_sound:
+                        pickup_sound.play()
                 return None
 
             if event.key in (pygame.K_UP, pygame.K_w):
@@ -202,11 +233,14 @@ class GameScene:
         self.paused = False
         self.game_over = False
         self.near_door = None
+        self.near_key = None
         self.dialogue.active = False
         self.game_over_menu.reset()
+        self.inventory_bar = InventoryBar(self.credit_font)
 
         if self.world:
             self.world.reset_doors()
+            self.world.reset_keys()
 
     def update(self, mouse_pos):
         """Update game state."""
@@ -215,6 +249,7 @@ class GameScene:
 
         # Update task panel
         self.task_panel.update(dt)
+        self.inventory_bar.update(dt)
 
         # Loading screen
         if self.loading:
@@ -276,7 +311,6 @@ class GameScene:
         # Check player facing
         self.player.update_facing(dx)
 
-
         if moving:
             # self.player.move(dx, dy, self.MOVE_SPEED * dt)
             if self.player.state not in ("run", "hit", "death"):
@@ -292,9 +326,7 @@ class GameScene:
         # Move and check X axis only
         self.player.position.x += dx * self.MOVE_SPEED * dt
         player_rect = pygame.Rect(
-            self.player.position.x - 4,
-            self.player.position.y + 8,
-            8, 4
+            self.player.position.x - 4, self.player.position.y + 8, 8, 4
         )
         if self.world:
             self.world.check_collision_x(player_rect, old_x, self.player)
@@ -302,9 +334,7 @@ class GameScene:
         # Move and check Y axis only
         self.player.position.y += dy * self.MOVE_SPEED * dt
         player_rect = pygame.Rect(
-            self.player.position.x - 4,
-            self.player.position.y + 8,
-            8, 4
+            self.player.position.x - 4, self.player.position.y + 8, 8, 4
         )
         if self.world:
             self.world.check_collision_y(player_rect, old_y, self.player)
@@ -321,16 +351,28 @@ class GameScene:
                         death_sound.play()
                     self.game_over = True
                     self.paused = False
-                    self.keys_pressed = {"up": False, "down": False, "left": False, "right": False}
+                    self.keys_pressed = {
+                        "up": False,
+                        "down": False,
+                        "left": False,
+                        "right": False,
+                    }
                     self.player.set_state("death")
 
         # Door proximity check
         self.near_door = self.world.get_nearby_door(self.player) if self.world else None
 
+        # Key proximity check
+        self.near_key = self.world.get_nearby_key(self.player) if self.world else None
+
         # Clamp to map bounds
         if self.world and self.world.map_width > 0 and self.world.map_height > 0:
-            self.player.position.x = max(0, min(self.world.map_width, self.player.position.x))
-            self.player.position.y = max(0, min(self.world.map_height, self.player.position.y))
+            self.player.position.x = max(
+                0, min(self.world.map_width, self.player.position.x)
+            )
+            self.player.position.y = max(
+                0, min(self.world.map_height, self.player.position.y)
+            )
 
         self.player.update(dt)
 
@@ -345,14 +387,18 @@ class GameScene:
             self.world.map_height if self.world else 0,
             SCREEN_WIDTH,
             SCREEN_HEIGHT,
-            self.world.map_layer.zoom if self.world and self.world.map_layer else 1.0
+            self.world.map_layer.zoom if self.world and self.world.map_layer else 1.0,
         )
 
         # Zoom transition
-        if self.world and self.world.map_layer and self.world.map_layer.zoom > self.target_zoom:
+        if (
+            self.world
+            and self.world.map_layer
+            and self.world.map_layer.zoom > self.target_zoom
+        ):
             self.world.map_layer.zoom = max(
                 self.target_zoom,
-                self.world.map_layer.zoom - self.zoom_transition_speed * dt
+                self.world.map_layer.zoom - self.zoom_transition_speed * dt,
             )
 
     def render(self, screen):
@@ -360,9 +406,15 @@ class GameScene:
 
         # Loading screen
         if self.loading:
-            draw_loading_screen(screen, self.loading_time, self.menu_font, self.credit_font, self.loading_hints)
+            draw_loading_screen(
+                screen,
+                self.loading_time,
+                self.menu_font,
+                self.credit_font,
+                self.loading_hints,
+            )
             return
-        
+
         # Map
         if self.world:
             self.world.draw(screen, self.camera.x, self.camera.y)
@@ -375,18 +427,25 @@ class GameScene:
         if self.near_door:
             draw_door_prompt(screen, self.player, self.camera, zoom, self.credit_font)
 
+        # Key prompt
+        if self.near_key:
+            draw_key_prompt(screen, self.player, self.camera, zoom, self.credit_font)
+
         # Debug
         if self.world:
             draw_debug_collision(
                 screen,
                 self.world.collision_rects + self.world.hazard_rects,
                 self.camera,
-                zoom
+                zoom,
             )
         draw_debug_coords(screen, self.player, self.credit_font)
 
         # Task panel
         self.task_panel.render(screen, self.time_seconds)
+
+        # Inventory bar
+        self.inventory_bar.render(screen)
 
         # Pause overlay
         if self.paused:
