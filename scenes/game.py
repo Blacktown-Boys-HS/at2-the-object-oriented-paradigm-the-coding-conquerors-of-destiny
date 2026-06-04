@@ -376,17 +376,6 @@ class GameScene:
             )
         draw_debug_coords(screen, self.player, self.credit_font)
 
-        # Debug player hitbox
-        player_screen_x = (self.player.position.x - self.camera.x) * zoom + SCREEN_WIDTH / 2
-        player_screen_y = (self.player.position.y - self.camera.y) * zoom + SCREEN_HEIGHT / 2
-        hitbox_rect = pygame.Rect(
-            player_screen_x - 4 * zoom,
-            player_screen_y + 8 * zoom,
-            8 * zoom,
-            4 * zoom
-        )
-        pygame.draw.rect(screen, (0, 255, 255), hitbox_rect, 1)
-
         # Pause overlay
         if self.paused:
             self.pause_menu.render(screen, self.time_seconds)
