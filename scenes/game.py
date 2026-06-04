@@ -32,6 +32,9 @@ class GameScene:
         self.camera = Camera(self.player.position.x, self.player.position.y)
         self.keys_pressed = {"up": False, "down": False, "left": False, "right": False}
 
+        # task panel
+        self.task_panel = TaskPanel(self.credit_font)
+
         # Loading screen state
         self.loading = True
         self.loading_ready = False
@@ -106,6 +109,8 @@ class GameScene:
         if self.game_over:
             self.game_over_menu.handle_event(event)
             return None
+
+        self.task_panel.handle_event(event)
 
         if self.dialogue.active:
             if event.type in (pygame.KEYDOWN, pygame.MOUSEBUTTONDOWN):
@@ -207,6 +212,9 @@ class GameScene:
         """Update game state."""
         self.time_seconds = pygame.time.get_ticks() / 1000.0
         dt = self._clock.tick(FPS) / 1000.0
+
+        # Update task panel
+        self.task_panel.update(dt)
 
         # Loading screen
         if self.loading:
@@ -376,6 +384,9 @@ class GameScene:
                 zoom
             )
         draw_debug_coords(screen, self.player, self.credit_font)
+
+        # Task panel
+        self.task_panel.render(screen, self.time_seconds)
 
         # Pause overlay
         if self.paused:
