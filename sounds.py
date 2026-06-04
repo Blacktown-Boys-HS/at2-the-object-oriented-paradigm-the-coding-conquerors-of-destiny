@@ -1,7 +1,9 @@
 """
 Centralized sound and music setup.
 """
+
 from pathlib import Path
+
 import pygame
 
 from globals import SCENE_CREDITS, SCENE_MENU, SCENE_SETTINGS
@@ -15,11 +17,13 @@ class SoundManager:
         self.sound_dir = base_dir / "assets" / "sound"
 
         self.effects = {
-            "button_hover": pygame.mixer.Sound(str(self.sound_dir / "Button Hover_1.wav")),
+            "button_hover": pygame.mixer.Sound(
+                str(self.sound_dir / "Button Hover_1.wav")
+            ),
             "cancel_back": pygame.mixer.Sound(str(self.sound_dir / "Cancel  Back.wav")),
             "confirm": pygame.mixer.Sound(str(self.sound_dir / "Confirm_1.wav")),
             "hit": pygame.mixer.Sound(str(self.sound_dir / "hurt.mp3")),
-            "death" : pygame.mixer.Sound(str(self.sound_dir / "death.mp3"))
+            "death": pygame.mixer.Sound(str(self.sound_dir / "death.mp3")),
         }
         game_start_path = self.sound_dir / "Game Start Sound FX.mp3"
         try:
@@ -56,6 +60,12 @@ class SoundManager:
         pygame.mixer.music.set_volume(self._music_volume)
         for sound in self.effects.values():
             sound.set_volume(self._sfx_volume)
+
+    def play_effect(self, effect_key):
+        """Safely play a sound effect if it exists."""
+        sound = self.effects.get(effect_key)
+        if sound:
+            sound.play()
 
     def update_music_for_scene(self, scene_name):
         """Play/stop looped background music based on active scene."""

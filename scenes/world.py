@@ -1,6 +1,17 @@
 """
 World module for the RPG game.
-Handles map loading, collision rects, hazard rects, doors, keys, locked doors, above zones and pyscroll group.
+
+This module manages the complete game world, including:
+- Map loading from Tiled TMX files
+- Collision detection and resolution
+- Hazard zones and damage
+- Door management (standard and locked doors)
+- Key collection mechanics
+- Z-layer sorting for proper sprite rendering above/below map elements
+- Camera tracking and rendering
+
+The World class is the central hub for all spatial and state management in the game.
+Methods are organized into logical sections for easy maintenance and extension.
 """
 
 import pygame
@@ -11,7 +22,11 @@ from globals import SCREEN_HEIGHT, SCREEN_WIDTH
 
 
 class World:
-    """Loads and manages the game map, collision, hazard, door, key, locked door and above zone rects."""
+    """Loads and manages the game map, collision rects, hazard rects, doors, keys, locked doors and above zones."""
+
+    # ============================================================================
+    # INITIALIZATION
+    # ============================================================================
 
     def __init__(self, tmx_path, player, zoom=3.0, default_layer=8):
         self.map_layer = None
@@ -36,7 +51,25 @@ class World:
         self.map_width = tmx_data.width * tmx_data.tilewidth
         self.map_height = tmx_data.height * tmx_data.tileheight
 
-        # Load all objects
+        # Load all objects from tiled map
+        self._load_objects_from_tiled(tmx_data)
+
+        # pyscroll group for z-ordering
+        self.group = pyscroll.PyscrollGroup(
+            map_layer=self.map_layer, default_layer=default_layer
+        )
+        self.group.add(player)
+
+    # ============================================================================
+    # INITIALIZATION (continued)
+    # ============================================================================
+
+    def _load_objects_from_tiled(self, tmx_data):
+        """Extract and parse all objects from tiled map data.
+
+        Categorizes objects into collision rects, hazards, doors, keys, locked doors,
+        and above zones based on object names and properties.
+        """
         for obj in tmx_data.objects:
             if obj.x is not None:
                 try:
@@ -83,11 +116,9 @@ class World:
                 except Exception:
                     pass
 
-        # pyscroll group for z-ordering
-        self.group = pyscroll.PyscrollGroup(
-            map_layer=self.map_layer, default_layer=default_layer
-        )
-        self.group.add(player)
+    # ============================================================================
+    # COLLISION DETECTION
+    # ============================================================================
 
     def get_collision_rects(self):
         """Return collision rects plus any closed doors and locked doors."""
@@ -109,6 +140,10 @@ class World:
                 player.position.y = old_y
                 break
 
+    # ============================================================================
+    # HAZARD DETECTION
+    # ============================================================================
+
     def check_hazard(self, player_rect, player):
         """Check hazard collision and apply damage. Returns True if hit."""
         for rect in self.hazard_rects:
@@ -116,6 +151,10 @@ class World:
                 player.take_damage(10)
                 return True
         return False
+
+    # ============================================================================
+    # PROXIMITY DETECTION (Doors, Keys, Locked Doors)
+    # ============================================================================
 
     def get_nearby_door(self, player):
         """Return the nearest closed door if player is close enough."""
@@ -156,14 +195,9 @@ class World:
                 return key
         return None
 
-    def collect_key(self, key):
-        """Mark a key as collected."""
-        key["collected"] = True
-
-    def reset_keys(self):
-        """Reset all keys to uncollected."""
-        for key in self.keys:
-            key["collected"] = False
+    # ============================================================================
+    # DOOR MANAGEMENT
+    # ============================================================================
 
     def open_door(self, door):
         """Open a door."""
@@ -182,6 +216,23 @@ class World:
         """Reset all locked doors to locked."""
         for door in self.locked_doors:
             door["locked"] = True
+
+    # ============================================================================
+    # KEY MANAGEMENT
+    # ============================================================================
+
+    def collect_key(self, key):
+        """Mark a key as collected."""
+        key["collected"] = True
+
+    def reset_keys(self):
+        """Reset all keys to uncollected."""
+        for key in self.keys:
+            key["collected"] = False
+
+    # ============================================================================
+    # RENDERING & CAMERA
+    # ============================================================================
 
     def update_player_layer(self, player):
         """Swap player z-layer based on above zone position."""

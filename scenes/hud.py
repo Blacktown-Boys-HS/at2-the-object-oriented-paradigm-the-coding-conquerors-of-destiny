@@ -1,11 +1,24 @@
 """
 HUD (Heads Up Display) for the RPG game.
-Handles health bar above player and debug overlays.
+
+This module handles all UI rendering for the game, organized into three categories:
+
+1. PLAYER HUD ELEMENTS: Health bar and coordinate display above the player.
+2. INTERACTION PROMPTS: Visual feedback for player interactions (doors, keys, locked doors).
+3. DEBUG VISUALIZATION: Collision rects and other debug information.
+
+All rendering functions take a screen object and camera position to properly display
+elements in world space on the player's viewport.
 """
 
 import pygame
 
 from globals import FONT_ANTIALIAS, SCREEN_HEIGHT, SCREEN_WIDTH
+
+# ============================================================================
+# PLAYER HUD ELEMENTS
+# ============================================================================
+# Functions for rendering player-related HUD (health, coordinates)
 
 
 def draw_player_health_bar(screen, player, camera, zoom):
@@ -51,18 +64,6 @@ def draw_player_health_bar(screen, player, camera, zoom):
     )
 
 
-def draw_debug_collision(screen, collision_rects, camera, zoom):
-    """ "Draw collision rects for debugging"""
-    for rect in collision_rects:
-        screen_x = (rect.x - camera.x) * zoom + SCREEN_WIDTH / 2
-        screen_y = (rect.y - camera.y) * zoom + SCREEN_HEIGHT / 2
-        debug_rect = pygame.Rect(
-            screen_x, screen_y, rect.width * zoom, rect.height * zoom
-        )
-
-        pygame.draw.rect(screen, (255, 0, 0), debug_rect, 1)
-
-
 def draw_debug_coords(screen, player, font):
     """Draw player coordinates for debugging."""
     coord_text = font.render(
@@ -71,6 +72,12 @@ def draw_debug_coords(screen, player, font):
         (255, 255, 0),
     )
     screen.blit(coord_text, (10, 90))
+
+
+# ============================================================================
+# INTERACTION PROMPTS
+# ============================================================================
+# Functions for rendering interaction prompts (doors, keys, locked doors)
 
 
 def draw_door_prompt(screen, player, camera, zoom, font):
@@ -164,3 +171,21 @@ def draw_locked_door_prompt(screen, player, camera, zoom, font):
 
     # Text
     screen.blit(label, (box_x + pad_x, box_y + pad_y))
+
+
+# ============================================================================
+# DEBUG VISUALIZATION
+# ============================================================================
+# Functions for rendering debug information
+
+
+def draw_debug_collision(screen, collision_rects, camera, zoom):
+    """ "Draw collision rects for debugging"""
+    for rect in collision_rects:
+        screen_x = (rect.x - camera.x) * zoom + SCREEN_WIDTH / 2
+        screen_y = (rect.y - camera.y) * zoom + SCREEN_HEIGHT / 2
+        debug_rect = pygame.Rect(
+            screen_x, screen_y, rect.width * zoom, rect.height * zoom
+        )
+
+        pygame.draw.rect(screen, (255, 0, 0), debug_rect, 1)
