@@ -1,15 +1,12 @@
 """
 Game scene for the RPG game.
 """
-import math
 import pygame
 from pathlib import Path
-from globals import SCREEN_WIDTH, SCREEN_HEIGHT, SCENE_MENU, SCENE_SETTINGS, FPS, FONT_ANTIALIAS, BLUE, GRAY, WHITE
-from vignette import create_vignette
+from globals import SCREEN_WIDTH, SCREEN_HEIGHT, SCENE_MENU, SCENE_SETTINGS, FPS
 from camera import Camera
 from player import Player
 
-from .aesthetic import safe_scale_surface
 from .dialogue import DialogueBox
 from .hud import draw_player_health_bar, draw_debug_coords, draw_debug_collision, draw_door_prompt
 from .game_over import GameOverMenu
@@ -287,7 +284,7 @@ class GameScene:
         self.player.position.x += dx * self.MOVE_SPEED * dt
         player_rect = pygame.Rect(
             self.player.position.x - 4,
-            self.player.position.y + 4,
+            self.player.position.y + 8,
             8, 4
         )
         if self.world:
@@ -297,7 +294,7 @@ class GameScene:
         self.player.position.y += dy * self.MOVE_SPEED * dt
         player_rect = pygame.Rect(
             self.player.position.x - 4,
-            self.player.position.y + 4,
+            self.player.position.y + 8,
             8, 4
         )
         if self.world:
@@ -378,6 +375,17 @@ class GameScene:
                 zoom
             )
         draw_debug_coords(screen, self.player, self.credit_font)
+
+        # Debug player hitbox
+        player_screen_x = (self.player.position.x - self.camera.x) * zoom + SCREEN_WIDTH / 2
+        player_screen_y = (self.player.position.y - self.camera.y) * zoom + SCREEN_HEIGHT / 2
+        hitbox_rect = pygame.Rect(
+            player_screen_x - 4 * zoom,
+            player_screen_y + 8 * zoom,
+            8 * zoom,
+            4 * zoom
+        )
+        pygame.draw.rect(screen, (0, 255, 255), hitbox_rect, 1)
 
         # Pause overlay
         if self.paused:
