@@ -3,6 +3,7 @@ Loading screen for the RPG game.
 """
 import math
 import pygame
+
 from globals import SCREEN_WIDTH, SCREEN_HEIGHT, FONT_ANTIALIAS, BLUE, GRAY
 from .aesthetic import safe_scale_surface
 

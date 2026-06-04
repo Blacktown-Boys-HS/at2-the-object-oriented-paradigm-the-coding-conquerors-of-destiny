@@ -13,6 +13,7 @@ from .game_over import GameOverMenu
 from .pause_menu import PauseMenu
 from .world import World
 from .loading_screen import draw_loading_screen
+from . task_panel import TaskPanel
 
 
 class GameScene:
