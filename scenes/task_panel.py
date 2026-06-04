@@ -1,5 +1,4 @@
 import math
-from posix import scandir
 import pygame
 
 from globals import SCREEN_WIDTH, FONT_ANTIALIAS, BLUE, WHITE, GRAY
@@ -53,20 +52,30 @@ class TaskPanel:
         panel_rect = pygame.Rect(int(self.x), self.y, self.width, self.height)
 
         # main panel
+        gold = (225, 185, 80)
         panel_surface = pygame.Surface((self.width, self.height), pygame.SRCALPHA)
-        panel_surface.fill((16, 16, 24, 210))
+        pygame.draw.rect(
+            panel_surface,
+            (16, 16, 24, 210),
+            panel_surface.get_rect(),
+            border_radius=8
+        )
         screen.blit(panel_surface, panel_rect.topleft)
 
         # Gold border
-        gold = (225, 185, 80)
         pygame.draw.rect(screen, gold, panel_rect, width=2, border_radius=8)
 
         # Toggle tab
         tab_x = panel_rect.left - self.tab_width
-        self.toggle_rect = pygame.Rect(tab_x, self.y + 16, self.width, 42)
+        self.toggle_rect = pygame.Rect(tab_x, self.y + 16, self.tab_width, 42)
 
         tab_surface = pygame.Surface((self.tab_width, 42), pygame.SRCALPHA)
-        tab_surface.fill((20, 20, 28, 230))
+        pygame.draw.rect(
+            tab_surface,
+            (20, 20, 28, 230),
+            tab_surface.get_rect(),
+            border_radius=8
+        )
         screen.blit(tab_surface, self.toggle_rect.topleft)
         pygame.draw.rect(screen, gold, self.toggle_rect, width=2, border_radius=8)
 
