@@ -17,6 +17,7 @@ from .hud import (
     draw_debug_coords,
     draw_door_prompt,
     draw_key_prompt,
+    draw_locked_door_prompt,
     draw_player_health_bar,
 )
 from .inventory_bar import InventoryBar
@@ -95,6 +96,11 @@ class GameScene:
         self.world = None
         self.near_door = None
         self.near_key = None
+        self.near_locked_door = None
+
+        # Locked door state
+        self.door_locked_message = False
+        self.door_locked_time = 0.0
 
         try:
             tmx_path = (
@@ -124,6 +130,13 @@ class GameScene:
         # Camera zoom transition
         self.target_zoom = 3.0
         self.zoom_transition_speed = 1.2
+
+    def player_has_key(self, key_id):
+        """Check if the player has a specific key in their inventory."""
+        for item in self.inventory_bar.items:
+            if item == key_id:
+                return True
+        return False
 
     def handle_event(self, event):
         """Handle input events."""
@@ -156,16 +169,31 @@ class GameScene:
 
             if event.key == pygame.K_e:
                 if self.near_door:
-                    self.world.open_door(self.near_door)
-                    open_sound = self.sounds.get("door_open")
-                    if open_sound:
-                        open_sound.play()
+                    required_key = self.near_door.get("required_key_id")
+                    if required_key and not self.player_has_key(required_key):
+                        self.door_locked_message = True
+                        self.door_locked_time = 0.0
+                    else:
+                        self.world.open_door(self.near_door)
+                        open_sound = self.sounds.get("door_open")
+                        if open_sound:
+                            open_sound.play()
                 elif self.near_key:
                     self.world.collect_key(self.near_key)
                     self.inventory_bar.set_slot(0, self.near_key["id"])
                     pickup_sound = self.sounds.get("pickup")
                     if pickup_sound:
                         pickup_sound.play()
+                elif self.near_locked_door:
+                    required_key = self.near_locked_door.get("required_key_id")
+                    if required_key and not self.player_has_key(required_key):
+                        self.door_locked_message = True
+                        self.door_locked_time = 0.0
+                    else:
+                        self.world.unlock_door(self.near_locked_door)
+                        open_sound = self.sounds.get("door_open")
+                        if open_sound:
+                            open_sound.play()
                 return None
 
             if event.key in (pygame.K_UP, pygame.K_w):
@@ -234,13 +262,16 @@ class GameScene:
         self.game_over = False
         self.near_door = None
         self.near_key = None
+        self.near_locked_door = None
         self.dialogue.active = False
         self.game_over_menu.reset()
         self.inventory_bar = InventoryBar(self.credit_font)
+        self.door_locked_message = False
 
         if self.world:
             self.world.reset_doors()
             self.world.reset_keys()
+            self.world.reset_locked_doors()
 
     def update(self, mouse_pos):
         """Update game state."""
@@ -250,6 +281,12 @@ class GameScene:
         # Update task panel
         self.task_panel.update(dt)
         self.inventory_bar.update(dt)
+
+        # Update locked door message timer
+        if self.door_locked_message:
+            self.door_locked_time += dt
+            if self.door_locked_time >= 2.0:
+                self.door_locked_message = False
 
         # Loading screen
         if self.loading:
@@ -365,6 +402,11 @@ class GameScene:
         # Key proximity check
         self.near_key = self.world.get_nearby_key(self.player) if self.world else None
 
+        # Locked door proximity check
+        self.near_locked_door = (
+            self.world.get_nearby_locked_door(self.player) if self.world else None
+        )
+
         # Clamp to map bounds
         if self.world and self.world.map_width > 0 and self.world.map_height > 0:
             self.player.position.x = max(
@@ -430,6 +472,16 @@ class GameScene:
         # Key prompt
         if self.near_key:
             draw_key_prompt(screen, self.player, self.camera, zoom, self.credit_font)
+
+        # Locked door prompt
+        if self.near_locked_door:
+            draw_door_prompt(screen, self.player, self.camera, zoom, self.credit_font)
+
+        # Locked door message
+        if self.door_locked_message:
+            draw_locked_door_prompt(
+                screen, self.player, self.camera, zoom, self.credit_font
+            )
 
         # Debug
         if self.world:

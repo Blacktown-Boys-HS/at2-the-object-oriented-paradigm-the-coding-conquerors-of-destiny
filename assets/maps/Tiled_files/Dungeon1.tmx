@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.12.1" orientation="orthogonal" renderorder="right-down" width="37" height="27" tilewidth="16" tileheight="16" infinite="0" nextlayerid="40" nextobjectid="144">
+<map version="1.10" tiledversion="1.12.1" orientation="orthogonal" renderorder="right-down" width="37" height="27" tilewidth="16" tileheight="16" infinite="0" nextlayerid="41" nextobjectid="146">
  <tileset firstgid="1" name="cracked_tiles" tilewidth="16" tileheight="16" tilecount="256" columns="8">
   <image source="decorative_cracks_walls.png" width="128" height="512"/>
  </tileset>
@@ -4937,5 +4937,8 @@
  </objectgroup>
  <objectgroup id="39" name="item">
   <object id="141" name="key" x="17.4775" y="239.207" width="14.6081" height="9.13004"/>
+ </objectgroup>
+ <objectgroup id="40" name="open_door">
+  <object id="144" name="locked_door" x="262.379" y="81.6743" width="19.9081" height="13.7825"/>
  </objectgroup>
 </map>

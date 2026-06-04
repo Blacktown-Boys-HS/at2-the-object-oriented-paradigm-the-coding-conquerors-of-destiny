@@ -1,6 +1,6 @@
 """
 World module for the RPG game.
-Handles map loading, collision rects, hazard rects, doors, keys, above zones and pyscroll group.
+Handles map loading, collision rects, hazard rects, doors, keys, locked doors, above zones and pyscroll group.
 """
 
 import pygame
@@ -11,7 +11,7 @@ from globals import SCREEN_HEIGHT, SCREEN_WIDTH
 
 
 class World:
-    """Loads and manages the game map, collision, hazard, door, key and above zone rects."""
+    """Loads and manages the game map, collision, hazard, door, key, locked door and above zone rects."""
 
     def __init__(self, tmx_path, player, zoom=3.0, default_layer=8):
         self.map_layer = None
@@ -21,6 +21,7 @@ class World:
         self.hazard_rects = []
         self.doors = []
         self.keys = []
+        self.locked_doors = []
         self.above_zones = []
         self.group = None
         self.zoom = zoom
@@ -51,6 +52,20 @@ class World:
                                 "rect": rect,
                                 "open": False,
                                 "id": obj.properties.get("door_id", 0),
+                                "required_key_id": obj.properties.get(
+                                    "required_key_id", None
+                                ),
+                            }
+                        )
+                    elif name == "locked_door":
+                        self.locked_doors.append(
+                            {
+                                "rect": rect,
+                                "locked": True,
+                                "id": obj.properties.get("door_id", 0),
+                                "required_key_id": obj.properties.get(
+                                    "required_key_id", None
+                                ),
                             }
                         )
                     elif name == "key":
@@ -75,9 +90,10 @@ class World:
         self.group.add(player)
 
     def get_collision_rects(self):
-        """Return collision rects plus any closed doors."""
+        """Return collision rects plus any closed doors and locked doors."""
         closed_doors = [d["rect"] for d in self.doors if not d["open"]]
-        return self.collision_rects + closed_doors
+        locked_door_rects = [d["rect"] for d in self.locked_doors if d["locked"]]
+        return self.collision_rects + closed_doors + locked_door_rects
 
     def check_collision_x(self, player_rect, old_x, player):
         """Check horizontal collision only."""
@@ -114,6 +130,19 @@ class World:
                 return door
         return None
 
+    def get_nearby_locked_door(self, player):
+        """Return the nearest locked door if player is close enough."""
+        for door in self.locked_doors:
+            if not door["locked"]:
+                continue
+            if (
+                door["rect"]
+                .inflate(32, 32)
+                .collidepoint(player.position.x, player.position.y)
+            ):
+                return door
+        return None
+
     def get_nearby_key(self, player):
         """Return the nearest uncollected key if player is close enough."""
         for key in self.keys:
@@ -140,10 +169,19 @@ class World:
         """Open a door."""
         door["open"] = True
 
+    def unlock_door(self, door):
+        """Unlock a locked door."""
+        door["locked"] = False
+
     def reset_doors(self):
         """Reset all doors to closed."""
         for door in self.doors:
             door["open"] = False
+
+    def reset_locked_doors(self):
+        """Reset all locked doors to locked."""
+        for door in self.locked_doors:
+            door["locked"] = True
 
     def update_player_layer(self, player):
         """Swap player z-layer based on above zone position."""

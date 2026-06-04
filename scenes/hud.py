@@ -135,3 +135,32 @@ def draw_key_prompt(screen, player, camera, zoom, font):
     # Text
     screen.blit(arrow, (box_x + pad_x, box_y + pad_y))
     screen.blit(label, (box_x + pad_x + arrow.get_width(), box_y + pad_y))
+
+
+def draw_locked_door_prompt(screen, player, camera, zoom, font):
+    """Draw a styled locked door message above the player."""
+    screen_x = (player.position.x - camera.x) * zoom + SCREEN_WIDTH / 2
+    screen_y = (player.position.y - camera.y) * zoom + SCREEN_HEIGHT / 2
+
+    # Render text
+    label = font.render("Door is Locked!", FONT_ANTIALIAS, (220, 80, 80))
+
+    pad_x, pad_y = 20, 12
+    box_w = label.get_width() + pad_x * 2
+    box_h = label.get_height() + pad_y * 2
+
+    box_x = int(screen_x - box_w / 2)
+    box_y = int(screen_y - 80)
+
+    # Box background
+    box_surf = pygame.Surface((box_w, box_h), pygame.SRCALPHA)
+    box_surf.fill((30, 30, 30, 200))
+    screen.blit(box_surf, (box_x, box_y))
+
+    # Border
+    pygame.draw.rect(
+        screen, (220, 80, 80), (box_x, box_y, box_w, box_h), 2, border_radius=8
+    )
+
+    # Text
+    screen.blit(label, (box_x + pad_x, box_y + pad_y))
