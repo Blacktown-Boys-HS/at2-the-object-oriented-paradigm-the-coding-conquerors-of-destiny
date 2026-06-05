@@ -73,9 +73,10 @@ def draw_player_health_bar(screen, player, font, time_seconds=0.0):
 
     if player.is_regenerating:
         pulse = 0.5 + 0.5 * math.sin(time_seconds * 5.0)
+        boost = int(40 * pulse)
         fill_color = tuple(
-            int(fill_color[i] * (0.75 + 0.25 * pulse) + (0, 40 * pulse, 0))
-            for i in range(3)
+            min(255, int(c * (0.85 + 0.15 * pulse) + (boost if i == 1 else 0)))
+            for i, c in enumerate(fill_color)
         )
         fill_hi = (120, 220, 140)
 
@@ -126,163 +127,45 @@ def _player_screen_pos(player, camera, zoom):
     return screen_x, screen_y
 
 
-def _draw_key_icon(screen, cx, cy, color):
-    """Small gold key glyph beside pickup text."""
-    pygame.draw.circle(screen, color, (cx, cy), 5, 2)
-    pygame.draw.line(screen, color, (cx + 5, cy), (cx + 16, cy), 2)
-    pygame.draw.line(screen, color, (cx + 16, cy), (cx + 16, cy - 5), 2)
-    pygame.draw.line(screen, color, (cx + 13, cy - 5), (cx + 19, cy - 5), 2)
-
-
-def _draw_interaction_prompt(
-    screen,
-    center_x,
-    center_y,
-    font,
-    main_text,
-    border_color,
-    accent_color,
-    icon_draw=None,
-):
-    """Gothic floating prompt with [E] badge, bob animation, and pointer."""
-    t = pygame.time.get_ticks() / 1000.0
-    bob = int(math.sin(t * 4.2) * 3)
-    pulse = 0.5 + 0.5 * math.sin(t * 5.5)
-    anchor_y = center_y - 84 + bob
-
-    badge_char = font.render("E", FONT_ANTIALIAS, GOTHIC_GOLD)
-    label = font.render(main_text, FONT_ANTIALIAS, WHITE)
-
-    icon_w = 22 if icon_draw else 0
-    gap = 10
-    badge_pad_x, badge_pad_y = 10, 6
-    badge_w = badge_char.get_width() + badge_pad_x * 2
-    badge_h = badge_char.get_height() + badge_pad_y * 2
-
-    content_w = icon_w + gap + label.get_width()
-    row_w = badge_w + gap + content_w
-    pad_x, pad_y = 14, 11
-    box_w = row_w + pad_x * 2
-    box_h = max(badge_h, label.get_height()) + pad_y * 2
-
+def _draw_simple_prompt(screen, center_x, center_y, font, text, border_color):
+    """Minimal prompt above the player: dark box, thin border, [E] label."""
+    key = font.render("[E]", FONT_ANTIALIAS, GOTHIC_GOLD)
+    label = font.render(text, FONT_ANTIALIAS, WHITE)
+    pad_x, pad_y = 10, 7
+    gap = 6
+    box_w = key.get_width() + gap + label.get_width() + pad_x * 2
+    box_h = max(key.get_height(), label.get_height()) + pad_y * 2
     box_x = int(center_x - box_w / 2)
-    box_y = int(anchor_y - box_h / 2)
+    box_y = int(center_y - 72)
 
-    glow_alpha = int(35 + 25 * pulse)
-    glow = pygame.Surface((box_w + 12, box_h + 12), pygame.SRCALPHA)
+    box_surf = pygame.Surface((box_w, box_h), pygame.SRCALPHA)
+    box_surf.fill((*GOTHIC_PANEL_INNER, 215))
+    screen.blit(box_surf, (box_x, box_y))
     pygame.draw.rect(
-        glow,
-        (*border_color[:3], glow_alpha),
-        glow.get_rect(),
-        border_radius=14,
-    )
-    screen.blit(glow, (box_x - 6, box_y - 6))
-
-    panel = pygame.Surface((box_w, box_h), pygame.SRCALPHA)
-    pygame.draw.rect(panel, border_color, panel.get_rect(), border_radius=11)
-    inner = panel.get_rect().inflate(-5, -5)
-    pygame.draw.rect(panel, (*GOTHIC_PANEL_INNER, 240), inner, border_radius=9)
-    screen.blit(panel, (box_x, box_y))
-
-    row_y = box_y + (box_h - max(badge_h, label.get_height())) // 2
-    cursor_x = box_x + pad_x
-
-    badge_x, badge_y = cursor_x, row_y + (label.get_height() - badge_h) // 2
-    badge_surf = pygame.Surface((badge_w, badge_h), pygame.SRCALPHA)
-    pygame.draw.rect(badge_surf, GOTHIC_GOLD_DIM, badge_surf.get_rect(), border_radius=7)
-    glow_border = tuple(
-        int(GOTHIC_GOLD[i] * (0.7 + 0.3 * pulse)) for i in range(3)
-    )
-    pygame.draw.rect(badge_surf, glow_border, badge_surf.get_rect(), width=2, border_radius=7)
-    screen.blit(badge_surf, (badge_x, badge_y))
-    screen.blit(
-        badge_char,
-        badge_char.get_rect(center=(badge_x + badge_w // 2, badge_y + badge_h // 2)),
+        screen, border_color, (box_x, box_y, box_w, box_h), 1, border_radius=6
     )
 
-    cursor_x = badge_x + badge_w + gap
-    if icon_draw:
-        icon_draw(screen, cursor_x + 11, row_y + label.get_height() // 2, accent_color)
-        cursor_x += icon_w
-
-    screen.blit(label, (cursor_x, row_y))
-
-    tip_y = box_y + box_h + 5
-    pygame.draw.polygon(
-        screen,
-        border_color,
-        [
-            (int(center_x), tip_y + 7),
-            (int(center_x) - 7, tip_y),
-            (int(center_x) + 7, tip_y),
-        ],
-    )
+    row_y = box_y + (box_h - label.get_height()) // 2
+    screen.blit(key, (box_x + pad_x, row_y))
+    screen.blit(label, (box_x + pad_x + key.get_width() + gap, row_y))
 
 
 def draw_door_prompt(screen, player, camera, zoom, font):
-    """Draw a styled door interaction prompt above the player."""
+    """Draw a door interaction prompt above the player."""
     sx, sy = _player_screen_pos(player, camera, zoom)
-    _draw_interaction_prompt(
-        screen,
-        sx,
-        sy,
-        font,
-        "Open Door",
-        border_color=(90, 130, 95),
-        accent_color=(120, 180, 130),
-    )
+    _draw_simple_prompt(screen, sx, sy, font, "Open Door", (100, 150, 110))
 
 
 def draw_key_prompt(screen, player, camera, zoom, font):
-    """Draw a styled key pickup prompt above the player."""
+    """Draw a key pickup prompt above the player."""
     sx, sy = _player_screen_pos(player, camera, zoom)
-    _draw_interaction_prompt(
-        screen,
-        sx,
-        sy,
-        font,
-        "Pick Up Key",
-        border_color=GOTHIC_GOLD,
-        accent_color=GOTHIC_GOLD,
-        icon_draw=_draw_key_icon,
-    )
+    _draw_simple_prompt(screen, sx, sy, font, "Pick Up Key", GOTHIC_GOLD_DIM)
 
 
 def draw_locked_door_prompt(screen, player, camera, zoom, font):
-    """Draw a styled locked door message above the player."""
+    """Draw a locked door message above the player."""
     sx, sy = _player_screen_pos(player, camera, zoom)
-    t = pygame.time.get_ticks() / 1000.0
-    bob = int(math.sin(t * 4.2) * 2)
-    anchor_y = sy - 84 + bob
-
-    label = font.render("Door is Locked", FONT_ANTIALIAS, (235, 120, 120))
-    sub = font.render("Need a key", FONT_ANTIALIAS, (180, 150, 150))
-
-    pad_x, pad_y = 16, 10
-    box_w = max(label.get_width(), sub.get_width()) + pad_x * 2
-    box_h = label.get_height() + sub.get_height() + 6 + pad_y * 2
-    box_x = int(sx - box_w / 2)
-    box_y = int(anchor_y - box_h / 2)
-
-    panel = pygame.Surface((box_w, box_h), pygame.SRCALPHA)
-    pygame.draw.rect(panel, (180, 70, 70), panel.get_rect(), border_radius=11)
-    inner = panel.get_rect().inflate(-5, -5)
-    pygame.draw.rect(panel, (*GOTHIC_PANEL_INNER, 240), inner, border_radius=9)
-    screen.blit(panel, (box_x, box_y))
-
-    screen.blit(label, (box_x + pad_x, box_y + pad_y))
-    screen.blit(sub, (box_x + pad_x, box_y + pad_y + label.get_height() + 6))
-
-    tip_y = box_y + box_h + 5
-    pygame.draw.polygon(
-        screen,
-        (180, 70, 70),
-        [
-            (int(sx), tip_y + 7),
-            (int(sx) - 7, tip_y),
-            (int(sx) + 7, tip_y),
-        ],
-    )
+    _draw_simple_prompt(screen, sx, sy, font, "Locked — need key", (180, 80, 80))
 
 
 # ============================================================================
