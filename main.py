@@ -128,7 +128,7 @@ async def main():
         transition.draw(screen)
 
         # Display debug stats in top left
-        _render_debug_stats(screen, clock, scene_manager, debug_font)
+        # _render_debug_stats(screen, clock, scene_manager, debug_font)
 
         cursor.draw(screen, mouse_pos)
 

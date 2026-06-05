@@ -558,7 +558,7 @@ class GameScene:
                 self.camera,
                 zoom,
             )
-        draw_debug_coords(screen, self.player, self.credit_font)
+        # draw_debug_coords(screen, self.player, self.credit_font)
 
         # Task panel
         self.task_panel.render(screen, self.time_seconds)
