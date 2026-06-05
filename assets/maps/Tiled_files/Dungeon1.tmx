@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.12.1" orientation="orthogonal" renderorder="right-down" width="37" height="27" tilewidth="16" tileheight="16" infinite="0" nextlayerid="41" nextobjectid="217">
+<map version="1.10" tiledversion="1.12.1" orientation="orthogonal" renderorder="right-down" width="37" height="27" tilewidth="16" tileheight="16" infinite="0" nextlayerid="41" nextobjectid="223">
  <tileset firstgid="1" name="cracked_tiles" tilewidth="16" tileheight="16" tilecount="256" columns="8">
   <image source="decorative_cracks_walls.png" width="128" height="512"/>
  </tileset>
@@ -4918,9 +4918,9 @@
   <object id="180" x="227.273" y="216.727" width="11.0909" height="10.1818"/>
   <object id="181" x="209.636" y="230" width="12.5455" height="12.1818"/>
   <object id="182" x="179.636" y="185.091" width="16.5455" height="1.45455"/>
-  <object id="183" x="196" y="185.273" width="0.909091" height="7.27273"/>
-  <object id="184" x="196.909" y="192.545" width="5.09091" height="1.81818"/>
-  <object id="185" x="201.455" y="194.182" width="0.909091" height="20"/>
+  <object id="183" x="195.1" y="185.273" width="1.80924" height="8.66387"/>
+  <object id="184" x="192.49" y="192.545" width="9.50982" height="1.81818"/>
+  <object id="185" x="200.555" y="194.182" width="1.8094" height="20"/>
   <object id="186" x="189.636" y="213.273" width="12.9091" height="1.63636"/>
   <object id="187" x="189.273" y="214.182" width="1.45455" height="11.0909"/>
   <object id="188" x="189.091" y="225.818" width="2.36364" height="8.90909"/>
@@ -4930,6 +4930,12 @@
   <object id="193" x="201.636" y="243.273" width="4.36364" height="17.0909"/>
   <object id="194" x="204.364" y="256" width="45.2727" height="2.90909"/>
   <object id="195" x="176.182" y="185.455" width="3.63636" height="22.5455"/>
+  <object id="217" x="282.191" y="89.6234" width="19.1537" height="4.81143"/>
+  <object id="220" x="282.191" y="19.0902" width="19.1537" height="75.3447"/>
+  <object id="218" x="251.157" y="89.4219" width="12.1003" height="4.81143"/>
+  <object id="219" x="251.157" y="19.0902" width="12.1003" height="75.1431"/>
+  <object id="221" x="219.57" y="88.9319" width="32.4562" height="9.16202"/>
+  <object id="222" x="205.707" y="87.1771" width="13.6797" height="6.00335"/>
   <object id="196" x="156.909" y="208.364" width="23.2727" height="2.54545"/>
   <object id="197" x="148.545" y="175.818" width="8.18182" height="36.5455"/>
   <object id="199" x="129.818" y="191.818" width="19.4545" height="40.9091"/>
@@ -4947,7 +4953,7 @@
  </objectgroup>
  <objectgroup id="36" name="hazard">
   <object id="71" name="hazard" x="322.668" y="352.125" width="27.6443" height="14.0488"/>
-  <object id="138" name="hazard" x="210.708" y="142.27" width="11.5016" height="49.5627"/>
+  <object id="138" name="hazard" x="210.708" y="144.025" width="11.5016" height="47.8079"/>
   <object id="140" name="hazard" x="322.248" y="161.531" width="11.5016" height="13.3413"/>
   <object id="139" name="hazard" x="82.5453" y="149.534" width="11.5016" height="9.60956"/>
   <object id="109" name="hazard" x="130.586" y="385.117" width="27.6443" height="14.0488"/>

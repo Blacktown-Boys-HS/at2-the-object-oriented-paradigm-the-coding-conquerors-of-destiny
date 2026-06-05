@@ -2,6 +2,7 @@
 Player character class for the RPG game.
 """
 
+import math
 from pathlib import Path
 
 import pygame
@@ -146,7 +147,6 @@ class Player(pygame.sprite.Sprite):
 
     def move(self, dx, dy, speed):
         """Move the player by (dx, dy) direction with given speed."""
-        import math
 
         if dx != 0 or dy != 0:
             length = math.sqrt(dx * dx + dy * dy)
