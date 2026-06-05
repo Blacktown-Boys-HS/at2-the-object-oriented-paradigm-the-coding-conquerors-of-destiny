@@ -8,7 +8,14 @@ import pygame
 
 from camera import Camera
 from game_constants import *
-from globals import FPS, SCENE_MENU, SCENE_SETTINGS, SCREEN_HEIGHT, SCREEN_WIDTH
+from globals import (
+    FPS,
+    SCENE_MENU,
+    SCENE_SETTINGS,
+    SCREEN_HEIGHT,
+    SCREEN_WIDTH,
+    get_gothic_font_path,
+)
 from player import Player
 
 from .dialogue import DialogueBox
@@ -79,20 +86,9 @@ class GameScene:
     def _init_dialogue(self):
         """Initialize dialogue box and first dialogue state."""
         self.first_dialogue_shown = False
-        font_path = None
-        for candidate in [
-            Path(__file__).resolve().parent.parent
-            / "assets"
-            / "fonts"
-            / "Kenney Pixel.ttf",
-            Path(__file__).resolve().parent.parent
-            / "assets"
-            / "font"
-            / "Kenney Pixel.ttf",
-        ]:
-            if candidate.exists():
-                font_path = str(candidate)
-                break
+        font_path = get_gothic_font_path()
+        if font_path is not None:
+            font_path = str(font_path)
         self.dialogue = DialogueBox(
             "Huh... Where am I? What is this place?",
             speed=30,

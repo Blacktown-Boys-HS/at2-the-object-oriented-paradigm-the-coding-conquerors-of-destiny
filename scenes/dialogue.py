@@ -1,7 +1,15 @@
 """Typewriter dialogue box with a closing animation."""
 from pathlib import Path
 import pygame
-from globals import SCREEN_WIDTH, SCREEN_HEIGHT, FONT_ANTIALIAS, BLUE, GRAY, WHITE
+from globals import (
+    SCREEN_WIDTH,
+    SCREEN_HEIGHT,
+    FONT_ANTIALIAS,
+    BLUE,
+    GRAY,
+    WHITE,
+    get_gothic_font_path,
+)
 
 
 class DialogueBox:
@@ -16,11 +24,15 @@ class DialogueBox:
         self.skipped = False
 
         # Build adaptive font: bigger for short text, smaller for long
-        if font_path and Path(font_path).exists():
+        path = font_path
+        if not path or not Path(path).exists():
+            gothic = get_gothic_font_path()
+            path = str(gothic) if gothic is not None else None
+        if path and Path(path).exists():
             size = max(24, min(48, int(1400 / max(len(text), 1))))
-            self.font = pygame.font.Font(str(font_path), size)
+            self.font = pygame.font.Font(path, size)
         else:
-            self.font = pygame.font.Font(None, 32)
+            self.font = pygame.font.SysFont("monospace", 32, bold=False)
 
         # Closing animation state
         self.closing = False
