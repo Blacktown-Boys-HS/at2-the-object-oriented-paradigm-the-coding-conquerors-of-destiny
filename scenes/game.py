@@ -14,7 +14,7 @@ from globals import (
     SCENE_SETTINGS,
     SCREEN_HEIGHT,
     SCREEN_WIDTH,
-    get_gothic_font_path,
+    get_pixel_font_path,
 )
 from player import Player
 
@@ -86,7 +86,7 @@ class GameScene:
     def _init_dialogue(self):
         """Initialize dialogue box and first dialogue state."""
         self.first_dialogue_shown = False
-        font_path = get_gothic_font_path()
+        font_path = get_pixel_font_path()
         if font_path is not None:
             font_path = str(font_path)
         self.dialogue = DialogueBox(
@@ -269,6 +269,7 @@ class GameScene:
         self.player.position.y = self.spawn_y
         self.player.health = self.player.max_health
         self.player.damage_cooldown = 0.0
+        self.player.time_since_last_damage = 0.0
         self.player.set_state("idle")
         self.player.update(0)
 
@@ -529,7 +530,7 @@ class GameScene:
         zoom = self.world.map_layer.zoom if self.world and self.world.map_layer else 1.0
 
         # HUD
-        draw_player_health_bar(screen, self.player, self.camera, zoom)
+        draw_player_health_bar(screen, self.player, self.credit_font, self.time_seconds)
 
         # Door prompt
         if self.near_door:

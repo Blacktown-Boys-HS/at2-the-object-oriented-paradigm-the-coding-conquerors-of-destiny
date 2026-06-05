@@ -8,7 +8,7 @@ from globals import (
     BLUE,
     GRAY,
     WHITE,
-    get_gothic_font_path,
+    get_pixel_font_path,
 )
 
 
@@ -26,8 +26,8 @@ class DialogueBox:
         # Build adaptive font: bigger for short text, smaller for long
         path = font_path
         if not path or not Path(path).exists():
-            gothic = get_gothic_font_path()
-            path = str(gothic) if gothic is not None else None
+            pixel = get_pixel_font_path()
+            path = str(pixel) if pixel is not None else None
         if path and Path(path).exists():
             size = max(24, min(48, int(1400 / max(len(text), 1))))
             self.font = pygame.font.Font(path, size)

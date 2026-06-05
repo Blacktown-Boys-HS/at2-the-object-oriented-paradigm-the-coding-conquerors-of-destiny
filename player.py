@@ -75,14 +75,30 @@ class Player(pygame.sprite.Sprite):
         self.max_health = 100
         self.health = 100
         self.damage_cooldown = 0.0
+        self.time_since_last_damage = 0.0
+        self.REGEN_DELAY = 5.0
+        self.REGEN_RATE = 8.0  # HP per second after delay
+
+    @property
+    def is_regenerating(self):
+        return (
+            0 < self.health < self.max_health
+            and self.time_since_last_damage >= self.REGEN_DELAY
+        )
 
     def update(self, dt):
-        if not self.sprite_sheet:
-            return
-
-        # Tick down the invincibility
         if self.damage_cooldown > 0:
             self.damage_cooldown = max(0.0, self.damage_cooldown - dt)
+
+        if self.health > 0:
+            self.time_since_last_damage += dt
+            if self.is_regenerating:
+                self.health = min(
+                    self.max_health, self.health + self.REGEN_RATE * dt
+                )
+
+        if not self.sprite_sheet:
+            return
 
         anim = self.animations[self.state]
         self.animation_time += dt
@@ -174,6 +190,7 @@ class Player(pygame.sprite.Sprite):
         Sets a 0.5s invincibility window after each hit."""
         self.health = max(0, self.health - amount)
         self.damage_cooldown = 0.5  # seconds of invincibility after a hit
+        self.time_since_last_damage = 0.0
         # Switch to hit animation if not already dying
         if self.health > 0 and self.state != "death":
             self.set_state("hit")

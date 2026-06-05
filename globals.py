@@ -44,39 +44,50 @@ def _first_existing_path(candidates):
     return next(path for path in candidates if path.exists())
 
 
-def gothic_font_candidates():
-    """Paths to GothicByte.ttf (preferred UI font)."""
+def _font_candidates(name):
     base_dir = Path(__file__).resolve().parent
     return [
-        base_dir / "assets" / "fonts" / "GothicByte.ttf",
-        base_dir / "assets" / "font" / "GothicByte.ttf",
+        base_dir / "assets" / "fonts" / name,
+        base_dir / "assets" / "font" / name,
     ]
 
 
 def get_gothic_font_path():
     """Return path to GothicByte.ttf, or None if missing."""
     try:
-        return _first_existing_path(gothic_font_candidates())
+        return _first_existing_path(_font_candidates("GothicByte.ttf"))
+    except StopIteration:
+        return None
+
+
+def get_pixel_font_path():
+    """Return path to Kenney Pixel.ttf, or None if missing."""
+    try:
+        return _first_existing_path(_font_candidates("Kenney Pixel.ttf"))
     except StopIteration:
         return None
 
 
 def load_fonts():
-    """Load GothicByte for all UI text sizes."""
-    font_path = get_gothic_font_path()
-    if font_path is not None:
-        try:
-            path = str(font_path)
-            title_font = pygame.font.Font(path, TITLE_FONT_SIZE)
-            menu_font = pygame.font.Font(path, MENU_FONT_SIZE)
-            credit_font = pygame.font.Font(path, CREDIT_FONT_SIZE)
-            debug_font = pygame.font.Font(path, DEBUG_FONT_SIZE)
-            return title_font, menu_font, credit_font, debug_font
-        except pygame.error:
-            pass
+    """GothicByte for titles; Kenney Pixel for menu, credits, and debug."""
+    pixel_font_path = get_pixel_font_path()
+    try:
+        path = str(pixel_font_path)
+        menu_font = pygame.font.Font(path, MENU_FONT_SIZE)
+        credit_font = pygame.font.Font(path, CREDIT_FONT_SIZE)
+        debug_font = pygame.font.Font(path, DEBUG_FONT_SIZE)
+    except (TypeError, FileNotFoundError, pygame.error):
+        menu_font = pygame.font.SysFont("monospace", MENU_FONT_SIZE, bold=False)
+        credit_font = pygame.font.SysFont("monospace", CREDIT_FONT_SIZE, bold=False)
+        debug_font = pygame.font.SysFont("monospace", DEBUG_FONT_SIZE, bold=False)
 
-    title_font = pygame.font.SysFont("monospace", TITLE_FONT_SIZE, bold=False)
-    menu_font = pygame.font.SysFont("monospace", MENU_FONT_SIZE, bold=False)
-    credit_font = pygame.font.SysFont("monospace", CREDIT_FONT_SIZE, bold=False)
-    debug_font = pygame.font.SysFont("monospace", DEBUG_FONT_SIZE, bold=False)
+    gothic_font_path = get_gothic_font_path()
+    try:
+        title_font = pygame.font.Font(str(gothic_font_path), TITLE_FONT_SIZE)
+    except (TypeError, FileNotFoundError, pygame.error):
+        if pixel_font_path is not None:
+            title_font = pygame.font.Font(str(pixel_font_path), TITLE_FONT_SIZE)
+        else:
+            title_font = pygame.font.SysFont("monospace", TITLE_FONT_SIZE, bold=False)
+
     return title_font, menu_font, credit_font, debug_font
