@@ -1,8 +1,15 @@
-from globals import SCENE_CREDITS, SCENE_GAME, SCENE_MENU, SCENE_SETTINGS
+from globals import (
+    SCENE_CREDITS,
+    SCENE_GAME,
+    SCENE_MENU,
+    SCENE_SETTINGS,
+    SCENE_TUTORIAL,
+)
 from scenes.credits import CreditsScene
 from scenes.game import GameScene
 from scenes.menu import MenuScene
 from scenes.settings import SettingsScene
+from scenes.tutorial import TutorialScene
 
 
 class SceneManager:
@@ -23,6 +30,9 @@ class SceneManager:
             ),
             SCENE_SETTINGS: SettingsScene(
                 title_font, menu_font, credit_font, sound_manager
+            ),
+            SCENE_TUTORIAL: TutorialScene(
+                title_font, menu_font, credit_font, sound_manager.effects
             ),
         }
         self.current_scene = SCENE_MENU

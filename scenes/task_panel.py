@@ -1,19 +1,18 @@
-import math
 import pygame
 
-from globals import SCREEN_WIDTH, FONT_ANTIALIAS, BLUE, WHITE, GRAY
+from game_data import objective_task_list
+from globals import SCREEN_WIDTH, FONT_ANTIALIAS, WHITE, GRAY
+from scenes.aesthetic import GOTHIC_GOLD, GOTHIC_GOLD_DIM
 
 class TaskPanel:
     """Animated task panel in the corner."""
 
     def __init__(self, font):
         self.font = font
-        self.tasks = [
-            {"text": "Find a key", "done": False}
-        ]
+        self.tasks = objective_task_list()
 
         self.width = 310
-        self.height = 120
+        self.height = 150
         self.margin = 18
         self.tab_width = 34
 
@@ -52,7 +51,7 @@ class TaskPanel:
         panel_rect = pygame.Rect(int(self.x), self.y, self.width, self.height)
 
         # main panel
-        gold = (225, 185, 80)
+        gold = GOTHIC_GOLD
         panel_surface = pygame.Surface((self.width, self.height), pygame.SRCALPHA)
         panel_outer_rect = panel_surface.get_rect()
         panel_inner_rect = panel_outer_rect.inflate(-4, -4)
@@ -96,15 +95,8 @@ class TaskPanel:
         arrow_rect = arrow_surf.get_rect(center=self.toggle_rect.center)
         screen.blit(arrow_surf, arrow_rect)
 
-        # Title shimmer
-        shimmer = 0.5 + 0.5 * math.sin(time_seconds * 3)
-        title_color = (
-            int(126 + 30 * shimmer),
-            int(193 + 20 * shimmer),
-            int(245)
-        )
-
-        title = self.font.render("Tasks", FONT_ANTIALIAS, title_color)
+        del time_seconds
+        title = self.font.render("Tasks", FONT_ANTIALIAS, GOTHIC_GOLD_DIM)
         screen.blit(title, (panel_rect.left + 18, panel_rect.top + 14))
 
         # Task list

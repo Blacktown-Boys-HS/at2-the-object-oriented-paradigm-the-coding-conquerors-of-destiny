@@ -6,7 +6,7 @@ from pathlib import Path
 
 import pygame
 
-from globals import SCENE_CREDITS, SCENE_MENU, SCENE_SETTINGS
+from globals import SCENE_CREDITS, SCENE_MENU, SCENE_SETTINGS, SCENE_TUTORIAL
 
 
 class SoundManager:
@@ -31,7 +31,12 @@ class SoundManager:
         except pygame.error:
             pass
         self.menu_theme_path = self.sound_dir / "Main Menu Theme - Calm (E,80BPM).wav"
-        self.music_scenes = {SCENE_MENU, SCENE_CREDITS, SCENE_SETTINGS}
+        self.music_scenes = {
+            SCENE_MENU,
+            SCENE_CREDITS,
+            SCENE_SETTINGS,
+            SCENE_TUTORIAL,
+        }
         self._music_volume = 1.0
         self._sfx_volume = 1.0
         self.apply_volumes()

@@ -4,20 +4,19 @@ Settings scene for the RPG game.
 import pygame
 from globals import (
     SCREEN_WIDTH,
-    SCREEN_HEIGHT,
     SCENE_MENU,
     FPS,
     WHITE,
     GRAY,
-    LIGHT_GRAY,
-    BLUE,
     FONT_ANTIALIAS,
 )
 
 from .aesthetic import (
     SharedBackground,
-    draw_pulsing_title,
+    draw_gothic_title,
     draw_footer_hint,
+    GOTHIC_GOLD,
+    GOTHIC_GOLD_DIM,
 )
 
 
@@ -105,13 +104,12 @@ class SettingsScene:
         """Render the settings scene."""
         self.bg.draw(screen)
 
-        draw_pulsing_title(
+        draw_gothic_title(
             screen,
             self.title_font,
             "Settings",
             SCREEN_WIDTH // 2,
-            115,
-            self.time_seconds,
+            100,
         )
 
         for key, spec in self._sliders.items():
@@ -127,11 +125,11 @@ class SettingsScene:
             fill_w = max(0, int(track.width * val))
             if fill_w > 0:
                 fill_rect = pygame.Rect(track.left, track.top, fill_w, track.height)
-                pygame.draw.rect(screen, LIGHT_GRAY, fill_rect, border_radius=5)
+                pygame.draw.rect(screen, GOTHIC_GOLD_DIM, fill_rect, border_radius=5)
 
             thumb_cx = track.left + int(track.width * val)
             thumb_cy = track.centery
-            pygame.draw.circle(screen, BLUE, (thumb_cx, thumb_cy), self._THUMB_R)
+            pygame.draw.circle(screen, GOTHIC_GOLD, (thumb_cx, thumb_cy), self._THUMB_R)
             pygame.draw.circle(screen, WHITE, (thumb_cx, thumb_cy), self._THUMB_R, width=2)
 
             pct = int(round(val * 100))

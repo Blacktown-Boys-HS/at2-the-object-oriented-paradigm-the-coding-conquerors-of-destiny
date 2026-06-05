@@ -7,7 +7,7 @@ import asyncio
 import pygame
 
 from cursor import CustomCursor
-from globals import BLUE, FPS, SCREEN_HEIGHT, SCREEN_WIDTH, load_fonts
+from globals import BLUE, FPS, GAME_TITLE, SCREEN_HEIGHT, SCREEN_WIDTH, load_fonts
 from scene_manager import SceneManager
 from sounds import SoundManager
 from splash import SplashScreen
@@ -54,7 +54,7 @@ async def main():
         pass
 
     screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
-    pygame.display.set_caption("RPG Game")
+    pygame.display.set_caption(GAME_TITLE)
 
     clock = pygame.time.Clock()
 

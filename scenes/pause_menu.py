@@ -3,9 +3,13 @@ Pause menu for the RPG game.
 """
 
 import pygame
-import math
-from globals import SCREEN_WIDTH, SCREEN_HEIGHT, FONT_ANTIALIAS, BLUE, GRAY, WHITE
-from scenes.aesthetic import safe_scale_surface
+from globals import SCREEN_WIDTH, SCREEN_HEIGHT
+from scenes.aesthetic import (
+    draw_gothic_title,
+    draw_gothic_selection_box,
+    draw_gothic_menu_item,
+    safe_scale_surface,
+)
 
 class PauseMenu:
     """Handles pause menu rendering and state."""
@@ -96,38 +100,6 @@ class PauseMenu:
         self.pending_action = None
         return action
     
-    def _draw_title(self, screen, time_seconds):
-        title_str = "PAUSED"
-        shimmer = 0.5 + 0.5 * math.sin(time_seconds * 2.8)
-        main_color = (
-            int(100 + 26 * shimmer),
-            int(160 + 33 * shimmer),
-            int(220 + 25 * shimmer),
-        )
-        shadow_deep = (14, 10, 32)
-        rim = (72, 58, 120)
-
-        base = self.title_font.render(title_str, FONT_ANTIALIAS, WHITE)
-        w, h = base.get_width(), base.get_height()
-        pad = 10
-        composite = pygame.Surface((w + pad * 2, h + pad * 2), pygame.SRCALPHA)
-        ox, oy = pad, pad
-
-        for d in (5, 4, 3, 2, 1):
-            layer = self.title_font.render(title_str, FONT_ANTIALIAS, shadow_deep)
-            composite.blit(layer, (ox + d, oy + d))
-        
-        for dx, dy in ((-1, 0), (1, 0), (0, -1), (0, 1), (-1, -1), (1, -1), (-1, 1), (1, 1)):
-            layer = self.title_font.render(title_str, FONT_ANTIALIAS, rim)
-            composite.blit(layer, (ox + dx, oy + dy))
-        
-        composite.blit(self.title_font.render(title_str, FONT_ANTIALIAS, main_color), (ox, oy))
-
-        pulse = 1.0 + math.sin(time_seconds * 2.2) * 0.02
-        scaled = safe_scale_surface(composite, pulse)
-        rect = scaled.get_rect(center=(SCREEN_WIDTH // 2, 200))
-        screen.blit(scaled, rect)
-    
     def render(self, screen, time_seconds):
         """Render the full pause overlay."""
         # Darken background
@@ -135,44 +107,33 @@ class PauseMenu:
         overlay.fill((0, 0, 0, 180))
         screen.blit(overlay, (0, 0))
 
-        self._draw_title(screen, time_seconds)
+        draw_gothic_title(
+            screen, self.title_font, "PAUSED", SCREEN_WIDTH // 2, 200
+        )
 
-        # Selection highlight box
-        selection_rect = pygame.Rect(SCREEN_WIDTH // 2 - 180, int(self.selection_y) - 8, 360, 60)
-        box_surface = pygame.Surface((selection_rect.width, selection_rect.height), pygame.SRCALPHA)
-        box_alpha = 22
-        if self.activation_item == self.selected:
-            box_alpha = 22 + int(70 * (1.0 - self.activation_progress))
-        box_surface.fill((255, 255, 255, box_alpha))
-        screen.blit(box_surface, selection_rect.topleft)
-        border_color = (130, 130, 130)
-        if self.activation_item == self.selected:
-            border_color = (220, 200, 120)
-        pygame.draw.rect(screen, border_color, selection_rect, width=2, border_radius=8)
+        selection_rect = pygame.Rect(
+            SCREEN_WIDTH // 2 - 180, int(self.selection_y) - 6, 360, 60
+        )
+        draw_gothic_selection_box(
+            screen,
+            selection_rect,
+            activating=self.activation_item == self.selected,
+            activation_progress=self.activation_progress,
+        )
 
-        # Menu items
         menu_start_x = SCREEN_WIDTH // 2 - 120
         menu_start_y = 320
         self.item_rects = []
         for i, item in enumerate(self.ITEMS):
-            if i == self.selected:
-                arrow_text = self.menu_font.render("> ", FONT_ANTIALIAS, BLUE)
-                item_text = self.menu_font.render(item, FONT_ANTIALIAS, WHITE)
-                item_pos = (menu_start_x, menu_start_y + i * 80)
-                if self.hover_scale[i] != 1.0:
-                    arrow_text = safe_scale_surface(arrow_text, self.hover_scale[i])
-                    item_text = safe_scale_surface(item_text, self.hover_scale[i])
-                arrow_rect = arrow_text.get_rect(topleft=item_pos)
-                item_rect = item_text.get_rect(topleft=(arrow_rect.right, item_pos[1]))
-                self.item_rects.append(arrow_rect.union(item_rect))
-                screen.blit(arrow_text, arrow_rect)
-                screen.blit(item_text, item_rect)
-            else:
-                text = self.menu_font.render(item, FONT_ANTIALIAS, GRAY)
-                if self.hover_scale[i] != 1.0:
-                    text = safe_scale_surface(text, self.hover_scale[i])
-                item_pos = (menu_start_x, menu_start_y + i * 80)
-                text_rect = text.get_rect(topleft=item_pos)
-                self.item_rects.append(text_rect)
-                screen.blit(text, text_rect)
+            item_pos = (menu_start_x, menu_start_y + i * 80)
+            rect = draw_gothic_menu_item(
+                screen,
+                self.menu_font,
+                item,
+                item_pos,
+                i == self.selected,
+                self.hover_scale[i],
+                safe_scale_surface,
+            )
+            self.item_rects.append(rect)
 
