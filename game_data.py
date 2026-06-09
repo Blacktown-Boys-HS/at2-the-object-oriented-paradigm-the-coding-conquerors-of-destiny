@@ -8,16 +8,6 @@ OBJECTIVES = [
         "text": "Find a key",
         "detail": "Explore the dungeon. When you stand near a key, press E to collect it.",
     },
-    {
-        "id": "unlock_door",
-        "text": "Unlock a door",
-        "detail": "Use keys from your inventory on locked doors and doorways (press E).",
-    },
-    {
-        "id": "escape",
-        "text": "Escape the dungeon",
-        "detail": "Survive hazards, manage your health, and find a way out of the depths.",
-    },
 ]
 
 CONTROLS = [
