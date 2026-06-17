@@ -17,6 +17,7 @@ from globals import (
     get_pixel_font_path,
 )
 from player import Player
+from enemy import SlimeEnemy
 
 from .dialogue import DialogueBox
 from .game_over import GameOverMenu
@@ -33,7 +34,6 @@ from .loading_screen import draw_loading_screen
 from .pause_menu import PauseMenu
 from .task_panel import TaskPanel
 from .world import World
-
 
 class GameScene:
     """Game scene."""
@@ -118,6 +118,12 @@ class GameScene:
                 zoom=DEFAULT_CAMERA_ZOOM,
                 default_layer=DEFAULT_LAYER,
             )
+            self.enemies = []
+            if self.world:
+                for x, y in self.world.enemy_spawns:
+                    slime = SlimeEnemy(x, y)
+                    self.world.group.add(slime)
+                    self.enemies.append(slime)
         except Exception as e:
             print(f"Warning: Could not load map : {e}")
 
@@ -474,6 +480,21 @@ class GameScene:
 
         # Update player sprite and animation
         self.player.update(dt)
+
+        # Update enemy events
+        for enemy in self.enemies:
+            enemy.update(dt, self.player.position, self.world.get_collision_rects() if self.world else [])
+            enemy.check_contact_damage(self.player)
+            if enemy.is_dead:
+                self.enemies.remove(enemy)
+                self.world.group.remove(enemy)
+
+        # Check if slime killed the player
+        if self.player.is_dead and not self.game_over:
+            self.game_over = True
+            self.paused = False
+            self.keys_pressed = {"up": False, "down": False, "left": False, "right": False}
+            self.player.set_state("death")
 
     def _update_world_state(self, dt):
         """Update world state: door/key proximity, player layer, and camera."""
