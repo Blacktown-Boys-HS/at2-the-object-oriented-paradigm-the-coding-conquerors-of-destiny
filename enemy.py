@@ -28,9 +28,9 @@ class SlimeEnemy(pygame.sprite.Sprite):
     LOSE_RADIUS = 75
     ROAM_CHANGE_TIME = 2.0  
 
-    MAX_HEALTH = 30
+    MAX_HEALTH = 75
     CONTACT_DAMAGE = 10
-    CONTACT_COOLDOWN = 0.8  
+    CONTACT_COOLDOWN = 1.2
 
     def __init__(self, x, y):
         super().__init__()

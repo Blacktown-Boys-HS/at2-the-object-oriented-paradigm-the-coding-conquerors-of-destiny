@@ -46,6 +46,9 @@ class GameScene:
         self._init_world()
         self._init_camera()
 
+        self.attack_effect = 0.0
+        self.attack_duration = 0.3
+
     def _init_core_objects(self, title_font, menu_font, credit_font, sounds):
         """Initialize core objects: clock, fonts, sounds, player, camera, keys."""
         self._clock = pygame.time.Clock()
@@ -236,6 +239,10 @@ class GameScene:
             if self._handle_interaction(event):
                 return None
 
+            if event.key == pygame.K_f:
+                self._do_attack()
+                return None
+
             self._handle_movement_input(event, is_keydown=True)
 
         elif event.type == pygame.KEYUP:
@@ -245,6 +252,12 @@ class GameScene:
             self.pause_menu.handle_event(event)
 
         return None
+
+    def _do_attack(self):
+        if self.player.state in ("death",):
+            return
+        self.attack_effect = self.attack_duration
+        self.player.attack(self.enemies, self.world.group)
 
     def consume_requested_scene(self):
         """Return and clear a deferred scene transition request."""
@@ -340,6 +353,9 @@ class GameScene:
             self.door_locked_time += dt
             if self.door_locked_time >= DOOR_LOCKED_MESSAGE_DURATION:
                 self.door_locked_message = False
+
+        if self.attack_effect > 0:  
+            self.attack_effect = max(0.0, self.attack_effect - dt)
 
     def _check_loading_screen(self, dt):
         """Check and handle loading screen. Returns True if still loading."""
@@ -552,6 +568,9 @@ class GameScene:
 
         # HUD
         draw_player_health_bar(screen, self.player, self.credit_font, self.time_seconds)
+
+        # Attack effect
+        self.player.render_attack_effect(screen, self.camera, zoom, self.attack_effect, self.attack_duration)
 
         # Door prompt
         if self.near_door:

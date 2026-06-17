@@ -195,12 +195,42 @@ class Player(pygame.sprite.Sprite):
         if self.health > 0 and self.state != "death":
             self.set_state("hit")
 
-    @property
-    def is_dead(self):
-        return self.health <= 0
+    def attack(self, enemies, group):
+        """Deal damage to nearby enemies."""
+        attack_rect = pygame.Rect(
+            self.position.x - 24,
+            self.position.y - 24,
+            48, 48
+        )
+        for enemy in enemies[:]:
+            enemy_rect = pygame.Rect(enemy.position.x - 8, enemy.position.y - 8, 16, 16)
+            if attack_rect.colliderect(enemy_rect):
+                enemy.take_damage(10)
+                if enemy.is_dead:
+                    enemies.remove(enemy)
+                    group.remove(enemy)
+
+    def render_attack_effect(self, screen, camera, zoom, attack_effect, attack_duration):
+        """Render the attack ring effect."""
+        if attack_effect <= 0:
+            return
+        from globals import SCREEN_WIDTH, SCREEN_HEIGHT
+        progress = 1.0 - (attack_effect / attack_duration)
+        radius = int(20 + progress * 24)
+        alpha = int(200 * (1.0 - progress))
+        screen_x = int((self.position.x - camera.x) * zoom + SCREEN_WIDTH / 2)
+        screen_y = int((self.position.y - camera.y) * zoom + SCREEN_HEIGHT / 2)
+        effect_surf = pygame.Surface((radius * 2, radius * 2), pygame.SRCALPHA)
+        effect_surf.fill((0, 0, 0, 0))
+        pygame.draw.circle(effect_surf, (100, 200, 255, alpha), (radius, radius), radius, 3)
+        screen.blit(effect_surf, (screen_x - radius, screen_y - radius))
 
     def update_facing(self, dx):
         if dx > 0:
             self.facing_right = True
         elif dx < 0:
             self.facing_right = False
+
+    @property
+    def is_dead(self):
+        return self.health <= 0
