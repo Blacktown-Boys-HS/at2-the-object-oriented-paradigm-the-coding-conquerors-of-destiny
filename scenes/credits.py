@@ -36,7 +36,7 @@ class CreditsScene:
 
         self.credits_items = [
             "Angadjot Dhaliwal",
-            "Sri Hari Srinigganathan",
+            "Sri Hari Sriranganathan",
             "Shivesh Sundar",
         ]
 
