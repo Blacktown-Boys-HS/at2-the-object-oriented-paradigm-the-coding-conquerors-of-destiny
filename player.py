@@ -205,7 +205,7 @@ class Player(pygame.sprite.Sprite):
         for enemy in enemies[:]:
             enemy_rect = pygame.Rect(enemy.position.x - 8, enemy.position.y - 8, 16, 16)
             if attack_rect.colliderect(enemy_rect):
-                enemy.take_damage(10)
+                enemy.take_damage(20)
                 if enemy.is_dead:
                     enemies.remove(enemy)
                     group.remove(enemy)
