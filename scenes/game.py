@@ -616,3 +616,7 @@ class GameScene:
 
         # Dialogue
         self.dialogue.render(screen, self.time_seconds)
+
+        # Draw enemy health bars
+        for enemy in self.enemies:
+            enemy.render_health_bar(screen, self.camera, zoom)

@@ -44,6 +44,3 @@ class CustomCursor:
         cursor_surface = pygame.transform.smoothscale(self.image, scaled_size)
         cursor_rect = cursor_surface.get_rect(topleft=mouse_pos)
         screen.blit(cursor_surface, cursor_rect)
-
-
-

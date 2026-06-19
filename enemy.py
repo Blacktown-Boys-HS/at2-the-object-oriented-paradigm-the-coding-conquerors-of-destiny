@@ -204,3 +204,30 @@ class SlimeEnemy(pygame.sprite.Sprite):
             if player.damage_cooldown <= 0:
                 player.take_damage(self.CONTACT_DAMAGE)
                 self.contact_cooldown = self.CONTACT_COOLDOWN
+
+    def render_health_bar(self, screen, camera, zoom):
+        """Render a health bar above the slime."""
+        from globals import SCREEN_WIDTH, SCREEN_HEIGHT
+        if self.ai_state == self.STATE_DEAD:
+            return
+
+        screen_x = (self.position.x - camera.x) * zoom + SCREEN_WIDTH / 2
+        screen_y = (self.position.y - camera.y) * zoom + SCREEN_HEIGHT / 2
+
+        bar_width = 24
+        bar_height = 4
+        bar_x = int(screen_x - bar_width / 2)
+        bar_y = int(screen_y - 28)
+
+        # Shadow
+        pygame.draw.rect(screen, (0, 0, 0), (bar_x - 1, bar_y - 1, bar_width + 2, bar_height + 2), border_radius=2)
+        # Background
+        pygame.draw.rect(screen, (60, 0, 0), (bar_x, bar_y, bar_width, bar_height), border_radius=2)
+        # Fill
+        health_pct = self.health / self.MAX_HEALTH
+        fill_width = max(0, int(bar_width * health_pct))
+        if fill_width > 0:
+            pygame.draw.rect(screen, (0, 180, 0), (bar_x, bar_y, fill_width, bar_height), border_radius=2)
+        # Border
+        pygame.draw.rect(screen, (0, 0, 0), (bar_x, bar_y, bar_width, bar_height), 1, border_radius=2)
+

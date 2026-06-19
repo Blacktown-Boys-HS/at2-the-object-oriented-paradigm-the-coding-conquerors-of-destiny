@@ -220,7 +220,7 @@ class Player(pygame.sprite.Sprite):
         alpha = int(200 * (1.0 - progress))
         screen_x = int((self.position.x - camera.x) * zoom + SCREEN_WIDTH / 2)
         screen_y = int((self.position.y - camera.y) * zoom + SCREEN_HEIGHT / 2)
-        effect_surf = pygame.Surface((radius * 2, radius * 2), pygame.SRCALPHA)
+        effect_surf = pygame.Surface((radius * 2, radius * 2), pygame.SRCALPHA).convert_alpha()
         effect_surf.fill((0, 0, 0, 0))
         pygame.draw.circle(effect_surf, (100, 200, 255, alpha), (radius, radius), radius, 3)
         screen.blit(effect_surf, (screen_x - radius, screen_y - radius))
