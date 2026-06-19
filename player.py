@@ -211,7 +211,6 @@ class Player(pygame.sprite.Sprite):
                     group.remove(enemy)
 
     def render_attack_effect(self, screen, camera, zoom, attack_effect, attack_duration):
-        """Render the attack ring effect."""
         if attack_effect <= 0:
             return
         from globals import SCREEN_WIDTH, SCREEN_HEIGHT
@@ -220,10 +219,8 @@ class Player(pygame.sprite.Sprite):
         alpha = int(200 * (1.0 - progress))
         screen_x = int((self.position.x - camera.x) * zoom + SCREEN_WIDTH / 2)
         screen_y = int((self.position.y - camera.y) * zoom + SCREEN_HEIGHT / 2)
-        effect_surf = pygame.Surface((radius * 2, radius * 2), pygame.SRCALPHA).convert_alpha()
-        effect_surf.fill((0, 0, 0, 0))
-        pygame.draw.circle(effect_surf, (100, 200, 255, alpha), (radius, radius), radius, 3)
-        screen.blit(effect_surf, (screen_x - radius, screen_y - radius))
+        # Draw directly on screen
+        pygame.draw.circle(screen, (100, 200, 255), (screen_x, screen_y), radius, max(1, int(3 * (1.0 - progress))))
 
     def update_facing(self, dx):
         if dx > 0:
