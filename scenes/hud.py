@@ -224,6 +224,57 @@ def draw_locked_door_prompt(screen, player, camera, zoom, font):
     _draw_simple_prompt(screen, sx, sy, font, "Locked — need key", (180, 80, 80))
 
 
+def draw_objective_arrow(screen, player, target_rect, camera, zoom, font, time_seconds=0.0):
+    """Draw a pulsing arrow that points from the player toward a world target."""
+    if target_rect is None:
+        return
+
+    player_x, player_y = _player_screen_pos(player, camera, zoom)
+    target_x = (target_rect.centerx - camera.x) * zoom + SCREEN_WIDTH / 2
+    target_y = (target_rect.centery - camera.y) * zoom + SCREEN_HEIGHT / 2
+
+    dx = target_x - player_x
+    dy = target_y - player_y
+    distance = math.hypot(dx, dy)
+    if distance < 1:
+        return
+
+    dx /= distance
+    dy /= distance
+
+    pulse = 0.5 + 0.5 * math.sin(time_seconds * 5.0)
+    arrow_distance = 54 + int(6 * pulse)
+    center = (
+        int(player_x + dx * arrow_distance),
+        int(player_y + dy * arrow_distance - 28),
+    )
+
+    angle = math.atan2(dy, dx)
+    tip = (
+        int(center[0] + math.cos(angle) * 18),
+        int(center[1] + math.sin(angle) * 18),
+    )
+    left = (
+        int(center[0] + math.cos(angle + 2.45) * 14),
+        int(center[1] + math.sin(angle + 2.45) * 14),
+    )
+    right = (
+        int(center[0] + math.cos(angle - 2.45) * 14),
+        int(center[1] + math.sin(angle - 2.45) * 14),
+    )
+
+    shadow_tip = (tip[0] + 2, tip[1] + 2)
+    shadow_left = (left[0] + 2, left[1] + 2)
+    shadow_right = (right[0] + 2, right[1] + 2)
+    pygame.draw.polygon(screen, (25, 18, 12), [shadow_tip, shadow_left, shadow_right])
+    pygame.draw.polygon(screen, GOTHIC_GOLD, [tip, left, right])
+    pygame.draw.polygon(screen, (255, 230, 140), [tip, left, right], width=2)
+
+    label = font.render("Boss door", FONT_ANTIALIAS, GOTHIC_GOLD)
+    label_rect = label.get_rect(center=(center[0], center[1] + 28))
+    screen.blit(label, label_rect)
+
+
 # ============================================================================
 # DEBUG VISUALIZATION
 # ============================================================================

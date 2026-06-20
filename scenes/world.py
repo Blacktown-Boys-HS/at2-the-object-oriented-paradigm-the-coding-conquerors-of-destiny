@@ -199,6 +199,13 @@ class World:
                 return trigger
         return None
 
+    def get_active_boss_room_trigger(self):
+        """Return the first unused boss room trigger."""
+        for trigger in self.boss_room_triggers:
+            if not trigger["used"]:
+                return trigger
+        return None
+
     # DOOR MANAGEMENT
 
     def open_door(self, door):

@@ -93,6 +93,25 @@ class InventoryBar:
 
             item_name = self.items[i]
             if item_name:
-                icon_text = self.font.render(item_name[:1].upper(), FONT_ANTIALIAS, WHITE)
-                icon_rect = icon_text.get_rect(center=(rect.centerx, rect.centery + 4))
-                screen.blit(icon_text, icon_rect)
+                if str(item_name).lower() == "key":
+                    self._draw_key_icon(screen, rect)
+                else:
+                    icon_text = self.font.render(str(item_name)[:1].upper(), FONT_ANTIALIAS, WHITE)
+                    icon_rect = icon_text.get_rect(center=(rect.centerx, rect.centery + 4))
+                    screen.blit(icon_text, icon_rect)
+
+    def _draw_key_icon(self, screen, rect):
+        """Draw a small gold key icon inside a hotbar slot."""
+        gold = (225, 185, 80)
+        highlight = (255, 230, 135)
+        shadow = (80, 55, 28)
+
+        cx = rect.centerx - 6
+        cy = rect.centery + 3
+        pygame.draw.circle(screen, shadow, (cx + 1, cy + 1), 8, width=3)
+        pygame.draw.circle(screen, gold, (cx, cy), 8, width=3)
+        pygame.draw.line(screen, shadow, (cx + 8, cy + 1), (cx + 25, cy + 1), 5)
+        pygame.draw.line(screen, gold, (cx + 8, cy), (cx + 25, cy), 5)
+        pygame.draw.line(screen, gold, (cx + 20, cy), (cx + 20, cy + 8), 4)
+        pygame.draw.line(screen, gold, (cx + 25, cy), (cx + 25, cy + 6), 4)
+        pygame.draw.circle(screen, highlight, (cx - 3, cy - 3), 2)

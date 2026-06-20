@@ -28,6 +28,7 @@ from .hud import (
     draw_door_prompt,
     draw_key_prompt,
     draw_locked_door_prompt,
+    draw_objective_arrow,
     draw_player_health_bar,
 )
 from .inventory_bar import InventoryBar
@@ -107,6 +108,7 @@ class GameScene:
         self.near_locked_door = None
         self.near_boss_room_trigger = None
         self.boss_room_started = False
+        self.show_boss_arrow = False
         self.door_locked_message = False
         self.door_locked_time = 0.0
 
@@ -192,6 +194,7 @@ class GameScene:
                 self.inventory_bar.set_slot(0, self.near_key["id"])
                 self.task_panel.set_task_done("Find a key")
                 self.task_panel.add_task("Find the boss door")
+                self.show_boss_arrow = True
                 self._play_sound("pickup")
             elif self.near_locked_door:
                 required_key = self.near_locked_door.get("required_key_id")
@@ -310,6 +313,7 @@ class GameScene:
         self.near_locked_door = None
         self.near_boss_room_trigger = None
         self.boss_room_started = False
+        self.show_boss_arrow = False
         self.dialogue.active = False
         self.game_over_menu.reset()
         self.inventory_bar = InventoryBar(self.credit_font)
@@ -575,6 +579,7 @@ class GameScene:
         """Start the boss room encounter."""
         trigger["used"] = True
         self.boss_room_started = True
+        self.show_boss_arrow = False
         self.door_locked_message = False
         self.task_panel.set_task_done("Find the boss door")
         self.task_panel.add_task("Defeat the boss")
@@ -614,6 +619,20 @@ class GameScene:
 
         # Attack effect
         self.player.render_attack_effect(screen, self.camera, zoom, self.attack_effect, self.attack_duration)
+
+        # Boss door direction
+        if self.show_boss_arrow and self.world:
+            boss_trigger = self.world.get_active_boss_room_trigger()
+            if boss_trigger:
+                draw_objective_arrow(
+                    screen,
+                    self.player,
+                    boss_trigger["rect"],
+                    self.camera,
+                    zoom,
+                    self.credit_font,
+                    self.time_seconds,
+                )
 
         # Door prompt
         if self.near_door:
