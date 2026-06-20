@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.12.1" orientation="orthogonal" renderorder="right-down" width="37" height="27" tilewidth="16" tileheight="16" infinite="0" nextlayerid="42" nextobjectid="227">
+<map version="1.10" tiledversion="1.12.1" orientation="orthogonal" renderorder="right-down" width="37" height="27" tilewidth="16" tileheight="16" infinite="0" nextlayerid="43" nextobjectid="239">
  <tileset firstgid="1" name="cracked_tiles" tilewidth="16" tileheight="16" tilecount="256" columns="8">
   <image source="decorative_cracks_walls.png" width="128" height="512"/>
  </tileset>
@@ -4802,7 +4802,7 @@
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
 </data>
  </layer>
- <objectgroup id="35" name="collision" visible="0" tintcolor="#c6040a">
+ <objectgroup id="35" name="collision" tintcolor="#c6040a">
   <object id="13" x="205.838" y="271.766" width="69.9547" height="9.05888"/>
   <object id="14" x="276.548" y="272.018" width="7.8007" height="98.0072"/>
   <object id="101" x="247.482" y="282.121" width="16.3496" height="10.626"/>
@@ -4951,7 +4951,7 @@
   <object id="209" x="14.9091" y="256.727" width="69.2727" height="3.63636"/>
   <object id="210" x="82" y="224.727" width="18.9091" height="36"/>
  </objectgroup>
- <objectgroup id="36" name="hazard" visible="0">
+ <objectgroup id="36" name="hazard">
   <object id="71" name="hazard" x="322.668" y="352.125" width="27.6443" height="14.0488"/>
   <object id="138" name="hazard" x="210.708" y="144.025" width="11.5016" height="47.8079"/>
   <object id="140" name="hazard" x="322.248" y="161.531" width="11.5016" height="13.3413"/>
@@ -4960,7 +4960,7 @@
   <object id="105" name="hazard" x="386.684" y="273.179" width="27.6443" height="14.0488"/>
   <object id="106" name="hazard" x="466.089" y="382.5" width="45.5384" height="33.6205"/>
  </objectgroup>
- <objectgroup id="37" name="doors" visible="0">
+ <objectgroup id="37" name="doors">
   <object id="74" name="door" x="248.078" y="368.046" width="17.0815" height="8.73935">
    <properties>
     <property name="door_id" value="1"/>
@@ -4972,7 +4972,7 @@
    </properties>
   </object>
  </objectgroup>
- <objectgroup id="38" name="above_layer" visible="0">
+ <objectgroup id="38" name="above_layer">
   <object id="76" name="above" x="219.5" y="374.834" width="87.5" height="24"/>
   <object id="108" name="above" x="384.461" y="333.031" width="15.644" height="6.38551"/>
   <object id="103" name="above" x="462.833" y="379.917" width="51.5" height="3.45455"/>
@@ -5008,15 +5008,28 @@
   <object id="82" name="above" x="381.024" y="264.179" width="72.2751" height="5.73015"/>
   <object id="83" name="above" x="450.754" y="334.214" width="32.6905" height="5.73015"/>
  </objectgroup>
- <objectgroup id="39" name="item" visible="0">
+ <objectgroup id="39" name="item">
   <object id="141" name="key" x="17.4775" y="239.207" width="14.6081" height="9.13004"/>
  </objectgroup>
- <objectgroup id="40" name="open_door" visible="0">
+ <objectgroup id="40" name="open_door">
   <object id="144" name="locked_door" x="262.379" y="81.6743" width="19.9081" height="13.7825"/>
  </objectgroup>
  <objectgroup id="41" name="enemy_spawns">
   <object id="224" name="enemy_spawn" x="255.991" y="405.71"/>
   <object id="225" name="enemy_spawn" x="452.664" y="349.43"/>
   <object id="226" name="enemy_spawn" x="164.458" y="159.56"/>
+  <object id="229" name="enemy_spawn" x="397.174" y="302.012"/>
+  <object id="230" name="enemy_spawn" x="413.699" y="120.805"/>
+  <object id="231" name="enemy_spawn" x="498.604" y="49.5755"/>
+  <object id="232" name="enemy_spawn" x="557.867" y="100.86"/>
+  <object id="233" name="enemy_spawn" x="47.866" y="229.643"/>
+  <object id="234" name="enemy_spawn" x="251.939" y="157.145"/>
+  <object id="235" name="enemy_spawn" x="321.894" y="75.0241"/>
+  <object id="236" name="enemy_spawn" x="455.214" y="80.0933"/>
+  <object id="237" name="enemy_spawn" x="559.639" y="371.065"/>
+  <object id="238" name="enemy_spawn" x="443.555" y="418.209"/>
+ </objectgroup>
+ <objectgroup id="42" name="triggers">
+  <object id="227" name="boss_room_trigger" x="261.829" y="39.2744" width="21.9081" height="8.54952"/>
  </objectgroup>
 </map>

@@ -105,6 +105,8 @@ class GameScene:
         self.near_door = None
         self.near_key = None
         self.near_locked_door = None
+        self.near_boss_room_trigger = None
+        self.boss_room_started = False
         self.door_locked_message = False
         self.door_locked_time = 0.0
 
@@ -188,6 +190,8 @@ class GameScene:
             elif self.near_key:
                 self.world.collect_key(self.near_key)
                 self.inventory_bar.set_slot(0, self.near_key["id"])
+                self.task_panel.set_task_done("Find a key")
+                self.task_panel.add_task("Find the boss door")
                 self._play_sound("pickup")
             elif self.near_locked_door:
                 required_key = self.near_locked_door.get("required_key_id")
@@ -304,6 +308,8 @@ class GameScene:
         self.near_door = None
         self.near_key = None
         self.near_locked_door = None
+        self.near_boss_room_trigger = None
+        self.boss_room_started = False
         self.dialogue.active = False
         self.game_over_menu.reset()
         self.inventory_bar = InventoryBar(self.credit_font)
@@ -313,6 +319,7 @@ class GameScene:
             self.world.reset_doors()
             self.world.reset_keys()
             self.world.reset_locked_doors()
+            self.world.reset_boss_room_triggers()
 
     def update(self, mouse_pos):
         """Update game state."""
@@ -521,6 +528,12 @@ class GameScene:
         self.near_locked_door = (
             self.world.get_nearby_locked_door(self.player) if self.world else None
         )
+        self.near_boss_room_trigger = (
+            self.world.get_boss_room_trigger(self.player) if self.world else None
+        )
+
+        if self.near_boss_room_trigger and not self.boss_room_started:
+            self._handle_boss_room_trigger(self.near_boss_room_trigger)
 
         # Update player layer based on above zones
         if self.world:
@@ -547,6 +560,34 @@ class GameScene:
                 self.target_zoom,
                 self.world.map_layer.zoom - self.zoom_transition_speed * dt,
             )
+
+    def _handle_boss_room_trigger(self, trigger):
+        """Enter the boss room if the player has the required key."""
+        required_key = trigger.get("required_key_id")
+        if required_key and not self.player_has_key(required_key):
+            self.door_locked_message = True
+            self.door_locked_time = 0.0
+            return
+
+        self._enter_boss_room(trigger)
+
+    def _enter_boss_room(self, trigger):
+        """Start the boss room encounter."""
+        trigger["used"] = True
+        self.boss_room_started = True
+        self.door_locked_message = False
+        self.task_panel.set_task_done("Find the boss door")
+        self.task_panel.add_task("Defeat the boss")
+
+        target_x = trigger.get("target_x")
+        target_y = trigger.get("target_y")
+        if target_x is not None and target_y is not None:
+            self.player.position.x = float(target_x)
+            self.player.position.y = float(target_y)
+            self.camera.x = self.player.position.x
+            self.camera.y = self.player.position.y
+            if self.world and self.world.map_layer:
+                self.world.center(self.player.position.x, self.player.position.y)
 
     def render(self, screen):
         """Render the game scene."""
@@ -596,7 +637,11 @@ class GameScene:
         if self.world:
             draw_debug_collision(
                 screen,
-                self.world.collision_rects + self.world.hazard_rects,
+                (
+                    self.world.collision_rects
+                    + self.world.hazard_rects
+                    + [t["rect"] for t in self.world.boss_room_triggers]
+                ),
                 self.camera,
                 zoom,
             )

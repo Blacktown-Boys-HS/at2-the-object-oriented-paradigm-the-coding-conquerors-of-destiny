@@ -23,6 +23,7 @@ class World:
         self.doors = []
         self.keys = []
         self.locked_doors = []
+        self.boss_room_triggers = []
         self.above_zones = []
         self.group = None
         self.zoom = zoom
@@ -92,6 +93,18 @@ class World:
                                 "rect": rect,
                                 "collected": False,
                                 "id": obj.properties.get("key_id", "key"),
+                            }
+                        )
+                    elif name == "boss_room_trigger":
+                        self.boss_room_triggers.append(
+                            {
+                                "rect": rect,
+                                "required_key_id": obj.properties.get(
+                                    "required_key_id", "key"
+                                ),
+                                "target_x": obj.properties.get("target_x", None),
+                                "target_y": obj.properties.get("target_y", None),
+                                "used": False,
                             }
                         )
                     elif name == "above":
@@ -176,6 +189,16 @@ class World:
                 return key
         return None
 
+    def get_boss_room_trigger(self, player):
+        """Return a boss room trigger the player is touching."""
+        player_rect = pygame.Rect(player.position.x - 4, player.position.y + 8, 8, 4)
+        for trigger in self.boss_room_triggers:
+            if trigger["used"]:
+                continue
+            if player_rect.colliderect(trigger["rect"]):
+                return trigger
+        return None
+
     # DOOR MANAGEMENT
 
     def open_door(self, door):
@@ -206,6 +229,11 @@ class World:
         """Reset all keys to uncollected."""
         for key in self.keys:
             key["collected"] = False
+
+    def reset_boss_room_triggers(self):
+        """Reset all boss room triggers."""
+        for trigger in self.boss_room_triggers:
+            trigger["used"] = False
 
     # RENDERING & CAMERA
 

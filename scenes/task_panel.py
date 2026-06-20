@@ -46,6 +46,13 @@ class TaskPanel:
             if task["text"] == task_text:
                 task["done"] = True
 
+    def add_task(self, task_text):
+        """Adds a new task if it is not already listed."""
+        for task in self.tasks:
+            if task["text"] == task_text:
+                return
+        self.tasks.append({"text": task_text, "done": False})
+
     def render(self, screen, time_seconds):
         """Renders the task panel on the screen."""
         panel_rect = pygame.Rect(int(self.x), self.y, self.width, self.height)
