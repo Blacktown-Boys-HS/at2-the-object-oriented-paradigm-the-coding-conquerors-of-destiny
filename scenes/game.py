@@ -26,6 +26,7 @@ from .hud import (
     draw_debug_collision,
     draw_debug_coords,
     draw_door_prompt,
+    draw_exit_prompt,
     draw_key_prompt,
     draw_locked_door_prompt,
     draw_objective_arrow,
@@ -107,6 +108,8 @@ class GameScene:
         self.near_key = None
         self.near_locked_door = None
         self.near_boss_room_trigger = None
+        self.near_exit_trigger = None
+        self.exit_trigger_active = False
         self.boss_room_started = False
         self.show_boss_arrow = False
         self.door_locked_message = False
@@ -159,6 +162,13 @@ class GameScene:
                 return True
         return False
 
+    def player_has_item(self, item_id):
+        """Check if the player has a specific inventory item."""
+        for item in self.inventory_bar.items:
+            if item == item_id:
+                return True
+        return False
+
     def _play_sound(self, sound_key):
         """Play a sound effect safely, handling both SoundManager and dict types."""
         if hasattr(self.sounds, "play_effect"):
@@ -204,6 +214,8 @@ class GameScene:
                 else:
                     self.world.unlock_door(self.near_locked_door)
                     self._play_sound("door_open")
+            elif self.near_exit_trigger:
+                self._handle_exit_trigger(self.near_exit_trigger)
             return True
         return False
 
@@ -312,6 +324,8 @@ class GameScene:
         self.near_key = None
         self.near_locked_door = None
         self.near_boss_room_trigger = None
+        self.near_exit_trigger = None
+        self.exit_trigger_active = False
         self.boss_room_started = False
         self.show_boss_arrow = False
         self.dialogue.active = False
@@ -324,6 +338,7 @@ class GameScene:
             self.world.reset_keys()
             self.world.reset_locked_doors()
             self.world.reset_boss_room_triggers()
+            self.world.reset_exit_triggers()
 
     def update(self, mouse_pos):
         """Update game state."""
@@ -535,6 +550,9 @@ class GameScene:
         self.near_boss_room_trigger = (
             self.world.get_boss_room_trigger(self.player) if self.world else None
         )
+        self.near_exit_trigger = (
+            self.world.get_exit_trigger(self.player) if self.world else None
+        )
 
         if self.near_boss_room_trigger and not self.boss_room_started:
             self._handle_boss_room_trigger(self.near_boss_room_trigger)
@@ -594,6 +612,22 @@ class GameScene:
             if self.world and self.world.map_layer:
                 self.world.center(self.player.position.x, self.player.position.y)
 
+    def _handle_exit_trigger(self, trigger):
+        """Handle exit trigger gate based on boss reward item."""
+        required_item = trigger.get("required_item", "magic_rune")
+        if required_item and not self.player_has_item(required_item):
+            self.dialogue.set_text_and_start(
+                trigger.get("message", "You need to beat the boss first.")
+            )
+            return
+
+        self._exit_dungeon(trigger)
+
+    def _exit_dungeon(self, trigger):
+        """Placeholder for leaving the dungeon after the boss reward."""
+        trigger["used"] = True
+        self.dialogue.set_text_and_start("The rune opens the way forward.")
+
     def render(self, screen):
         """Render the game scene."""
 
@@ -642,6 +676,10 @@ class GameScene:
         if self.near_key:
             draw_key_prompt(screen, self.player, self.camera, zoom, self.credit_font)
 
+        # Exit prompt
+        if self.near_exit_trigger:
+            draw_exit_prompt(screen, self.player, self.camera, zoom, self.credit_font)
+
         # Locked door prompt
         if self.near_locked_door:
             draw_door_prompt(screen, self.player, self.camera, zoom, self.credit_font)
@@ -660,6 +698,7 @@ class GameScene:
                     self.world.collision_rects
                     + self.world.hazard_rects
                     + [t["rect"] for t in self.world.boss_room_triggers]
+                    + [t["rect"] for t in self.world.exit_triggers]
                 ),
                 self.camera,
                 zoom,

@@ -24,6 +24,7 @@ class World:
         self.keys = []
         self.locked_doors = []
         self.boss_room_triggers = []
+        self.exit_triggers = []
         self.above_zones = []
         self.group = None
         self.zoom = zoom
@@ -104,6 +105,19 @@ class World:
                                 ),
                                 "target_x": obj.properties.get("target_x", None),
                                 "target_y": obj.properties.get("target_y", None),
+                                "used": False,
+                            }
+                        )
+                    elif name == "exit_trigger":
+                        self.exit_triggers.append(
+                            {
+                                "rect": rect,
+                                "required_item": obj.properties.get(
+                                    "required_item", "magic_rune"
+                                ),
+                                "message": obj.properties.get(
+                                    "message", "You need to beat the boss first."
+                                ),
                                 "used": False,
                             }
                         )
@@ -206,6 +220,14 @@ class World:
                 return trigger
         return None
 
+    def get_exit_trigger(self, player):
+        """Return an exit trigger the player is touching."""
+        player_rect = pygame.Rect(player.position.x - 4, player.position.y + 8, 8, 4)
+        for trigger in self.exit_triggers:
+            if player_rect.colliderect(trigger["rect"]):
+                return trigger
+        return None
+
     # DOOR MANAGEMENT
 
     def open_door(self, door):
@@ -240,6 +262,11 @@ class World:
     def reset_boss_room_triggers(self):
         """Reset all boss room triggers."""
         for trigger in self.boss_room_triggers:
+            trigger["used"] = False
+
+    def reset_exit_triggers(self):
+        """Reset all exit triggers."""
+        for trigger in self.exit_triggers:
             trigger["used"] = False
 
     # RENDERING & CAMERA

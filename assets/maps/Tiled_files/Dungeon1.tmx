@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.12.1" orientation="orthogonal" renderorder="right-down" width="37" height="27" tilewidth="16" tileheight="16" infinite="0" nextlayerid="43" nextobjectid="239">
+<map version="1.10" tiledversion="1.12.1" orientation="orthogonal" renderorder="right-down" width="37" height="27" tilewidth="16" tileheight="16" infinite="0" nextlayerid="43" nextobjectid="241">
  <tileset firstgid="1" name="cracked_tiles" tilewidth="16" tileheight="16" tilecount="256" columns="8">
   <image source="decorative_cracks_walls.png" width="128" height="512"/>
  </tileset>
@@ -5031,5 +5031,6 @@
  </objectgroup>
  <objectgroup id="42" name="triggers">
   <object id="227" name="boss_room_trigger" x="261.829" y="39.2744" width="21.9081" height="8.54952"/>
+  <object id="239" name="exit_trigger" x="277.285" y="230.141" width="22.3045" height="21.7975"/>
  </objectgroup>
 </map>

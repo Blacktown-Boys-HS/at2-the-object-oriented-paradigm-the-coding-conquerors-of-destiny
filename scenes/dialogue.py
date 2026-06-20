@@ -51,6 +51,11 @@ class DialogueBox:
         self.closing = False
         self.close_timer = 0.0
 
+    def set_text_and_start(self, text):
+        """Replace dialogue text and start the typewriter effect."""
+        self.text = text
+        self.start()
+
     def skip_or_dismiss(self):
         """Advance: skip to end if typing, otherwise start close animation."""
         if self.chars_shown < len(self.text):

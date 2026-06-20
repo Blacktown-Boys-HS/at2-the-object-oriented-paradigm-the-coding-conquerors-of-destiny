@@ -224,6 +224,12 @@ def draw_locked_door_prompt(screen, player, camera, zoom, font):
     _draw_simple_prompt(screen, sx, sy, font, "Locked — need key", (180, 80, 80))
 
 
+def draw_exit_prompt(screen, player, camera, zoom, font):
+    """Draw an exit interaction prompt above the player."""
+    sx, sy = _player_screen_pos(player, camera, zoom)
+    _draw_simple_prompt(screen, sx, sy, font, "Escape", GOTHIC_GOLD_DIM)
+
+
 def draw_objective_arrow(screen, player, target_rect, camera, zoom, font, time_seconds=0.0):
     """Draw a pulsing arrow that points from the player toward a world target."""
     if target_rect is None:
