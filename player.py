@@ -24,6 +24,8 @@ class Player(pygame.sprite.Sprite):
         self.sprite_sheet = None
         self.current_frame = 0
         self.animation_time = 0.0
+        self.attack_cooldown = 0.0
+        self.attack_cooldown_duration = 0.8
 
         # Load sprite sheet
         knight_path = (
@@ -127,6 +129,9 @@ class Player(pygame.sprite.Sprite):
             center=(int(self.position.x), int(self.position.y))
         )
 
+        if self.attack_cooldown > 0:
+            self.attack_cooldown = max(0.0, self.attack_cooldown - dt)
+
     def render(self, screen, camera, zoom=1) -> None:
         """Render the player sprite relative to the camera."""
         if self.sprite_sheet:
@@ -196,11 +201,13 @@ class Player(pygame.sprite.Sprite):
             self.set_state("hit")
 
     def attack(self, enemies, group):
-        """Deal damage to nearby enemies."""
+        if self.attack_cooldown > 0:
+            return False  # on cooldown
+        self.attack_cooldown = self.attack_cooldown_duration
         attack_rect = pygame.Rect(
-            self.position.x - 24,
-            self.position.y - 24,
-            48, 48
+            self.position.x - 40,
+            self.position.y - 40,
+            80, 80
         )
         for enemy in enemies[:]:
             enemy_rect = pygame.Rect(enemy.position.x - 8, enemy.position.y - 8, 16, 16)
@@ -209,18 +216,22 @@ class Player(pygame.sprite.Sprite):
                 if enemy.is_dead:
                     enemies.remove(enemy)
                     group.remove(enemy)
+        return True
 
     def render_attack_effect(self, screen, camera, zoom, attack_effect, attack_duration):
         if attack_effect <= 0:
             return
         from globals import SCREEN_WIDTH, SCREEN_HEIGHT
         progress = 1.0 - (attack_effect / attack_duration)
-        radius = int(20 + progress * 24)
-        alpha = int(200 * (1.0 - progress))
+        radius = int(40 + progress * 40)  
+        thickness = max(2, int(5 * (1.0 - progress))) 
         screen_x = int((self.position.x - camera.x) * zoom + SCREEN_WIDTH / 2)
         screen_y = int((self.position.y - camera.y) * zoom + SCREEN_HEIGHT / 2)
-        # Draw directly on screen
-        pygame.draw.circle(screen, (100, 200, 255), (screen_x, screen_y), radius, max(1, int(3 * (1.0 - progress))))
+        pygame.draw.circle(screen, (100, 200, 255), (screen_x, screen_y), radius, thickness)
+        # Inner ring for extra impact
+        if progress < 0.5:
+            inner_radius = int(20 + progress * 30)
+            pygame.draw.circle(screen, (180, 230, 255), (screen_x, screen_y), inner_radius, max(1, thickness - 1))
 
     def update_facing(self, dx):
         if dx > 0:

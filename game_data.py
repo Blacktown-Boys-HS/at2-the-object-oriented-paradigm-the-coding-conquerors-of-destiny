@@ -16,6 +16,7 @@ CONTROLS = [
     ("Pause", "ESC — pause menu (resume, settings, or quit to menu)"),
     ("Hotbar", "1–9 or mouse wheel — select inventory slots"),
     ("Tasks panel", "Click the gold tab — show or hide your objectives"),
+    ("Attack", "F — Use your magic ability to attack enemies"),
 ]
 
 SURVIVAL_TIPS = [

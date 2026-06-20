@@ -22,6 +22,7 @@ from enemy import SlimeEnemy
 from .dialogue import DialogueBox
 from .game_over import GameOverMenu
 from .hud import (
+    draw_attack_cooldown,
     draw_debug_collision,
     draw_debug_coords,
     draw_door_prompt,
@@ -256,8 +257,8 @@ class GameScene:
     def _do_attack(self):
         if self.player.state in ("death",):
             return
-        self.attack_effect = self.attack_duration
-        self.player.attack(self.enemies, self.world.group)
+        if self.player.attack(self.enemies, self.world.group if self.world else None):
+            self.attack_effect = self.attack_duration
 
     def consume_requested_scene(self):
         """Return and clear a deferred scene transition request."""
@@ -568,6 +569,7 @@ class GameScene:
 
         # HUD
         draw_player_health_bar(screen, self.player, self.credit_font, self.time_seconds)
+        draw_attack_cooldown(screen, self.player, self.credit_font, self.time_seconds)
 
         # Attack effect
         self.player.render_attack_effect(screen, self.camera, zoom, self.attack_effect, self.attack_duration)

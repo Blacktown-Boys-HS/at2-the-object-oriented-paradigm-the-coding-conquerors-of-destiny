@@ -106,6 +106,62 @@ def draw_player_health_bar(screen, player, font, time_seconds=0.0):
         screen.blit(regen_soon, regen_rect)
 
 
+def draw_attack_cooldown(screen, player, font, time_seconds=0.0):
+    """Gothic attack cooldown panel fixed under the health panel."""
+    margin = 18
+    panel_x = margin
+    panel_y = 120
+    panel_w = 220
+    panel_h = 62
+    pad = 12
+    bar_w = panel_w - pad * 2
+    bar_h = 10
+
+    duration = max(0.01, player.attack_cooldown_duration)
+    cooldown = max(0.0, player.attack_cooldown)
+    ready = cooldown <= 0
+    fill_pct = 1.0 if ready else 1.0 - min(1.0, cooldown / duration)
+
+    panel = pygame.Surface((panel_w, panel_h), pygame.SRCALPHA)
+    pygame.draw.rect(panel, GOTHIC_GOLD, panel.get_rect(), border_radius=10)
+    inner = panel.get_rect().inflate(-5, -5)
+    pygame.draw.rect(panel, (*GOTHIC_PANEL_INNER, 245), inner, border_radius=8)
+    screen.blit(panel, (panel_x, panel_y))
+
+    pulse = 0.5 + 0.5 * math.sin(time_seconds * 5.0)
+    title_color = GOTHIC_GOLD if ready else (165, 150, 120)
+    if ready:
+        title_color = (
+            min(255, int(GOTHIC_GOLD[0] + 20 * pulse)),
+            min(255, int(GOTHIC_GOLD[1] + 20 * pulse)),
+            min(255, int(GOTHIC_GOLD[2] + 10 * pulse)),
+        )
+
+    title = font.render("[F] Attack", FONT_ANTIALIAS, title_color)
+    status_text = "Ready" if ready else f"{cooldown:.1f}s"
+    status_color = (120, 220, 160) if ready else (185, 175, 150)
+    status = font.render(status_text, FONT_ANTIALIAS, status_color)
+
+    screen.blit(title, (panel_x + pad, panel_y + 9))
+    status_rect = status.get_rect(topright=(panel_x + panel_w - pad, panel_y + 9))
+    screen.blit(status, status_rect)
+
+    bar_x = panel_x + pad
+    bar_y = panel_y + 39
+    track = pygame.Rect(bar_x, bar_y, bar_w, bar_h)
+    pygame.draw.rect(screen, (22, 18, 24), track, border_radius=5)
+    pygame.draw.rect(screen, (55, 45, 42), track, width=1, border_radius=5)
+
+    fill_w = max(0, int(bar_w * fill_pct))
+    if fill_w > 0:
+        fill = pygame.Rect(bar_x, bar_y, fill_w, bar_h)
+        fill_color = (225, 185, 80) if ready else (90, 150, 220)
+        fill_hi = (255, 225, 120) if ready else (130, 195, 245)
+        pygame.draw.rect(screen, fill_color, fill, border_radius=5)
+        shine = pygame.Rect(bar_x, bar_y, fill_w, max(2, bar_h // 3))
+        pygame.draw.rect(screen, fill_hi, shine, border_radius=5)
+
+
 def draw_debug_coords(screen, player, font):
     """Draw player coordinates for debugging."""
     coord_text = font.render(
