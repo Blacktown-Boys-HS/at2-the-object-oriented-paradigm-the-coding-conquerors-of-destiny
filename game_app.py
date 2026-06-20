@@ -58,12 +58,17 @@ class GameApp:
             mouse_pos = pygame.mouse.get_pos()
 
             running = self._handle_events()
+            if not running or self.scene_manager.quit_requested:
+                break
 
             if self.splash.active:
                 await self._render_splash(mouse_pos)
                 continue
 
             self._update_scene(mouse_pos)
+            if self.scene_manager.quit_requested:
+                break
+
             self._render_scene(mouse_pos)
 
             pygame.display.update()

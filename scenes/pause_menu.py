@@ -13,7 +13,7 @@ from scenes.aesthetic import (
 
 class PauseMenu:
     """Handles pause menu rendering and state."""
-    ITEMS = ["Resume", "Settings", "Main Menu"]
+    ITEMS = ["Resume", "Settings", "Main Menu", "Quit"]
 
     def __init__(self, title_font, menu_font, sounds=None):
         self.title_font = title_font
@@ -136,4 +136,3 @@ class PauseMenu:
                 safe_scale_surface,
             )
             self.item_rects.append(rect)
-

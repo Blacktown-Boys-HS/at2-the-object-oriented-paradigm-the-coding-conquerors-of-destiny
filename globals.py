@@ -26,6 +26,7 @@ SCENE_CREDITS = "credits"
 SCENE_GAME = "game"
 SCENE_SETTINGS = "settings"
 SCENE_TUTORIAL = "tutorial"
+SCENE_QUIT = "quit"
 
 # Game display name
 GAME_TITLE = "Escape the Dungeon"

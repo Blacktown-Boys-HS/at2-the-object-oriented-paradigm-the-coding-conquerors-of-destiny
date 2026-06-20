@@ -11,6 +11,7 @@ from game_constants import *
 from globals import (
     FPS,
     SCENE_MENU,
+    SCENE_QUIT,
     SCENE_SETTINGS,
     SCREEN_HEIGHT,
     SCREEN_WIDTH,
@@ -432,6 +433,9 @@ class GameScene:
             elif action == "Main Menu":
                 self.paused = False
                 self.pause_pending_scene = SCENE_MENU
+            elif action == "Quit":
+                self.paused = False
+                self.pause_pending_scene = SCENE_QUIT
             return True
         return False
 

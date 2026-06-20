@@ -2,6 +2,7 @@ from globals import (
     SCENE_CREDITS,
     SCENE_GAME,
     SCENE_MENU,
+    SCENE_QUIT,
     SCENE_SETTINGS,
     SCENE_TUTORIAL,
 )
@@ -36,6 +37,7 @@ class SceneManager:
             ),
         }
         self.current_scene = SCENE_MENU
+        self.quit_requested = False
 
     def get_current_scene(self):
         """Return the active scene object."""
@@ -67,7 +69,14 @@ class SceneManager:
 
     def request_scene(self, next_scene, transition):
         """Start a fade transition to another scene."""
-        if not next_scene or next_scene == self.current_scene:
+        if not next_scene:
+            return
+
+        if next_scene == SCENE_QUIT:
+            self.quit_requested = True
+            return
+
+        if next_scene == self.current_scene:
             return
 
         if next_scene == SCENE_SETTINGS:

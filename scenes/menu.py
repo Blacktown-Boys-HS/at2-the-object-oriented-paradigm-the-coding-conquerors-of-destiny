@@ -7,6 +7,7 @@ from globals import (
     FPS,
     SCENE_CREDITS,
     SCENE_GAME,
+    SCENE_QUIT,
     SCENE_SETTINGS,
     SCENE_TUTORIAL,
     FONT_ANTIALIAS,
@@ -40,7 +41,7 @@ class MenuScene:
         self.credit_font = credit_font
         self.sounds = sounds or {}
 
-        self.menu_items = ["Play Game", "Tutorial", "Settings", "Credits"]
+        self.menu_items = ["Play Game", "Tutorial", "Settings", "Credits", "Quit"]
         self.selected_item = 0
         self.menu_item_rects = []
         self.hover_scale = [1.0 for _ in self.menu_items]
@@ -92,6 +93,8 @@ class MenuScene:
             return SCENE_SETTINGS
         if item == "Credits":
             return SCENE_CREDITS
+        if item == "Quit":
+            return SCENE_QUIT
         return None
 
     def consume_requested_scene(self):
