@@ -24,7 +24,6 @@ from .game_over import GameOverMenu
 from .hud import (
     draw_attack_cooldown,
     draw_debug_collision,
-    draw_debug_coords,
     draw_door_prompt,
     draw_exit_prompt,
     draw_key_prompt,
@@ -37,6 +36,7 @@ from .loading_screen import draw_loading_screen
 from .pause_menu import PauseMenu
 from .task_panel import TaskPanel
 from .world import World
+
 
 class GameScene:
     """Game scene."""
@@ -104,6 +104,7 @@ class GameScene:
     def _init_world(self):
         """Initialize world map and proximity detection state."""
         self.world = None
+        self.enemies = []
         self.near_door = None
         self.near_key = None
         self.near_locked_door = None
@@ -129,7 +130,6 @@ class GameScene:
                 zoom=DEFAULT_CAMERA_ZOOM,
                 default_layer=DEFAULT_LAYER,
             )
-            self.enemies = []
             if self.world:
                 for x, y in self.world.enemy_spawns:
                     slime = SlimeEnemy(x, y)
@@ -630,31 +630,59 @@ class GameScene:
 
     def render(self, screen):
         """Render the game scene."""
-
-        # Loading screen
         if self.loading:
-            draw_loading_screen(
-                screen,
-                self.loading_time,
-                self.menu_font,
-                self.credit_font,
-                self.loading_hints,
-            )
+            self._render_loading(screen)
             return
 
-        # Map
+        zoom = self._get_zoom()
+
+        self._render_world(screen)
+        self._render_hud(screen)
+        self._render_effects(screen, zoom)
+        self._render_prompts(screen, zoom)
+        self._render_debug(screen, zoom)
+        self._render_ui(screen)
+        self._render_overlays(screen)
+        self._render_enemy_health_bars(screen, zoom)
+
+    def _render_loading(self, screen):
+        """Render the loading screen."""
+        draw_loading_screen(
+            screen,
+            self.loading_time,
+            self.menu_font,
+            self.credit_font,
+            self.loading_hints,
+        )
+
+    def _get_zoom(self):
+        """Get the current map zoom."""
+        if self.world and self.world.map_layer:
+            return self.world.map_layer.zoom
+        return 1.0
+
+    def _render_world(self, screen):
+        """Render the map and sprites."""
         if self.world:
             self.world.draw(screen, self.camera.x, self.camera.y)
-        zoom = self.world.map_layer.zoom if self.world and self.world.map_layer else 1.0
 
-        # HUD
+    def _render_hud(self, screen):
+        """Render player HUD elements."""
         draw_player_health_bar(screen, self.player, self.credit_font, self.time_seconds)
         draw_attack_cooldown(screen, self.player, self.credit_font, self.time_seconds)
 
-        # Attack effect
-        self.player.render_attack_effect(screen, self.camera, zoom, self.attack_effect, self.attack_duration)
+    def _render_effects(self, screen, zoom):
+        """Render gameplay effects."""
+        self.player.render_attack_effect(
+            screen,
+            self.camera,
+            zoom,
+            self.attack_effect,
+            self.attack_duration,
+        )
 
-        # Boss door direction
+    def _render_prompts(self, screen, zoom):
+        """Render interaction prompts and direction helpers."""
         if self.show_boss_arrow and self.world:
             boss_trigger = self.world.get_active_boss_room_trigger()
             if boss_trigger:
@@ -668,29 +696,25 @@ class GameScene:
                     self.time_seconds,
                 )
 
-        # Door prompt
         if self.near_door:
             draw_door_prompt(screen, self.player, self.camera, zoom, self.credit_font)
 
-        # Key prompt
         if self.near_key:
             draw_key_prompt(screen, self.player, self.camera, zoom, self.credit_font)
 
-        # Exit prompt
         if self.near_exit_trigger:
             draw_exit_prompt(screen, self.player, self.camera, zoom, self.credit_font)
 
-        # Locked door prompt
         if self.near_locked_door:
             draw_door_prompt(screen, self.player, self.camera, zoom, self.credit_font)
 
-        # Locked door message
         if self.door_locked_message:
             draw_locked_door_prompt(
                 screen, self.player, self.camera, zoom, self.credit_font
             )
 
-        # Debug
+    def _render_debug(self, screen, zoom):
+        """Render debug overlays."""
         if self.world:
             draw_debug_collision(
                 screen,
@@ -705,23 +729,22 @@ class GameScene:
             )
         # draw_debug_coords(screen, self.player, self.credit_font)
 
-        # Task panel
+    def _render_ui(self, screen):
+        """Render normal gameplay UI."""
         self.task_panel.render(screen, self.time_seconds)
-
-        # Inventory bar
         self.inventory_bar.render(screen)
 
-        # Pause overlay
+    def _render_overlays(self, screen):
+        """Render overlays that sit above the gameplay UI."""
         if self.paused:
             self.pause_menu.render(screen, self.time_seconds)
 
-        # Game over overlay
         if self.game_over:
             self.game_over_menu.render(screen, self.time_seconds)
 
-        # Dialogue
         self.dialogue.render(screen, self.time_seconds)
 
-        # Draw enemy health bars
+    def _render_enemy_health_bars(self, screen, zoom):
+        """Render enemy health bars."""
         for enemy in self.enemies:
             enemy.render_health_bar(screen, self.camera, zoom)
