@@ -51,7 +51,7 @@ class PlayerFireball:
         self.y = float(y)
         self.vx = float(vx)
         self.vy = float(vy)
-        self.radius = 5
+        self.radius = 4
         self.damage = damage
         self.lifetime = 2.2
         self.age = 0.0
@@ -78,7 +78,7 @@ class PlayerFireball:
         """Draw the fireball directly on the screen."""
         screen_x = int((self.x - camera.x) * zoom + SCREEN_WIDTH / 2)
         screen_y = int((self.y - camera.y) * zoom + SCREEN_HEIGHT / 2)
-        draw_radius = max(4, int(self.radius * zoom))
+        draw_radius = max(3, int(self.radius * zoom))
 
         pulse = 0.5 + 0.5 * math.sin(time_seconds * 16 + self.age * 12)
         flame = (
@@ -1207,7 +1207,7 @@ class GameScene:
     def _render_ui(self, screen):
         """Render normal gameplay UI."""
         self.task_panel.render(screen, self.time_seconds)
-        if self.current_map_path != BOSS_MAP_PATH:
+        if self.current_map_path != BOSS_MAP_PATH or self.boss_enemy is None:
             self.inventory_bar.render(screen)
 
     def _render_overlays(self, screen):
