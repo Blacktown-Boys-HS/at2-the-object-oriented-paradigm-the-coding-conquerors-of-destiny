@@ -162,6 +162,60 @@ def draw_attack_cooldown(screen, player, font, time_seconds=0.0):
         pygame.draw.rect(screen, fill_hi, shine, border_radius=5)
 
 
+def draw_boss_health_bar(screen, boss, font, time_seconds=0.0):
+    """Render the boss name and health bar at the top of the screen."""
+    if boss is None or boss.is_dead:
+        return
+
+    panel_w = 620
+    panel_h = 74
+    panel_x = (SCREEN_WIDTH - panel_w) // 2
+    panel_y = 18
+    pad = 14
+    bar_h = 16
+
+    panel = pygame.Surface((panel_w, panel_h), pygame.SRCALPHA)
+    pygame.draw.rect(panel, GOTHIC_GOLD, panel.get_rect(), border_radius=10)
+    inner = panel.get_rect().inflate(-5, -5)
+    pygame.draw.rect(panel, (*GOTHIC_PANEL_INNER, 245), inner, border_radius=8)
+    screen.blit(panel, (panel_x, panel_y))
+
+    pulse = 0.5 + 0.5 * math.sin(time_seconds * 3.5)
+    name_color = (
+        min(255, int(185 + 35 * pulse)),
+        min(255, int(95 + 25 * pulse)),
+        min(255, int(230 + 20 * pulse)),
+    )
+    name = getattr(boss, "NAME", "Boss")
+    title = font.render(name, FONT_ANTIALIAS, name_color)
+    title_rect = title.get_rect(center=(SCREEN_WIDTH // 2, panel_y + 22))
+    screen.blit(title, title_rect)
+
+    bar_x = panel_x + pad
+    bar_y = panel_y + 44
+    bar_w = panel_w - pad * 2
+    track_rect = pygame.Rect(bar_x, bar_y, bar_w, bar_h)
+
+    pygame.draw.rect(screen, (42, 8, 45), track_rect, border_radius=8)
+    pygame.draw.rect(screen, (14, 10, 18), track_rect, width=1, border_radius=8)
+
+    health_pct = max(0, boss.health / boss.MAX_HEALTH)
+    fill_w = int(bar_w * health_pct)
+    if fill_w > 0:
+        fill_rect = pygame.Rect(bar_x, bar_y, fill_w, bar_h)
+        pygame.draw.rect(screen, (135, 54, 196), fill_rect, border_radius=8)
+        shine_rect = pygame.Rect(bar_x, bar_y, fill_w, max(3, bar_h // 3))
+        pygame.draw.rect(screen, (205, 130, 255), shine_rect, border_radius=8)
+
+    hp_text = font.render(
+        f"{int(boss.health)} / {int(boss.MAX_HEALTH)}",
+        FONT_ANTIALIAS,
+        WHITE,
+    )
+    hp_rect = hp_text.get_rect(center=track_rect.center)
+    screen.blit(hp_text, hp_rect)
+
+
 def draw_debug_coords(screen, player, font):
     """Draw player coordinates for debugging."""
     coord_text = font.render(

@@ -18,12 +18,13 @@ from globals import (
     get_pixel_font_path,
 )
 from player import Player
-from enemy import SlimeEnemy
+from enemy import BossSlimeEnemy, SlimeEnemy
 
 from .dialogue import DialogueBox
 from .game_over import GameOverMenu
 from .hud import (
     draw_attack_cooldown,
+    draw_boss_health_bar,
     draw_debug_collision,
     draw_door_prompt,
     draw_exit_prompt,
@@ -106,6 +107,8 @@ class GameScene:
         """Initialize world map and proximity detection state."""
         self.world = None
         self.enemies = []
+        self.boss_enemy = None
+        self.current_map_path = DEFAULT_MAP_PATH
         self.near_door = None
         self.near_key = None
         self.near_locked_door = None
@@ -117,13 +120,14 @@ class GameScene:
         self.door_locked_message = False
         self.door_locked_time = 0.0
 
+        self._load_world(DEFAULT_MAP_PATH, player_spawn=((27 * 16) / 2, (37 * 16) / 2))
+
+    def _load_world(self, map_path, player_spawn=None):
+        """Load a TMX world and rebuild enemies for it."""
         try:
             tmx_path = (
                 Path(__file__).resolve().parent.parent
-                / "assets"
-                / "maps"
-                / "Tiled_files"
-                / "Dungeon1.tmx"
+                / map_path
             )
             self.world = World(
                 tmx_path,
@@ -131,18 +135,34 @@ class GameScene:
                 zoom=DEFAULT_CAMERA_ZOOM,
                 default_layer=DEFAULT_LAYER,
             )
+            self.current_map_path = map_path
+            self.enemies = []
+            self.boss_enemy = None
+
             if self.world:
                 for x, y in self.world.enemy_spawns:
                     slime = SlimeEnemy(x, y)
                     self.world.group.add(slime)
                     self.enemies.append(slime)
+
+                if self.world.boss_spawn:
+                    boss_x, boss_y = self.world.boss_spawn
+                    self.boss_enemy = BossSlimeEnemy(boss_x, boss_y)
+                    self.world.group.add(self.boss_enemy)
+                    self.enemies.append(self.boss_enemy)
         except Exception as e:
             print(f"Warning: Could not load map : {e}")
 
-        # Center player on map
+        if player_spawn is None and self.world and self.world.player_spawn:
+            player_spawn = self.world.player_spawn
+
+        if player_spawn is None and self.world:
+            player_spawn = (self.world.map_width / 2, self.world.map_height - 96)
+
         if self.world and self.world.map_layer:
-            self.player.position.x = (27 * 16) / 2
-            self.player.position.y = (37 * 16) / 2
+            self.player.position.x = float(player_spawn[0])
+            self.player.position.y = float(player_spawn[1])
+            self.world.center(self.player.position.x, self.player.position.y)
         else:
             self.player.position.x = SCREEN_WIDTH / 2
             self.player.position.y = SCREEN_HEIGHT / 2
@@ -529,10 +549,16 @@ class GameScene:
         self.player.update(dt)
 
         # Update enemy events
-        for enemy in self.enemies:
-            enemy.update(dt, self.player.position, self.world.get_collision_rects() if self.world else [])
+        for enemy in self.enemies[:]:
+            enemy.update(
+                dt,
+                self.player.position,
+                self.world.get_collision_rects() if self.world else [],
+            )
             enemy.check_contact_damage(self.player)
             if enemy.is_dead:
+                if enemy is self.boss_enemy:
+                    self._handle_boss_defeated()
                 self.enemies.remove(enemy)
                 self.world.group.remove(enemy)
 
@@ -542,6 +568,15 @@ class GameScene:
             self.paused = False
             self.keys_pressed = {"up": False, "down": False, "left": False, "right": False}
             self.player.set_state("death")
+
+    def _handle_boss_defeated(self):
+        """Reward the player after defeating the boss."""
+        self.task_panel.set_task_done("Defeat the boss")
+        self.task_panel.add_task("Escape the dungeon")
+        self.inventory_bar.set_slot(1, "magic_rune")
+        self.boss_enemy = None
+        self.boss_room_started = False
+        self._play_sound("pickup")
 
     def _update_world_state(self, dt):
         """Update world state: door/key proximity, player layer, and camera."""
@@ -608,13 +643,19 @@ class GameScene:
 
         target_x = trigger.get("target_x")
         target_y = trigger.get("target_y")
+        player_spawn = None
         if target_x is not None and target_y is not None:
-            self.player.position.x = float(target_x)
-            self.player.position.y = float(target_y)
-            self.camera.x = self.player.position.x
-            self.camera.y = self.player.position.y
-            if self.world and self.world.map_layer:
-                self.world.center(self.player.position.x, self.player.position.y)
+            player_spawn = (float(target_x), float(target_y))
+
+        self._load_world(BOSS_MAP_PATH, player_spawn=player_spawn)
+        self.spawn_x = self.player.position.x
+        self.spawn_y = self.player.position.y
+        self.camera.x = self.player.position.x
+        self.camera.y = self.player.position.y
+        self.player.update(0)
+
+        if self.world and self.world.map_layer:
+            self.world.center(self.player.position.x, self.player.position.y)
 
     def _handle_exit_trigger(self, trigger):
         """Handle exit trigger gate based on boss reward item."""
@@ -674,6 +715,12 @@ class GameScene:
         """Render player HUD elements."""
         draw_player_health_bar(screen, self.player, self.credit_font, self.time_seconds)
         draw_attack_cooldown(screen, self.player, self.credit_font, self.time_seconds)
+        draw_boss_health_bar(
+            screen,
+            self.boss_enemy,
+            self.credit_font,
+            self.time_seconds,
+        )
 
     def _render_effects(self, screen, zoom):
         """Render gameplay effects."""
@@ -751,4 +798,6 @@ class GameScene:
     def _render_enemy_health_bars(self, screen, zoom):
         """Render enemy health bars."""
         for enemy in self.enemies:
+            if enemy is self.boss_enemy:
+                continue
             enemy.render_health_bar(screen, self.camera, zoom)

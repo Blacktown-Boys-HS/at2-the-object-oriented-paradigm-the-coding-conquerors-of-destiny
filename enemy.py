@@ -15,6 +15,7 @@ class SlimeEnemy(pygame.sprite.Sprite):
     FRAME_WIDTH = 24
     FRAME_HEIGHT = 24
     DISPLAY_SCALE = 1
+    SPRITE_NAME = "slime_green.png"
 
     # AI states
     STATE_ROAM = "roam"
@@ -56,7 +57,7 @@ class SlimeEnemy(pygame.sprite.Sprite):
 
         slime_path = (
             Path(__file__).resolve().parent
-            / "assets" / "rpg_assets" / "sprites" / "slime_green.png"
+            / "assets" / "rpg_assets" / "sprites" / self.SPRITE_NAME
         )
         try:
             self.sprite_sheet = SpriteSheet(slime_path, self.FRAME_WIDTH, self.FRAME_HEIGHT)
@@ -146,7 +147,7 @@ class SlimeEnemy(pygame.sprite.Sprite):
             # Move X
             self.position.x += dx * speed * dt
             if collision_rects:
-                hit_rect = pygame.Rect(self.position.x - 4, self.position.y + 4, 8, 4)
+                hit_rect = self.get_hit_rect()
                 for rect in collision_rects:
                     if hit_rect.colliderect(rect):
                         self.position.x = old_x
@@ -156,7 +157,7 @@ class SlimeEnemy(pygame.sprite.Sprite):
             # Move Y
             self.position.y += dy * speed * dt
             if collision_rects:
-                hit_rect = pygame.Rect(self.position.x - 4, self.position.y + 4, 8, 4)
+                hit_rect = self.get_hit_rect()
                 for rect in collision_rects:
                     if hit_rect.colliderect(rect):
                         self.position.y = old_y
@@ -191,14 +192,24 @@ class SlimeEnemy(pygame.sprite.Sprite):
         self.image = scaled
         self.rect = self.image.get_rect(center=self.rect.center)
 
+    def get_hit_rect(self):
+        """Return the enemy collision / attack hitbox."""
+        width = int(16 * self.DISPLAY_SCALE)
+        height = int(12 * self.DISPLAY_SCALE)
+        return pygame.Rect(
+            int(self.position.x - width / 2),
+            int(self.position.y - height / 2),
+            width,
+            height,
+        )
+
     def check_contact_damage(self, player):
         """Deal contact damage to player if overlapping. Call each frame."""
         if self.ai_state == self.STATE_DEAD:
             return
         if self.contact_cooldown > 0:
             return
-        slime_rect = pygame.Rect(self.position.x - 8, self.position.y - 8, 16, 16)
-        player_rect = pygame.Rect(self.position.x - 4, self.position.y + 8, 8, 4)
+        slime_rect = self.get_hit_rect()
         player_check = pygame.Rect(player.position.x - 4, player.position.y + 8, 8, 4)
         if slime_rect.colliderect(player_check):
             if player.damage_cooldown <= 0:
@@ -231,3 +242,20 @@ class SlimeEnemy(pygame.sprite.Sprite):
         # Border
         pygame.draw.rect(screen, (0, 0, 0), (bar_x, bar_y, bar_width, bar_height), 1, border_radius=2)
 
+
+class BossSlimeEnemy(SlimeEnemy):
+    """Large purple slime boss."""
+
+    DISPLAY_SCALE = 10
+    SPRITE_NAME = "slime_purple.png"
+
+    ROAM_SPEED = 12
+    CHASE_SPEED = 28
+    DETECT_RADIUS = 260
+    LOSE_RADIUS = 320
+
+    MAX_HEALTH = 750
+    CONTACT_DAMAGE = 25
+    CONTACT_COOLDOWN = 1.0
+
+    NAME = "The Violet Slime King"

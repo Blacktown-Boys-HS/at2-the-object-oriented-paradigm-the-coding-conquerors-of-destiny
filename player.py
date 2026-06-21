@@ -210,7 +210,10 @@ class Player(pygame.sprite.Sprite):
             80, 80
         )
         for enemy in enemies[:]:
-            enemy_rect = pygame.Rect(enemy.position.x - 8, enemy.position.y - 8, 16, 16)
+            if hasattr(enemy, "get_hit_rect"):
+                enemy_rect = enemy.get_hit_rect()
+            else:
+                enemy_rect = pygame.Rect(enemy.position.x - 8, enemy.position.y - 8, 16, 16)
             if attack_rect.colliderect(enemy_rect):
                 enemy.take_damage(20)
                 if enemy.is_dead:

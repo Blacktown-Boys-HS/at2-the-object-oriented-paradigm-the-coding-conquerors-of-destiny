@@ -29,6 +29,8 @@ class World:
         self.group = None
         self.zoom = zoom
         self.enemy_spawns = []
+        self.boss_spawn = None
+        self.player_spawn = None
 
         tmx_data = pytmx.load_pygame(str(tmx_path), pixelalpha=True)
 
@@ -58,77 +60,108 @@ class World:
         and above zones based on object names and properties.
         """
         for obj in tmx_data.objects:
-            if obj.x is not None:
-                try:
-                    rect = pygame.Rect(
-                        int(obj.x), int(obj.y), int(obj.width), int(obj.height)
-                    )
-                    name = (obj.name or "").lower()
-                    if name == "hazard":
-                        self.hazard_rects.append(rect)
-                    elif name == "door":
-                        self.doors.append(
-                            {
-                                "rect": rect,
-                                "open": False,
-                                "id": obj.properties.get("door_id", 0),
-                                "required_key_id": obj.properties.get(
-                                    "required_key_id", None
-                                ),
-                            }
-                        )
-                    elif name == "locked_door":
-                        self.locked_doors.append(
-                            {
-                                "rect": rect,
-                                "locked": True,
-                                "id": obj.properties.get("door_id", 0),
-                                "required_key_id": obj.properties.get(
-                                    "required_key_id", None
-                                ),
-                            }
-                        )
-                    elif name == "key":
-                        self.keys.append(
-                            {
-                                "rect": rect,
-                                "collected": False,
-                                "id": obj.properties.get("key_id", "key"),
-                            }
-                        )
-                    elif name == "boss_room_trigger":
-                        self.boss_room_triggers.append(
-                            {
-                                "rect": rect,
-                                "required_key_id": obj.properties.get(
-                                    "required_key_id", "key"
-                                ),
-                                "target_x": obj.properties.get("target_x", None),
-                                "target_y": obj.properties.get("target_y", None),
-                                "used": False,
-                            }
-                        )
-                    elif name == "exit_trigger":
-                        self.exit_triggers.append(
-                            {
-                                "rect": rect,
-                                "required_item": obj.properties.get(
-                                    "required_item", "magic_rune"
-                                ),
-                                "message": obj.properties.get(
-                                    "message", "You need to beat the boss first."
-                                ),
-                                "used": False,
-                            }
-                        )
-                    elif name == "above":
-                        self.above_zones.append(rect)
-                    elif name == "enemy_spawn":
-                        self.enemy_spawns.append((int(obj.x), int(obj.y)))
-                    else:
-                        self.collision_rects.append(rect)
-                except Exception:
-                    pass
+            self._load_tiled_object(obj, obj.name)
+
+        # Tiled lets you name the layer instead of each object.
+        # Use that for point markers like player_spawn.
+        for layer in tmx_data.layers:
+            if not isinstance(layer, pytmx.TiledObjectGroup):
+                continue
+
+            layer_name = (layer.name or "").lower()
+            if layer_name not in ("player_spawn", "boss_spawn"):
+                continue
+
+            for obj in layer:
+                if obj.name:
+                    continue
+                self._load_tiled_object(obj, layer_name, marker_only=True)
+
+    def _load_tiled_object(self, obj, object_name, marker_only=False):
+        """Load one Tiled object into the correct world list."""
+        if obj.x is None:
+            return
+
+        try:
+            rect = pygame.Rect(
+                int(obj.x),
+                int(obj.y),
+                int(getattr(obj, "width", 0) or 0),
+                int(getattr(obj, "height", 0) or 0),
+            )
+            name = (object_name or "").lower()
+
+            if name == "boss_spawn":
+                self.boss_spawn = rect.center
+            elif name == "player_spawn":
+                self.player_spawn = rect.center
+            elif marker_only:
+                return
+            elif name == "hazard":
+                self.hazard_rects.append(rect)
+            elif name == "door":
+                self.doors.append(
+                    {
+                        "rect": rect,
+                        "open": False,
+                        "id": obj.properties.get("door_id", 0),
+                        "required_key_id": obj.properties.get(
+                            "required_key_id", None
+                        ),
+                    }
+                )
+            elif name == "locked_door":
+                self.locked_doors.append(
+                    {
+                        "rect": rect,
+                        "locked": True,
+                        "id": obj.properties.get("door_id", 0),
+                        "required_key_id": obj.properties.get(
+                            "required_key_id", None
+                        ),
+                    }
+                )
+            elif name == "key":
+                self.keys.append(
+                    {
+                        "rect": rect,
+                        "collected": False,
+                        "id": obj.properties.get("key_id", "key"),
+                    }
+                )
+            elif name == "boss_room_trigger":
+                self.boss_room_triggers.append(
+                    {
+                        "rect": rect,
+                        "required_key_id": obj.properties.get(
+                            "required_key_id", "key"
+                        ),
+                        "target_x": obj.properties.get("target_x", None),
+                        "target_y": obj.properties.get("target_y", None),
+                        "used": False,
+                    }
+                )
+            elif name == "exit_trigger":
+                self.exit_triggers.append(
+                    {
+                        "rect": rect,
+                        "required_item": obj.properties.get(
+                            "required_item", "magic_rune"
+                        ),
+                        "message": obj.properties.get(
+                            "message", "You need to beat the boss first."
+                        ),
+                        "used": False,
+                    }
+                )
+            elif name == "above":
+                self.above_zones.append(rect)
+            elif name == "enemy_spawn":
+                self.enemy_spawns.append((int(obj.x), int(obj.y)))
+            else:
+                self.collision_rects.append(rect)
+        except Exception:
+            pass
 
     # COLLISION DETECTION
 

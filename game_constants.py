@@ -28,3 +28,4 @@ PLAYER_DAMAGE_ANIMATION_SPEED = 5
 
 # Map
 DEFAULT_MAP_PATH = "assets/maps/Tiled_files/Dungeon1.tmx"
+BOSS_MAP_PATH = "assets/maps/Tiled_files/Bossfight.tmx"
