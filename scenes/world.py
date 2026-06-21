@@ -82,8 +82,16 @@ class World:
         Categorizes objects into collision rects, hazards, doors, keys, locked doors,
         and above zones based on object names and properties.
         """
-        for obj in tmx_data.objects:
-            self._load_tiled_object(obj, obj.name)
+        for layer in tmx_data.layers:
+            if not isinstance(layer, pytmx.TiledObjectGroup):
+                continue
+
+            layer_name = (layer.name or "").lower()
+            for obj in layer:
+                if layer_name in ("player_spawn", "boss_spawn") and not obj.name:
+                    continue
+                object_name = obj.name or getattr(obj, "type", "")
+                self._load_tiled_object(obj, object_name, layer_name=layer_name)
 
         # Tiled lets you name the layer instead of each object.
         # Use that for point markers like player_spawn.
@@ -98,9 +106,14 @@ class World:
             for obj in layer:
                 if obj.name:
                     continue
-                self._load_tiled_object(obj, layer_name, marker_only=True)
+                self._load_tiled_object(
+                    obj,
+                    layer_name,
+                    layer_name=layer_name,
+                    marker_only=True,
+                )
 
-    def _load_tiled_object(self, obj, object_name, marker_only=False):
+    def _load_tiled_object(self, obj, object_name, layer_name="", marker_only=False):
         """Load one Tiled object into the correct world list."""
         if obj.x is None:
             return
@@ -113,6 +126,7 @@ class World:
                 int(getattr(obj, "height", 0) or 0),
             )
             name = (object_name or "").lower()
+            layer_name = (layer_name or "").lower()
 
             if name == "boss_spawn":
                 self.boss_spawn = rect.center
@@ -179,12 +193,21 @@ class World:
                 )
             elif name == "above":
                 self.above_zones.append(rect)
+            elif layer_name == "enemy_spawns":
+                self._load_enemy_spawn(name, rect)
             elif name == "enemy_spawn":
-                self.enemy_spawns.append((int(obj.x), int(obj.y)))
+                self.enemy_spawns.append(rect.center)
             else:
                 self.collision_rects.append(rect)
         except Exception:
             pass
+
+    def _load_enemy_spawn(self, name, rect):
+        """Load an enemy from the enemy_spawns Tiled layer."""
+        if name in ("boss", "boss_spawn", "main_boss"):
+            self.boss_spawn = rect.center
+        elif name in ("enemy", "enemy_spawn", "slime", "slime_green"):
+            self.enemy_spawns.append(rect.center)
 
     # COLLISION DETECTION
 

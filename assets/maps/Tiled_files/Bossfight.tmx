@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.12.1" orientation="orthogonal" renderorder="right-down" width="37" height="27" tilewidth="16" tileheight="16" infinite="0" nextlayerid="49" nextobjectid="272">
+<map version="1.10" tiledversion="1.12.1" orientation="orthogonal" renderorder="right-down" width="37" height="27" tilewidth="16" tileheight="16" infinite="0" nextlayerid="49" nextobjectid="274">
  <tileset firstgid="1" name="cracked_tiles" tilewidth="16" tileheight="16" tilecount="256" columns="8">
   <image source="decorative_cracks_walls.png" width="128" height="512"/>
  </tileset>
@@ -4531,9 +4531,11 @@
   <object id="247" name="above" x="124.588" y="90.7938" width="342.991" height="14.9904"/>
  </objectgroup>
  <objectgroup id="41" name="enemy_spawns">
-  <object id="268" x="237.084" y="171.72"/>
+  <object id="268" name="enemy" x="242.291" y="175.83"/>
   <object id="269" x="356.734" y="170.612" width="0.36929"/>
-  <object id="270" x="356.734" y="310.942"/>
-  <object id="271" x="235.976" y="312.05"/>
+  <object id="270" name="enemy" x="349.061" y="306.284"/>
+  <object id="272" name="enemy" x="349.62" y="176.815"/>
+  <object id="271" name="enemy" x="243.101" y="305.473"/>
+  <object id="273" name="boss" x="297.087" y="228.764"/>
  </objectgroup>
 </map>

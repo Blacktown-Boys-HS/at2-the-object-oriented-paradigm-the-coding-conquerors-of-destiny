@@ -246,16 +246,91 @@ class SlimeEnemy(pygame.sprite.Sprite):
 class BossSlimeEnemy(SlimeEnemy):
     """Large purple slime boss."""
 
-    DISPLAY_SCALE = 10
+    NAME = "The Violet Slime King"
+    DISPLAY_SCALE = 3
     SPRITE_NAME = "slime_purple.png"
-
-    ROAM_SPEED = 12
-    CHASE_SPEED = 28
-    DETECT_RADIUS = 260
-    LOSE_RADIUS = 320
 
     MAX_HEALTH = 750
     CONTACT_DAMAGE = 25
     CONTACT_COOLDOWN = 1.0
 
-    NAME = "The Violet Slime King"
+    def update(self, dt, player_pos=None, collision_rects=None):
+        """Update animation only; the boss stays still and attacks with projectiles."""
+        if self.ai_state == self.STATE_DEAD:
+            self._update_animation(dt)
+            self.rect.center = (int(self.position.x), int(self.position.y))
+            return
+
+        self.damage_cooldown = max(0.0, self.damage_cooldown - dt)
+        self.contact_cooldown = max(0.0, self.contact_cooldown - dt)
+
+        if self.ai_state == self.STATE_HIT:
+            self.hit_timer -= dt
+            if self.hit_timer <= 0:
+                self.ai_state = self.STATE_ROAM
+
+        if player_pos:
+            if player_pos.x > self.position.x:
+                self.facing_right = True
+            elif player_pos.x < self.position.x:
+                self.facing_right = False
+
+        self._update_animation(dt)
+        self.rect.center = (int(self.position.x), int(self.position.y))
+
+
+class BossProjectile:
+    """Projectile fired by the boss in the arena."""
+
+    def __init__(self, x, y, vx, vy, radius=5, damage=12, lifetime=4.0):
+        self.x = float(x)
+        self.y = float(y)
+        self.vx = float(vx)
+        self.vy = float(vy)
+        self.radius = radius
+        self.damage = damage
+        self.lifetime = lifetime
+        self.age = 0.0
+        self.active = True
+
+    def update(self, dt):
+        """Move the projectile and expire it after its lifetime."""
+        self.x += self.vx * dt
+        self.y += self.vy * dt
+        self.age += dt
+        if self.age >= self.lifetime:
+            self.active = False
+
+    def get_rect(self):
+        """Return collision rect for hitting the player."""
+        return pygame.Rect(
+            int(self.x - self.radius),
+            int(self.y - self.radius),
+            self.radius * 2,
+            self.radius * 2,
+        )
+
+    def render(self, screen, camera, zoom, time_seconds=0.0):
+        """Draw projectile directly on the screen."""
+        from globals import SCREEN_WIDTH, SCREEN_HEIGHT
+
+        screen_x = int((self.x - camera.x) * zoom + SCREEN_WIDTH / 2)
+        screen_y = int((self.y - camera.y) * zoom + SCREEN_HEIGHT / 2)
+        draw_radius = max(3, int(self.radius * zoom))
+
+        pulse = 0.5 + 0.5 * math.sin(time_seconds * 10 + self.age * 8)
+        core = (
+            min(255, int(180 + 45 * pulse)),
+            min(255, int(80 + 30 * pulse)),
+            255,
+        )
+        rim = (70, 20, 100)
+
+        pygame.draw.circle(screen, rim, (screen_x, screen_y), draw_radius + 2)
+        pygame.draw.circle(screen, core, (screen_x, screen_y), draw_radius)
+        pygame.draw.circle(
+            screen,
+            (245, 210, 255),
+            (screen_x - draw_radius // 3, screen_y - draw_radius // 3),
+            max(1, draw_radius // 3),
+        )

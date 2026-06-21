@@ -2,6 +2,7 @@
 Game scene for the RPG game.
 """
 
+import math
 from pathlib import Path
 
 import pygame
@@ -18,7 +19,7 @@ from globals import (
     get_pixel_font_path,
 )
 from player import Player
-from enemy import BossSlimeEnemy, SlimeEnemy
+from enemy import BossProjectile, BossSlimeEnemy, SlimeEnemy
 
 from .dialogue import DialogueBox
 from .debug_menu import DebugMenu
@@ -54,6 +55,9 @@ class GameScene:
 
         self.attack_effect = 0.0
         self.attack_duration = 0.3
+        self.boss_projectiles = []
+        self.boss_shot_timer = 0.0
+        self.boss_burst_timer = 1.2
 
     def _init_core_objects(self, title_font, menu_font, credit_font, sounds):
         """Initialize core objects: clock, fonts, sounds, player, camera, keys."""
@@ -140,6 +144,9 @@ class GameScene:
             self.current_map_path = map_path
             self.enemies = []
             self.boss_enemy = None
+            self.boss_projectiles = []
+            self.boss_shot_timer = 0.0
+            self.boss_burst_timer = 1.2
 
             if self.world:
                 for x, y in self.world.enemy_spawns:
@@ -362,6 +369,9 @@ class GameScene:
         self.exit_trigger_active = False
         self.boss_room_started = False
         self.show_boss_arrow = False
+        self.boss_projectiles = []
+        self.boss_shot_timer = 0.0
+        self.boss_burst_timer = 1.2
         self.dialogue.active = False
         self.game_over_menu.reset()
         self.inventory_bar = InventoryBar(self.credit_font)
@@ -589,6 +599,8 @@ class GameScene:
                 self.enemies.remove(enemy)
                 self.world.group.remove(enemy)
 
+        self._update_boss_projectiles(dt)
+
         # Check if slime killed the player
         if self.player.is_dead and not self.game_over:
             self.game_over = True
@@ -596,11 +608,103 @@ class GameScene:
             self.keys_pressed = {"up": False, "down": False, "left": False, "right": False}
             self.player.set_state("death")
 
+    def _update_boss_projectiles(self, dt):
+        """Update boss projectile patterns and player hits."""
+        if not self.boss_enemy or self.boss_enemy.is_dead:
+            self.boss_projectiles = []
+            return
+
+        self.boss_shot_timer -= dt
+        self.boss_burst_timer -= dt
+
+        if self.boss_shot_timer <= 0:
+            self._spawn_aimed_boss_projectile()
+            self.boss_shot_timer = 0.75
+
+        if self.boss_burst_timer <= 0:
+            self._spawn_boss_burst()
+            self.boss_burst_timer = 2.4
+
+        player_rect = pygame.Rect(
+            self.player.position.x - PLAYER_COLLISION_OFFSET_X,
+            self.player.position.y + PLAYER_COLLISION_OFFSET_Y,
+            PLAYER_COLLISION_WIDTH,
+            PLAYER_COLLISION_HEIGHT,
+        ).inflate(8, 8)
+
+        for projectile in self.boss_projectiles[:]:
+            projectile.update(dt)
+
+            if self.world and (
+                projectile.x < -32
+                or projectile.y < -32
+                or projectile.x > self.world.map_width + 32
+                or projectile.y > self.world.map_height + 32
+            ):
+                projectile.active = False
+
+            if projectile.active and projectile.get_rect().colliderect(player_rect):
+                if self.player.damage_cooldown <= 0:
+                    self.player.take_damage(projectile.damage)
+                    self._play_sound("hit")
+                    if self.player.is_dead:
+                        self._play_sound("death")
+                        self.game_over = True
+                        self.paused = False
+                        self.keys_pressed = {
+                            "up": False,
+                            "down": False,
+                            "left": False,
+                            "right": False,
+                        }
+                        self.player.set_state("death")
+                projectile.active = False
+
+            if not projectile.active:
+                self.boss_projectiles.remove(projectile)
+
+    def _spawn_aimed_boss_projectile(self):
+        """Shoot one projectile toward the player's current position."""
+        dx = self.player.position.x - self.boss_enemy.position.x
+        dy = self.player.position.y - self.boss_enemy.position.y
+        length = max(1.0, (dx * dx + dy * dy) ** 0.5)
+        speed = 115
+        self.boss_projectiles.append(
+            BossProjectile(
+                self.boss_enemy.position.x,
+                self.boss_enemy.position.y,
+                dx / length * speed,
+                dy / length * speed,
+                radius=4,
+                damage=10,
+            )
+        )
+
+    def _spawn_boss_burst(self):
+        """Shoot a rotating ring of projectiles from the boss."""
+        amount = 10
+        speed = 80
+        offset = self.time_seconds * 0.8
+
+        for i in range(amount):
+            angle = offset + (i / amount) * 6.28318530718
+            self.boss_projectiles.append(
+                BossProjectile(
+                    self.boss_enemy.position.x,
+                    self.boss_enemy.position.y,
+                    math.cos(angle) * speed,
+                    math.sin(angle) * speed,
+                    radius=4,
+                    damage=8,
+                )
+            )
+
     def _handle_boss_defeated(self):
         """Reward the player after defeating the boss."""
         self.task_panel.set_task_done("Defeat the boss")
         self.task_panel.add_task("Escape the dungeon")
         self.inventory_bar.set_slot(1, "magic_rune")
+        self.boss_projectiles = []
         self.boss_enemy = None
         self.boss_room_started = False
         self._play_sound("pickup")
@@ -733,8 +837,8 @@ class GameScene:
         zoom = self._get_zoom()
 
         self._render_world(screen)
-        self._render_hud(screen)
         self._render_effects(screen, zoom)
+        self._render_hud(screen)
         self._render_prompts(screen, zoom)
         self._render_debug(screen, zoom)
         self._render_ui(screen)
@@ -775,6 +879,9 @@ class GameScene:
 
     def _render_effects(self, screen, zoom):
         """Render gameplay effects."""
+        for projectile in self.boss_projectiles:
+            projectile.render(screen, self.camera, zoom, self.time_seconds)
+
         self.player.render_attack_effect(
             screen,
             self.camera,

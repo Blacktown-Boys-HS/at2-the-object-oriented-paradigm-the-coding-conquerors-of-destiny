@@ -6,7 +6,13 @@ from pathlib import Path
 
 import pygame
 
-from globals import SCENE_CREDITS, SCENE_MENU, SCENE_SETTINGS, SCENE_TUTORIAL
+from globals import (
+    SCENE_CREDITS,
+    SCENE_GAME,
+    SCENE_MENU,
+    SCENE_SETTINGS,
+    SCENE_TUTORIAL,
+)
 
 
 class SoundManager:
@@ -15,24 +21,14 @@ class SoundManager:
     def __init__(self):
         base_dir = Path(__file__).resolve().parent
         self.sound_dir = base_dir / "assets" / "sound"
+        self.audio_enabled = pygame.mixer.get_init() is not None
 
-        self.effects = {
-            "button_hover": pygame.mixer.Sound(
-                str(self.sound_dir / "Button Hover_1.wav")
-            ),
-            "cancel_back": pygame.mixer.Sound(str(self.sound_dir / "Cancel  Back.wav")),
-            "confirm": pygame.mixer.Sound(str(self.sound_dir / "Confirm_1.wav")),
-            "hit": pygame.mixer.Sound(str(self.sound_dir / "hurt.mp3")),
-            "death": pygame.mixer.Sound(str(self.sound_dir / "death.mp3")),
-            "attack": pygame.mixer.Sound(str(self.sound_dir / "power_up.wav")),
-            "attack_hit": pygame.mixer.Sound(str(self.sound_dir / "explosion.wav")),
-        }
-        game_start_path = self.sound_dir / "Game Start Sound FX.mp3"
-        try:
-            self.effects["game_start"] = pygame.mixer.Sound(str(game_start_path))
-        except pygame.error:
-            pass
-        self.menu_theme_path = self.sound_dir / "Main Menu Theme - Calm (E,80BPM).wav"
+        self.effects = {}
+        self._load_effects()
+        self.menu_theme_path = self.sound_dir / "Main Menu Theme - Calm (E,80BPM).ogg"
+        self.game_theme_path = (
+            base_dir / "assets" / "rpg_assets" / "music" / "time_for_adventure.ogg"
+        )
         self.music_scenes = {
             SCENE_MENU,
             SCENE_CREDITS,
@@ -41,7 +37,36 @@ class SoundManager:
         }
         self._music_volume = 1.0
         self._sfx_volume = 1.0
+        self.current_music_path = None
         self.apply_volumes()
+
+    def _load_effects(self):
+        """Load effects if the mixer is available."""
+        effect_files = {
+            "button_hover": "Button Hover_1.ogg",
+            "cancel_back": "Cancel  Back.ogg",
+            "confirm": "Confirm_1.ogg",
+            "hit": "hurt.ogg",
+            "death": "death.ogg",
+            "attack": "power_up.ogg",
+            "attack_hit": "explosion.ogg",
+            "game_start": "Game Start Sound FX.ogg",
+        }
+
+        for key, filename in effect_files.items():
+            sound = self._load_effect(filename)
+            if sound:
+                self.effects[key] = sound
+
+    def _load_effect(self, filename):
+        """Return a sound effect, or None if audio is unavailable."""
+        if not self.audio_enabled:
+            return None
+
+        try:
+            return pygame.mixer.Sound(str(self.sound_dir / filename))
+        except (FileNotFoundError, pygame.error):
+            return None
 
     @property
     def music_volume(self):
@@ -54,7 +79,8 @@ class SoundManager:
     def set_music_volume(self, volume):
         """Background music volume 0.0–1.0."""
         self._music_volume = max(0.0, min(1.0, float(volume)))
-        pygame.mixer.music.set_volume(self._music_volume)
+        if self.audio_enabled:
+            pygame.mixer.music.set_volume(self._music_volume)
 
     def set_sfx_volume(self, volume):
         """Sound effects volume 0.0–1.0."""
@@ -64,7 +90,8 @@ class SoundManager:
 
     def apply_volumes(self):
         """Re-apply stored volumes (e.g. after mixer re-init)."""
-        pygame.mixer.music.set_volume(self._music_volume)
+        if self.audio_enabled:
+            pygame.mixer.music.set_volume(self._music_volume)
         for sound in self.effects.values():
             sound.set_volume(self._sfx_volume)
 
@@ -76,10 +103,27 @@ class SoundManager:
 
     def update_music_for_scene(self, scene_name):
         """Play/stop looped background music based on active scene."""
-        if scene_name in self.music_scenes:
-            if not pygame.mixer.music.get_busy():
-                pygame.mixer.music.load(str(self.menu_theme_path))
-                pygame.mixer.music.play(-1)
-        else:
+        if not self.audio_enabled:
+            return
+
+        music_path = None
+        if scene_name == SCENE_GAME:
+            music_path = self.game_theme_path
+        elif scene_name in self.music_scenes:
+            music_path = self.menu_theme_path
+
+        if music_path is None:
             if pygame.mixer.music.get_busy():
                 pygame.mixer.music.stop()
+            self.current_music_path = None
+            return
+
+        if getattr(self, "current_music_path", None) == music_path:
+            return
+
+        try:
+            pygame.mixer.music.load(str(music_path))
+            pygame.mixer.music.play(-1)
+            self.current_music_path = music_path
+        except (FileNotFoundError, pygame.error):
+            self.current_music_path = None

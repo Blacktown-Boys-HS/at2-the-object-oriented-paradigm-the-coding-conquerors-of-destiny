@@ -219,9 +219,6 @@ class Player(pygame.sprite.Sprite):
             if attack_rect.colliderect(enemy_rect):
                 enemy.take_damage(20)
                 self.last_attack_hit = True
-                if enemy.is_dead:
-                    enemies.remove(enemy)
-                    group.remove(enemy)
         return True
 
     def render_attack_effect(self, screen, camera, zoom, attack_effect, attack_duration):
