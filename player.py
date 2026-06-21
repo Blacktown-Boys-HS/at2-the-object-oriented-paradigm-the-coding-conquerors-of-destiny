@@ -26,6 +26,8 @@ class Player(pygame.sprite.Sprite):
         self.animation_time = 0.0
         self.attack_cooldown = 0.0
         self.attack_cooldown_duration = 0.8
+        self.fireball_cooldown = 0.0
+        self.fireball_cooldown_duration = 1.2
         self.last_attack_hit = False
 
         # Load sprite sheet
@@ -100,6 +102,12 @@ class Player(pygame.sprite.Sprite):
                     self.max_health, self.health + self.REGEN_RATE * dt
                 )
 
+        if self.attack_cooldown > 0:
+            self.attack_cooldown = max(0.0, self.attack_cooldown - dt)
+
+        if self.fireball_cooldown > 0:
+            self.fireball_cooldown = max(0.0, self.fireball_cooldown - dt)
+
         if not self.sprite_sheet:
             return
 
@@ -129,9 +137,6 @@ class Player(pygame.sprite.Sprite):
         self.rect = self.image.get_rect(
             center=(int(self.position.x), int(self.position.y))
         )
-
-        if self.attack_cooldown > 0:
-            self.attack_cooldown = max(0.0, self.attack_cooldown - dt)
 
     def render(self, screen, camera, zoom=1) -> None:
         """Render the player sprite relative to the camera."""
@@ -201,6 +206,11 @@ class Player(pygame.sprite.Sprite):
         if self.health > 0 and self.state != "death":
             self.set_state("hit")
 
+    def heal(self, amount):
+        """Heal the player without going over max health."""
+        self.health = min(self.max_health, self.health + amount)
+        self.time_since_last_damage = self.REGEN_DELAY
+
     def attack(self, enemies, group):
         self.last_attack_hit = False
         if self.attack_cooldown > 0:
@@ -220,6 +230,14 @@ class Player(pygame.sprite.Sprite):
                 enemy.take_damage(20)
                 self.last_attack_hit = True
         return True
+
+    def can_shoot_fireball(self):
+        """Return True if fireball is ready."""
+        return self.fireball_cooldown <= 0 and self.state != "death"
+
+    def start_fireball_cooldown(self):
+        """Start fireball cooldown."""
+        self.fireball_cooldown = self.fireball_cooldown_duration
 
     def render_attack_effect(self, screen, camera, zoom, attack_effect, attack_duration):
         if attack_effect <= 0:

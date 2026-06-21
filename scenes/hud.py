@@ -107,20 +107,15 @@ def draw_player_health_bar(screen, player, font, time_seconds=0.0):
 
 
 def draw_attack_cooldown(screen, player, font, time_seconds=0.0):
-    """Gothic attack cooldown panel fixed under the health panel."""
+    """Gothic ability cooldown panel fixed under the health panel."""
     margin = 18
     panel_x = margin
     panel_y = 120
-    panel_w = 220
-    panel_h = 62
+    panel_w = 245
+    panel_h = 104
     pad = 12
     bar_w = panel_w - pad * 2
-    bar_h = 10
-
-    duration = max(0.01, player.attack_cooldown_duration)
-    cooldown = max(0.0, player.attack_cooldown)
-    ready = cooldown <= 0
-    fill_pct = 1.0 if ready else 1.0 - min(1.0, cooldown / duration)
+    bar_h = 8
 
     panel = pygame.Surface((panel_w, panel_h), pygame.SRCALPHA)
     pygame.draw.rect(panel, GOTHIC_GOLD, panel.get_rect(), border_radius=10)
@@ -128,38 +123,62 @@ def draw_attack_cooldown(screen, player, font, time_seconds=0.0):
     pygame.draw.rect(panel, (*GOTHIC_PANEL_INNER, 245), inner, border_radius=8)
     screen.blit(panel, (panel_x, panel_y))
 
-    pulse = 0.5 + 0.5 * math.sin(time_seconds * 5.0)
-    title_color = GOTHIC_GOLD if ready else (165, 150, 120)
-    if ready:
-        title_color = (
-            min(255, int(GOTHIC_GOLD[0] + 20 * pulse)),
-            min(255, int(GOTHIC_GOLD[1] + 20 * pulse)),
-            min(255, int(GOTHIC_GOLD[2] + 10 * pulse)),
-        )
+    def draw_ability_row(label, cooldown, duration, row_y, ready_color, fill_color, fill_hi):
+        duration = max(0.01, duration)
+        cooldown = max(0.0, cooldown)
+        ready = cooldown <= 0
+        fill_pct = 1.0 if ready else 1.0 - min(1.0, cooldown / duration)
 
-    title = font.render("[F] Attack", FONT_ANTIALIAS, title_color)
-    status_text = "Ready" if ready else f"{cooldown:.1f}s"
-    status_color = (120, 220, 160) if ready else (185, 175, 150)
-    status = font.render(status_text, FONT_ANTIALIAS, status_color)
+        pulse = 0.5 + 0.5 * math.sin(time_seconds * 5.0)
+        title_color = GOTHIC_GOLD if ready else (165, 150, 120)
+        if ready:
+            title_color = (
+                min(255, int(ready_color[0] + 20 * pulse)),
+                min(255, int(ready_color[1] + 20 * pulse)),
+                min(255, int(ready_color[2] + 10 * pulse)),
+            )
 
-    screen.blit(title, (panel_x + pad, panel_y + 9))
-    status_rect = status.get_rect(topright=(panel_x + panel_w - pad, panel_y + 9))
-    screen.blit(status, status_rect)
+        title = font.render(label, FONT_ANTIALIAS, title_color)
+        status_text = "Ready" if ready else f"{cooldown:.1f}s"
+        status_color = (120, 220, 160) if ready else (185, 175, 150)
+        status = font.render(status_text, FONT_ANTIALIAS, status_color)
 
-    bar_x = panel_x + pad
-    bar_y = panel_y + 39
-    track = pygame.Rect(bar_x, bar_y, bar_w, bar_h)
-    pygame.draw.rect(screen, (22, 18, 24), track, border_radius=5)
-    pygame.draw.rect(screen, (55, 45, 42), track, width=1, border_radius=5)
+        screen.blit(title, (panel_x + pad, row_y))
+        status_rect = status.get_rect(topright=(panel_x + panel_w - pad, row_y))
+        screen.blit(status, status_rect)
 
-    fill_w = max(0, int(bar_w * fill_pct))
-    if fill_w > 0:
-        fill = pygame.Rect(bar_x, bar_y, fill_w, bar_h)
-        fill_color = (225, 185, 80) if ready else (90, 150, 220)
-        fill_hi = (255, 225, 120) if ready else (130, 195, 245)
-        pygame.draw.rect(screen, fill_color, fill, border_radius=5)
-        shine = pygame.Rect(bar_x, bar_y, fill_w, max(2, bar_h // 3))
-        pygame.draw.rect(screen, fill_hi, shine, border_radius=5)
+        bar_x = panel_x + pad
+        bar_y = row_y + 28
+        track = pygame.Rect(bar_x, bar_y, bar_w, bar_h)
+        pygame.draw.rect(screen, (22, 18, 24), track, border_radius=5)
+        pygame.draw.rect(screen, (55, 45, 42), track, width=1, border_radius=5)
+
+        fill_w = max(0, int(bar_w * fill_pct))
+        if fill_w > 0:
+            fill = pygame.Rect(bar_x, bar_y, fill_w, bar_h)
+            current_fill = ready_color if ready else fill_color
+            pygame.draw.rect(screen, current_fill, fill, border_radius=5)
+            shine = pygame.Rect(bar_x, bar_y, fill_w, max(2, bar_h // 3))
+            pygame.draw.rect(screen, fill_hi, shine, border_radius=5)
+
+    draw_ability_row(
+        "[F] Slash",
+        player.attack_cooldown,
+        player.attack_cooldown_duration,
+        panel_y + 9,
+        (225, 185, 80),
+        (90, 150, 220),
+        (130, 195, 245),
+    )
+    draw_ability_row(
+        "[RMB/R] Fireball",
+        player.fireball_cooldown,
+        player.fireball_cooldown_duration,
+        panel_y + 53,
+        (245, 145, 65),
+        (210, 80, 45),
+        (255, 180, 90),
+    )
 
 
 def draw_boss_health_bar(screen, boss, font, time_seconds=0.0):

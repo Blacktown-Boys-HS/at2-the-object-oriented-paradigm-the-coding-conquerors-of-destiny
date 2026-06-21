@@ -26,6 +26,7 @@ class World:
         self.boss_room_triggers = []
         self.exit_triggers = []
         self.above_zones = []
+        self.health_potion_spawns = []
         self.group = None
         self.zoom = zoom
         self.enemy_spawns = []
@@ -195,6 +196,8 @@ class World:
                 self.above_zones.append(rect)
             elif layer_name == "enemy_spawns":
                 self._load_enemy_spawn(name, rect)
+            elif layer_name == "potions":
+                self._load_potion_spawn(name, rect)
             elif name == "enemy_spawn":
                 self.enemy_spawns.append(rect.center)
             else:
@@ -208,6 +211,11 @@ class World:
             self.boss_spawn = rect.center
         elif name in ("enemy", "enemy_spawn", "slime", "slime_green"):
             self.enemy_spawns.append(rect.center)
+
+    def _load_potion_spawn(self, name, rect):
+        """Load potion spawn zones from the potions Tiled layer."""
+        if name in ("health", "health_potion", "potion"):
+            self.health_potion_spawns.append(rect)
 
     # COLLISION DETECTION
 

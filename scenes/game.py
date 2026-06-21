@@ -3,6 +3,7 @@ Game scene for the RPG game.
 """
 
 import math
+import random
 from pathlib import Path
 
 import pygame
@@ -42,6 +43,103 @@ from .task_panel import TaskPanel
 from .world import World
 
 
+class PlayerFireball:
+    """Fireball shot by the player toward the mouse."""
+
+    def __init__(self, x, y, vx, vy):
+        self.x = float(x)
+        self.y = float(y)
+        self.vx = float(vx)
+        self.vy = float(vy)
+        self.radius = 5
+        self.damage = 35
+        self.lifetime = 2.2
+        self.age = 0.0
+        self.active = True
+
+    def update(self, dt):
+        """Move the fireball and expire it."""
+        self.x += self.vx * dt
+        self.y += self.vy * dt
+        self.age += dt
+        if self.age >= self.lifetime:
+            self.active = False
+
+    def get_rect(self):
+        """Return the fireball hitbox."""
+        return pygame.Rect(
+            int(self.x - self.radius),
+            int(self.y - self.radius),
+            self.radius * 2,
+            self.radius * 2,
+        )
+
+    def render(self, screen, camera, zoom, time_seconds=0.0):
+        """Draw the fireball directly on the screen."""
+        screen_x = int((self.x - camera.x) * zoom + SCREEN_WIDTH / 2)
+        screen_y = int((self.y - camera.y) * zoom + SCREEN_HEIGHT / 2)
+        draw_radius = max(4, int(self.radius * zoom))
+
+        pulse = 0.5 + 0.5 * math.sin(time_seconds * 16 + self.age * 12)
+        flame = (
+            245,
+            min(255, int(95 + 70 * pulse)),
+            30,
+        )
+        glow = (110, 30, 12)
+
+        pygame.draw.circle(screen, glow, (screen_x, screen_y), draw_radius + 4)
+        pygame.draw.circle(screen, flame, (screen_x, screen_y), draw_radius)
+        pygame.draw.circle(
+            screen,
+            (255, 225, 120),
+            (screen_x - draw_radius // 3, screen_y - draw_radius // 3),
+            max(2, draw_radius // 3),
+        )
+
+
+class HealthPotion:
+    """Health potion spawned from Tiled potion spawn zones."""
+
+    def __init__(self, x, y):
+        self.x = float(x)
+        self.y = float(y)
+        self.radius = 6
+        self.heal_amount = 35
+        self.active = True
+
+    def get_rect(self):
+        """Return pickup hitbox."""
+        return pygame.Rect(
+            int(self.x - self.radius),
+            int(self.y - self.radius),
+            self.radius * 2,
+            self.radius * 2,
+        )
+
+    def render(self, screen, camera, zoom, time_seconds=0.0):
+        """Draw a small animated health potion."""
+        bob = math.sin(time_seconds * 4.0) * 3
+        screen_x = int((self.x - camera.x) * zoom + SCREEN_WIDTH / 2)
+        screen_y = int((self.y + bob - camera.y) * zoom + SCREEN_HEIGHT / 2)
+        size = max(7, int(7 * zoom))
+
+        pygame.draw.circle(screen, (35, 10, 18), (screen_x, screen_y), size + 3)
+        pygame.draw.circle(screen, (190, 45, 70), (screen_x, screen_y), size)
+        pygame.draw.rect(
+            screen,
+            (245, 225, 225),
+            (screen_x - size // 3, screen_y - size // 2, max(2, size // 2), size),
+            border_radius=2,
+        )
+        pygame.draw.rect(
+            screen,
+            (245, 225, 225),
+            (screen_x - size // 2, screen_y - size // 3, size, max(2, size // 2)),
+            border_radius=2,
+        )
+
+
 class GameScene:
     """Game scene."""
 
@@ -58,6 +156,9 @@ class GameScene:
         self.boss_projectiles = []
         self.boss_shot_timer = 0.0
         self.boss_burst_timer = 1.2
+        self.fireballs = []
+        self.active_health_potion = None
+        self.health_potion_spawn_timer = 2.0
 
     def _init_core_objects(self, title_font, menu_font, credit_font, sounds):
         """Initialize core objects: clock, fonts, sounds, player, camera, keys."""
@@ -147,6 +248,9 @@ class GameScene:
             self.boss_projectiles = []
             self.boss_shot_timer = 0.0
             self.boss_burst_timer = 1.2
+            self.fireballs = []
+            self.active_health_potion = None
+            self.health_potion_spawn_timer = random.uniform(2.0, 5.0)
 
             if self.world:
                 for x, y in self.world.enemy_spawns:
@@ -301,10 +405,18 @@ class GameScene:
                 self._do_attack()
                 return None
 
+            if event.key == pygame.K_r:
+                self._shoot_fireball(pygame.mouse.get_pos())
+                return None
+
             self._handle_movement_input(event, is_keydown=True)
 
         elif event.type == pygame.KEYUP:
             self._handle_movement_input(event, is_keydown=False)
+
+        elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 3 and not self.paused:
+            self._shoot_fireball(event.pos)
+            return None
 
         elif event.type == pygame.MOUSEBUTTONDOWN and self.paused:
             self.pause_menu.handle_event(event)
@@ -319,6 +431,32 @@ class GameScene:
             self._play_sound("attack")
             if self.player.last_attack_hit:
                 self._play_sound("attack_hit")
+
+    def _shoot_fireball(self, mouse_pos):
+        """Shoot a fireball toward the mouse."""
+        if not self.player.can_shoot_fireball():
+            return
+
+        zoom = self._get_zoom()
+        target_x = (mouse_pos[0] - SCREEN_WIDTH / 2) / zoom + self.camera.x
+        target_y = (mouse_pos[1] - SCREEN_HEIGHT / 2) / zoom + self.camera.y
+
+        dx = target_x - self.player.position.x
+        dy = target_y - self.player.position.y
+        length = max(1.0, math.hypot(dx, dy))
+        speed = 230
+
+        self.player.start_fireball_cooldown()
+        self.player.update_facing(dx)
+        self.fireballs.append(
+            PlayerFireball(
+                self.player.position.x,
+                self.player.position.y,
+                dx / length * speed,
+                dy / length * speed,
+            )
+        )
+        self._play_sound("attack")
 
     def consume_requested_scene(self):
         """Return and clear a deferred scene transition request."""
@@ -345,10 +483,18 @@ class GameScene:
 
     def _reset_player(self):
         """Respawn the player and reset gameplay state."""
+        reset_map_path = self.current_map_path
+        reset_spawn = (self.spawn_x, self.spawn_y)
+
+        # reload the current map so enemies and boss health reset on retry
+        self._load_world(reset_map_path, player_spawn=reset_spawn)
+
         self.player.position.x = self.spawn_x
         self.player.position.y = self.spawn_y
         self.player.health = self.player.max_health
         self.player.damage_cooldown = 0.0
+        self.player.attack_cooldown = 0.0
+        self.player.fireball_cooldown = 0.0
         self.player.time_since_last_damage = 0.0
         self.player.set_state("idle")
         self.player.update(0)
@@ -367,11 +513,14 @@ class GameScene:
         self.near_boss_room_trigger = None
         self.near_exit_trigger = None
         self.exit_trigger_active = False
-        self.boss_room_started = False
+        self.boss_room_started = reset_map_path == BOSS_MAP_PATH
         self.show_boss_arrow = False
         self.boss_projectiles = []
         self.boss_shot_timer = 0.0
         self.boss_burst_timer = 1.2
+        self.fireballs = []
+        self.active_health_potion = None
+        self.health_potion_spawn_timer = 2.0
         self.dialogue.active = False
         self.game_over_menu.reset()
         self.inventory_bar = InventoryBar(self.credit_font)
@@ -600,6 +749,8 @@ class GameScene:
                 self.world.group.remove(enemy)
 
         self._update_boss_projectiles(dt)
+        self._update_fireballs(dt)
+        self._update_health_potion(dt)
 
         # Check if slime killed the player
         if self.player.is_dead and not self.game_over:
@@ -699,12 +850,83 @@ class GameScene:
                 )
             )
 
+    def _update_fireballs(self, dt):
+        """Move player fireballs and damage enemies."""
+        for fireball in self.fireballs[:]:
+            fireball.update(dt)
+
+            if self.world and (
+                fireball.x < -32
+                or fireball.y < -32
+                or fireball.x > self.world.map_width + 32
+                or fireball.y > self.world.map_height + 32
+            ):
+                fireball.active = False
+
+            if fireball.active and self.world:
+                for rect in self.world.get_collision_rects():
+                    if fireball.get_rect().colliderect(rect):
+                        fireball.active = False
+                        break
+
+            if fireball.active:
+                for enemy in self.enemies[:]:
+                    if enemy.is_dead:
+                        continue
+                    enemy_rect = (
+                        enemy.get_hit_rect()
+                        if hasattr(enemy, "get_hit_rect")
+                        else pygame.Rect(enemy.position.x - 8, enemy.position.y - 8, 16, 16)
+                    )
+                    if fireball.get_rect().colliderect(enemy_rect):
+                        enemy.take_damage(fireball.damage)
+                        self._play_sound("attack_hit")
+                        fireball.active = False
+                        break
+
+            if not fireball.active:
+                self.fireballs.remove(fireball)
+
+    def _update_health_potion(self, dt):
+        """Spawn and collect one health potion at a time."""
+        if not self.world or not self.world.health_potion_spawns:
+            self.active_health_potion = None
+            return
+
+        if self.active_health_potion:
+            player_rect = pygame.Rect(
+                self.player.position.x - PLAYER_COLLISION_OFFSET_X,
+                self.player.position.y + PLAYER_COLLISION_OFFSET_Y,
+                PLAYER_COLLISION_WIDTH,
+                PLAYER_COLLISION_HEIGHT,
+            ).inflate(14, 14)
+
+            if player_rect.colliderect(self.active_health_potion.get_rect()):
+                if self.player.health < self.player.max_health:
+                    self.player.heal(self.active_health_potion.heal_amount)
+                    self._play_sound("pickup")
+                    self.active_health_potion = None
+                    self.health_potion_spawn_timer = random.uniform(6.0, 11.0)
+            return
+
+        self.health_potion_spawn_timer -= dt
+        if self.health_potion_spawn_timer <= 0:
+            spawn_rect = random.choice(self.world.health_potion_spawns)
+            if spawn_rect.width > 0 and spawn_rect.height > 0:
+                x = random.uniform(spawn_rect.left, spawn_rect.right)
+                y = random.uniform(spawn_rect.top, spawn_rect.bottom)
+            else:
+                x, y = spawn_rect.center
+
+            self.active_health_potion = HealthPotion(x, y)
+
     def _handle_boss_defeated(self):
         """Reward the player after defeating the boss."""
         self.task_panel.set_task_done("Defeat the boss")
         self.task_panel.add_task("Escape the dungeon")
         self.inventory_bar.set_slot(1, "magic_rune")
         self.boss_projectiles = []
+        self.fireballs = []
         self.boss_enemy = None
         self.boss_room_started = False
         self._play_sound("pickup")
@@ -879,6 +1101,17 @@ class GameScene:
 
     def _render_effects(self, screen, zoom):
         """Render gameplay effects."""
+        if self.active_health_potion:
+            self.active_health_potion.render(
+                screen,
+                self.camera,
+                zoom,
+                self.time_seconds,
+            )
+
+        for fireball in self.fireballs:
+            fireball.render(screen, self.camera, zoom, self.time_seconds)
+
         for projectile in self.boss_projectiles:
             projectile.render(screen, self.camera, zoom, self.time_seconds)
 
@@ -932,6 +1165,7 @@ class GameScene:
                     + self.world.hazard_rects
                     + [t["rect"] for t in self.world.boss_room_triggers]
                     + [t["rect"] for t in self.world.exit_triggers]
+                    + self.world.health_potion_spawns
                 ),
                 self.camera,
                 zoom,
@@ -941,7 +1175,8 @@ class GameScene:
     def _render_ui(self, screen):
         """Render normal gameplay UI."""
         self.task_panel.render(screen, self.time_seconds)
-        self.inventory_bar.render(screen)
+        if self.current_map_path != BOSS_MAP_PATH:
+            self.inventory_bar.render(screen)
 
     def _render_overlays(self, screen):
         """Render overlays that sit above the gameplay UI."""
