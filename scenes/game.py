@@ -309,6 +309,9 @@ class GameScene:
             return
         if self.player.attack(self.enemies, self.world.group if self.world else None):
             self.attack_effect = self.attack_duration
+            self._play_sound("attack")
+            if self.player.last_attack_hit:
+                self._play_sound("attack_hit")
 
     def consume_requested_scene(self):
         """Return and clear a deferred scene transition request."""

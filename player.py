@@ -26,6 +26,7 @@ class Player(pygame.sprite.Sprite):
         self.animation_time = 0.0
         self.attack_cooldown = 0.0
         self.attack_cooldown_duration = 0.8
+        self.last_attack_hit = False
 
         # Load sprite sheet
         knight_path = (
@@ -201,6 +202,7 @@ class Player(pygame.sprite.Sprite):
             self.set_state("hit")
 
     def attack(self, enemies, group):
+        self.last_attack_hit = False
         if self.attack_cooldown > 0:
             return False  # on cooldown
         self.attack_cooldown = self.attack_cooldown_duration
@@ -216,6 +218,7 @@ class Player(pygame.sprite.Sprite):
                 enemy_rect = pygame.Rect(enemy.position.x - 8, enemy.position.y - 8, 16, 16)
             if attack_rect.colliderect(enemy_rect):
                 enemy.take_damage(20)
+                self.last_attack_hit = True
                 if enemy.is_dead:
                     enemies.remove(enemy)
                     group.remove(enemy)
