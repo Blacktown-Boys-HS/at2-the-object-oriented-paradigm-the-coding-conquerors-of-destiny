@@ -250,7 +250,7 @@ class BossSlimeEnemy(SlimeEnemy):
     DISPLAY_SCALE = 3
     SPRITE_NAME = "slime_purple.png"
 
-    MAX_HEALTH = 750
+    MAX_HEALTH = 500
     CONTACT_DAMAGE = 25
     CONTACT_COOLDOWN = 1.0
 
