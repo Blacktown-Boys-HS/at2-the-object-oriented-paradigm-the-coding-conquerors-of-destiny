@@ -18,7 +18,15 @@ from scenes.aesthetic import (
 class DebugMenu:
     """Developer-only menu for quick testing."""
 
-    ITEMS = ["Teleport to Boss Room", "Close"]
+    ITEMS = [
+        "Teleport to Boss Room",
+        "Full Heal",
+        "Health +25",
+        "Health -25",
+        "Fireball Damage +10",
+        "Fireball Damage -10",
+        "Close",
+    ]
 
     def __init__(self, title_font, menu_font, credit_font):
         self.title_font = title_font
@@ -31,6 +39,8 @@ class DebugMenu:
         self.item_rects = []
         self.pending_action = None
         self.hover_scale = [1.0 for _ in self.ITEMS]
+        self.player_health_text = "Health: --"
+        self.fireball_damage_text = "Fireball Damage: --"
 
     def toggle(self):
         """Open or close the debug menu."""
@@ -88,6 +98,13 @@ class DebugMenu:
         self.pending_action = None
         return action
 
+    def set_stats(self, player_health, player_max_health, fireball_damage):
+        """Set debug stats shown in the menu."""
+        self.player_health_text = (
+            f"Health: {int(player_health)} / {int(player_max_health)}"
+        )
+        self.fireball_damage_text = f"Fireball Damage: {int(fireball_damage)}"
+
     def render(self, screen):
         """Draw the debug menu overlay."""
         if not self.active:
@@ -97,7 +114,7 @@ class DebugMenu:
         overlay.fill((0, 0, 0, 145))
         screen.blit(overlay, (0, 0))
 
-        panel_rect = pygame.Rect(340, 190, 520, 320)
+        panel_rect = pygame.Rect(300, 95, 600, 560)
         draw_gothic_panel(screen, panel_rect, border_radius=10)
 
         title = self.title_font.render("DEBUG", FONT_ANTIALIAS, WHITE)
@@ -108,20 +125,33 @@ class DebugMenu:
         hint_rect = hint.get_rect(center=(panel_rect.centerx, panel_rect.top + 104))
         screen.blit(hint, hint_rect)
 
+        health_text = self.credit_font.render(
+            self.player_health_text,
+            FONT_ANTIALIAS,
+            GOTHIC_GOLD,
+        )
+        damage_text = self.credit_font.render(
+            self.fireball_damage_text,
+            FONT_ANTIALIAS,
+            GOTHIC_GOLD,
+        )
+        screen.blit(health_text, (panel_rect.left + 50, panel_rect.top + 132))
+        screen.blit(damage_text, (panel_rect.left + 310, panel_rect.top + 132))
+
         self.item_rects = []
-        start_x = panel_rect.left + 92
-        start_y = panel_rect.top + 155
+        start_x = panel_rect.left + 78
+        start_y = panel_rect.top + 178
         for i, item in enumerate(self.ITEMS):
             rect = draw_gothic_menu_item(
                 screen,
                 self.menu_font,
                 item,
-                (start_x, start_y + i * 72),
+                (start_x, start_y + i * 50),
                 i == self.selected,
                 self.hover_scale[i],
                 safe_scale_surface,
             )
             self.item_rects.append(rect)
 
-        border = pygame.Rect(panel_rect.left + 28, panel_rect.top + 132, panel_rect.width - 56, 150)
+        border = pygame.Rect(panel_rect.left + 28, panel_rect.top + 160, panel_rect.width - 56, 370)
         pygame.draw.rect(screen, GOTHIC_GOLD, border, width=1, border_radius=8)

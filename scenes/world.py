@@ -184,7 +184,7 @@ class World:
                     {
                         "rect": rect,
                         "required_item": obj.properties.get(
-                            "required_item", "magic_rune"
+                            "required_item", "purple_orb"
                         ),
                         "message": obj.properties.get(
                             "message", "You need to beat the boss first."

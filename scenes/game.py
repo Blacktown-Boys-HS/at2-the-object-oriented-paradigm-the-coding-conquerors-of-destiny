@@ -46,13 +46,13 @@ from .world import World
 class PlayerFireball:
     """Fireball shot by the player toward the mouse."""
 
-    def __init__(self, x, y, vx, vy):
+    def __init__(self, x, y, vx, vy, damage=35):
         self.x = float(x)
         self.y = float(y)
         self.vx = float(vx)
         self.vy = float(vy)
         self.radius = 5
-        self.damage = 35
+        self.damage = damage
         self.lifetime = 2.2
         self.age = 0.0
         self.active = True
@@ -162,6 +162,7 @@ class GameScene:
         self.boss_shot_timer = 0.0
         self.boss_burst_timer = 1.2
         self.fireballs = []
+        self.fireball_damage = 35
         self.active_health_potion = None
         self.health_potion_spawn_timer = 2.0
 
@@ -303,6 +304,10 @@ class GameScene:
 
     def player_has_item(self, item_id):
         """Check if the player has a specific inventory item."""
+        item_aliases = {
+            "magic_rune": "purple_orb",
+        }
+        item_id = item_aliases.get(item_id, item_id)
         for item in self.inventory_bar.items:
             if item == item_id:
                 return True
@@ -459,6 +464,7 @@ class GameScene:
                 self.player.position.y,
                 dx / length * speed,
                 dy / length * speed,
+                self.fireball_damage,
             )
         )
         self._play_sound("attack")
@@ -604,6 +610,22 @@ class GameScene:
         action = self.debug_menu.consume_action()
         if action == "Teleport to Boss Room":
             self._debug_teleport_to_boss_room()
+        elif action == "Full Heal":
+            self.player.health = self.player.max_health
+            self.player.damage_cooldown = 0.0
+            self.player.time_since_last_damage = self.player.REGEN_DELAY
+        elif action == "Health +25":
+            self.player.heal(25)
+        elif action == "Health -25":
+            self.player.take_damage(25)
+            if self.player.is_dead:
+                self.player.set_state("death")
+                self.game_over = True
+                self.debug_menu.close()
+        elif action == "Fireball Damage +10":
+            self.fireball_damage = min(999, self.fireball_damage + 10)
+        elif action == "Fireball Damage -10":
+            self.fireball_damage = max(5, self.fireball_damage - 10)
         elif action == "Close":
             self.debug_menu.close()
 
@@ -932,8 +954,8 @@ class GameScene:
     def _handle_boss_defeated(self):
         """Reward the player after defeating the boss."""
         self.task_panel.set_task_done("Defeat the boss")
-        self.task_panel.add_task("Escape the dungeon")
-        self.inventory_bar.set_slot(1, "magic_rune")
+        self.task_panel.add_task("Return to the escape door")
+        self.inventory_bar.set_slot(1, "purple_orb")
         self.boss_projectiles = []
         self.fireballs = []
         self.boss_enemy = None
@@ -1045,7 +1067,7 @@ class GameScene:
 
     def _handle_exit_trigger(self, trigger):
         """Handle exit trigger gate based on boss reward item."""
-        required_item = trigger.get("required_item", "magic_rune")
+        required_item = trigger.get("required_item", "purple_orb")
         if required_item and not self.player_has_item(required_item):
             self.dialogue.set_text_and_start(
                 trigger.get("message", "You need to beat the boss first.")
@@ -1057,6 +1079,7 @@ class GameScene:
     def _exit_dungeon(self, trigger):
         """Placeholder for leaving the dungeon after the boss reward."""
         trigger["used"] = True
+        self.task_panel.set_task_done("Return to the escape door")
         self.dialogue.set_text_and_start("The rune opens the way forward.")
 
     def render(self, screen):
@@ -1196,6 +1219,11 @@ class GameScene:
             self.game_over_menu.render(screen, self.time_seconds)
 
         self.dialogue.render(screen, self.time_seconds)
+        self.debug_menu.set_stats(
+            self.player.health,
+            self.player.max_health,
+            self.fireball_damage,
+        )
         self.debug_menu.render(screen)
 
     def _render_enemy_health_bars(self, screen, zoom):

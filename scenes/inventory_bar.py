@@ -95,6 +95,8 @@ class InventoryBar:
             if item_name:
                 if str(item_name).lower() == "key":
                     self._draw_key_icon(screen, rect)
+                elif str(item_name).lower() == "purple_orb":
+                    self._draw_purple_orb_icon(screen, rect)
                 else:
                     icon_text = self.font.render(str(item_name)[:1].upper(), FONT_ANTIALIAS, WHITE)
                     icon_rect = icon_text.get_rect(center=(rect.centerx, rect.centery + 4))
@@ -115,3 +117,14 @@ class InventoryBar:
         pygame.draw.line(screen, gold, (cx + 20, cy), (cx + 20, cy + 8), 4)
         pygame.draw.line(screen, gold, (cx + 25, cy), (cx + 25, cy + 6), 4)
         pygame.draw.circle(screen, highlight, (cx - 3, cy - 3), 2)
+
+    def _draw_purple_orb_icon(self, screen, rect):
+        """Draw a glowing purple orb inside a hotbar slot."""
+        cx = rect.centerx
+        cy = rect.centery + 4
+
+        pygame.draw.circle(screen, (40, 14, 60), (cx, cy), 17)
+        pygame.draw.circle(screen, (95, 35, 135), (cx, cy), 14)
+        pygame.draw.circle(screen, (165, 75, 225), (cx, cy), 10)
+        pygame.draw.circle(screen, (230, 175, 255), (cx - 4, cy - 4), 4)
+        pygame.draw.circle(screen, (255, 225, 255), (cx - 5, cy - 5), 2)

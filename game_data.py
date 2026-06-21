@@ -18,7 +18,6 @@ CONTROLS = [
     ("Hotbar", "1–9 or mouse wheel — select inventory slots"),
     ("Tasks panel", "Click the gold tab — show or hide your objectives"),
     ("Pause", "ESC — pause menu (resume, settings, or quit to menu)"),
-    ("Debug", "F3 — open the debug menu while testing"),
 ]
 
 SURVIVAL_TIPS = [
@@ -28,6 +27,7 @@ SURVIVAL_TIPS = [
     "Health potions can appear in arenas. Walk over one when damaged to heal.",
     "In the boss room, keep moving and use fireballs to damage the boss from range.",
     "Fireballs pass through boss arena walls, but boss projectiles can still hit you.",
+    "Defeating the boss gives you a purple orb. Return to the escape door with it.",
     "If health reaches zero, you get Game Over and can retry.",
     "Volume sliders live in Settings on the main menu.",
 ]

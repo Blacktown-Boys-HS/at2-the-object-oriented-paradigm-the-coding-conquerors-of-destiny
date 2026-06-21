@@ -12,7 +12,7 @@ class TaskPanel:
         self.tasks = objective_task_list()
 
         self.width = 310
-        self.height = 150
+        self.height = 178
         self.margin = 18
         self.tab_width = 34
 
