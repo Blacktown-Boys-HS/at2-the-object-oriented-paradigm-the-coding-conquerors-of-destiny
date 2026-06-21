@@ -227,6 +227,25 @@ class GameScene:
         self.target_zoom = DEFAULT_CAMERA_ZOOM
         self.zoom_transition_speed = CAMERA_ZOOM_TRANSITION_SPEED
 
+    def _snap_camera_to_player(self):
+        """Immediately center and clamp the camera on the player."""
+        self.camera.x = self.player.position.x
+        self.camera.y = self.player.position.y
+
+        if self.world and self.world.map_layer:
+            self.camera.update(
+                self.player,
+                1.0,
+                self.world.map_width,
+                self.world.map_height,
+                SCREEN_WIDTH,
+                SCREEN_HEIGHT,
+                self.world.map_layer.zoom,
+            )
+            self.world.center(self.camera.x, self.camera.y)
+
+        self.player.update(0)
+
     def player_has_key(self, key_id):
         """Check if the player has a specific key in their inventory."""
         for item in self.inventory_bar.items:
@@ -429,6 +448,7 @@ class GameScene:
             self.camera.x = self.player.position.x
             self.camera.y = self.player.position.y
             self.player.update(0)
+            self._snap_camera_to_player()
 
         if self.sound_manager:
             if self.current_map_path == BOSS_MAP_PATH and self.boss_enemy is not None:
@@ -458,6 +478,7 @@ class GameScene:
         self.camera.y = self.player.position.y
         if self.world and self.world.map_layer:
             self.world.center(self.player.position.x, self.player.position.y)
+            self._snap_camera_to_player()
 
         self.keys_pressed = {"up": False, "down": False, "left": False, "right": False}
         self.paused = False
@@ -1019,10 +1040,7 @@ class GameScene:
         self.spawn_y = self.player.position.y
         self.camera.x = self.player.position.x
         self.camera.y = self.player.position.y
-        self.player.update(0)
-
-        if self.world and self.world.map_layer:
-            self.world.center(self.player.position.x, self.player.position.y)
+        self._snap_camera_to_player()
 
     def _enter_boss_room(self, trigger):
         """Start the boss room encounter."""
@@ -1051,10 +1069,7 @@ class GameScene:
         self.spawn_y = self.player.position.y
         self.camera.x = self.player.position.x
         self.camera.y = self.player.position.y
-        self.player.update(0)
-
-        if self.world and self.world.map_layer:
-            self.world.center(self.player.position.x, self.player.position.y)
+        self._snap_camera_to_player()
 
     def _is_near_boss_return(self):
         """Return True when the player can leave the cleared boss room."""
@@ -1075,6 +1090,30 @@ class GameScene:
         )
         return player_rect.colliderect(return_rect)
 
+    def _get_boss_door_return_position(self):
+        """Find a safe return position beside the dungeon boss door."""
+        if not self.world:
+            return self.boss_return_position
+
+        if not self.world.boss_room_triggers:
+            return self.boss_return_position
+
+        trigger_rect = self.world.boss_room_triggers[0]["rect"]
+        return_x = float(trigger_rect.centerx)
+        return_y = float(trigger_rect.centery)
+
+        if self.world.locked_doors:
+            nearest_door = min(
+                self.world.locked_doors,
+                key=lambda door: abs(door["rect"].centerx - trigger_rect.centerx)
+                + abs(door["rect"].centery - trigger_rect.centery),
+            )
+            door_rect = nearest_door["rect"]
+            return_x = float(door_rect.centerx)
+            return_y = float(door_rect.bottom + 20)
+
+        return (return_x, return_y)
+
     def _return_from_boss_room(self):
         """Return from the cleared boss arena to the dungeon."""
         self.task_panel.set_task_done("Go back to the dungeon")
@@ -1087,20 +1126,24 @@ class GameScene:
         self.show_escape_arrow = True
         self.door_locked_message = False
 
-        return_position = self.boss_return_position
+        fallback_return_position = self.boss_return_position
+        self._load_world(DEFAULT_MAP_PATH)
+        return_position = self._get_boss_door_return_position()
+        if return_position is None:
+            return_position = fallback_return_position
         if return_position is None:
             return_position = (self.spawn_x, self.spawn_y)
 
-        self._load_world(DEFAULT_MAP_PATH, player_spawn=return_position)
+        self.player.position.x = float(return_position[0])
+        self.player.position.y = float(return_position[1])
+
         if self.sound_manager:
             self.sound_manager.play_game_music()
         self.current_map_path = DEFAULT_MAP_PATH
-        self.camera.x = self.player.position.x
-        self.camera.y = self.player.position.y
-        self.player.update(0)
-
-        if self.world and self.world.map_layer:
-            self.world.center(self.player.position.x, self.player.position.y)
+        self.spawn_x = self.player.position.x
+        self.spawn_y = self.player.position.y
+        self.keys_pressed = {"up": False, "down": False, "left": False, "right": False}
+        self._snap_camera_to_player()
 
         self.dialogue.set_text_and_start(
             "The orb is yours. Now return to the escape door."
@@ -1138,12 +1181,12 @@ class GameScene:
 
         self._render_world(screen)
         self._render_effects(screen, zoom)
+        self._render_enemy_health_bars(screen, zoom)
         self._render_hud(screen)
         self._render_prompts(screen, zoom)
         self._render_debug(screen, zoom)
         self._render_ui(screen)
         self._render_overlays(screen)
-        self._render_enemy_health_bars(screen, zoom)
 
     def _render_loading(self, screen):
         """Render the loading screen."""
