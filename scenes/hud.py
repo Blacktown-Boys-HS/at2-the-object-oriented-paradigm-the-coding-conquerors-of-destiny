@@ -367,4 +367,4 @@ def draw_debug_collision(screen, collision_rects, camera, zoom):
         debug_rect = pygame.Rect(
             screen_x, screen_y, rect.width * zoom, rect.height * zoom
         )
-        pygame.draw.rect(screen, (255, 0, 0), debug_rect, 1)
+        #pygame.draw.rect(screen, (255, 0, 0), debug_rect, 1)

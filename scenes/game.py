@@ -9,7 +9,20 @@ from pathlib import Path
 import pygame
 
 from camera import Camera
-from game_constants import *
+from game_constants import (
+    BOSS_MAP_PATH,
+    CAMERA_ZOOM_TRANSITION_SPEED,
+    DEFAULT_CAMERA_ZOOM,
+    DEFAULT_LAYER,
+    DEFAULT_MAP_PATH,
+    DOOR_LOCKED_MESSAGE_DURATION,
+    LOADING_SCREEN_DURATION,
+    PLAYER_COLLISION_HEIGHT,
+    PLAYER_COLLISION_OFFSET_X,
+    PLAYER_COLLISION_OFFSET_Y,
+    PLAYER_COLLISION_WIDTH,
+    PLAYER_MOVE_SPEED,
+)
 from globals import (
     FPS,
     SCENE_MENU,
@@ -20,7 +33,9 @@ from globals import (
     get_pixel_font_path,
 )
 from player import Player
-from enemy import BossProjectile, BossSlimeEnemy, SlimeEnemy
+from enemy import BossSlimeEnemy, SlimeEnemy
+from pickups import HealthPotion
+from projectiles import BossProjectile, PlayerFireball
 
 from .dialogue import DialogueBox
 from .debug_menu import DebugMenu
@@ -43,108 +58,6 @@ from .pause_menu import PauseMenu
 from .task_panel import TaskPanel
 from .victory_menu import VictoryMenu
 from .world import World
-
-
-class PlayerFireball:
-    """Fireball shot by the player toward the mouse."""
-
-    def __init__(self, x, y, vx, vy, damage=35):
-        self.x = float(x)
-        self.y = float(y)
-        self.vx = float(vx)
-        self.vy = float(vy)
-        self.radius = 4
-        self.damage = damage
-        self.lifetime = 2.2
-        self.age = 0.0
-        self.active = True
-
-    def update(self, dt):
-        """Move the fireball and expire it."""
-        self.x += self.vx * dt
-        self.y += self.vy * dt
-        self.age += dt
-        if self.age >= self.lifetime:
-            self.active = False
-
-    def get_rect(self):
-        """Return the fireball hitbox."""
-        return pygame.Rect(
-            int(self.x - self.radius),
-            int(self.y - self.radius),
-            self.radius * 2,
-            self.radius * 2,
-        )
-
-    def render(self, screen, camera, zoom, time_seconds=0.0):
-        """Draw the fireball directly on the screen."""
-        screen_x = int((self.x - camera.x) * zoom + SCREEN_WIDTH / 2)
-        screen_y = int((self.y - camera.y) * zoom + SCREEN_HEIGHT / 2)
-        draw_radius = max(3, int(self.radius * zoom))
-
-        pulse = 0.5 + 0.5 * math.sin(time_seconds * 16 + self.age * 12)
-        flame = (
-            245,
-            min(255, int(95 + 70 * pulse)),
-            30,
-        )
-        glow = (110, 30, 12)
-
-        pygame.draw.circle(screen, glow, (screen_x, screen_y), draw_radius + 4)
-        pygame.draw.circle(screen, flame, (screen_x, screen_y), draw_radius)
-        pygame.draw.circle(
-            screen,
-            (255, 225, 120),
-            (screen_x - draw_radius // 3, screen_y - draw_radius // 3),
-            max(2, draw_radius // 3),
-        )
-
-
-class HealthPotion:
-    """Health potion spawned from Tiled potion spawn zones."""
-
-    def __init__(self, x, y):
-        self.x = float(x)
-        self.y = float(y)
-        self.radius = 6
-        self.heal_amount = 35
-        self.active = True
-
-    def get_rect(self):
-        """Return pickup hitbox."""
-        return pygame.Rect(
-            int(self.x - self.radius),
-            int(self.y - self.radius),
-            self.radius * 2,
-            self.radius * 2,
-        )
-
-    def render(self, screen, camera, zoom, time_seconds=0.0):
-        """Draw a glowing golden health orb."""
-        bob = math.sin(time_seconds * 4.0) * 3
-        screen_x = int((self.x - camera.x) * zoom + SCREEN_WIDTH / 2)
-        screen_y = int((self.y + bob - camera.y) * zoom + SCREEN_HEIGHT / 2)
-        radius = max(5, int(self.radius * zoom))
-
-        pulse = 0.5 + 0.5 * math.sin(time_seconds * 8.0)
-        glow_radius = radius + int(7 + 4 * pulse)
-        core = (
-            255,
-            min(255, int(205 + 35 * pulse)),
-            min(255, int(70 + 35 * pulse)),
-        )
-        inner = (255, 245, 165)
-        rim = (125, 80, 18)
-
-        pygame.draw.circle(screen, rim, (screen_x, screen_y), glow_radius)
-        pygame.draw.circle(screen, (205, 140, 30), (screen_x, screen_y), radius + 4)
-        pygame.draw.circle(screen, core, (screen_x, screen_y), radius)
-        pygame.draw.circle(
-            screen,
-            inner,
-            (screen_x - radius // 3, screen_y - radius // 3),
-            max(2, radius // 3),
-        )
 
 
 class GameScene:
