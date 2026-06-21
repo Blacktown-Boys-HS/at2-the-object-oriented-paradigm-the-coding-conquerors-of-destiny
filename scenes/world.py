@@ -31,8 +31,15 @@ class World:
         self.enemy_spawns = []
         self.boss_spawn = None
         self.player_spawn = None
+        self.default_sprite_layer = default_layer
+        self.above_sprite_layer = 100
 
         tmx_data = pytmx.load_pygame(str(tmx_path), pixelalpha=True)
+        self.default_sprite_layer = self._get_sprite_layer_before(
+            tmx_data,
+            "wall",
+            default_layer,
+        )
 
         map_data = pyscroll.data.TiledMapData(tmx_data)
         self.map_layer = pyscroll.orthographic.BufferedRenderer(
@@ -47,11 +54,27 @@ class World:
 
         # pyscroll group for z-ordering
         self.group = pyscroll.PyscrollGroup(
-            map_layer=self.map_layer, default_layer=default_layer
+            map_layer=self.map_layer, default_layer=self.default_sprite_layer
         )
         self.group.add(player)
 
     # INITIALIZATION (continued)
+
+    def _get_sprite_layer_before(self, tmx_data, layer_name, fallback_layer):
+        """Return a sprite layer that draws before a named tile layer."""
+        tile_layer_index = 0
+        target_name = layer_name.lower()
+
+        for layer in tmx_data.layers:
+            if not isinstance(layer, pytmx.TiledTileLayer):
+                continue
+
+            if (layer.name or "").lower() == target_name:
+                return max(0, tile_layer_index - 1)
+
+            tile_layer_index += 1
+
+        return fallback_layer
 
     def _load_objects_from_tiled(self, tmx_data):
         """Extract and parse all objects from tiled map data.
@@ -308,7 +331,9 @@ class World:
         """Swap player z-layer based on above zone position."""
         player_rect = pygame.Rect(player.position.x - 4, player.position.y - 4, 8, 8)
         in_above_zone = any(player_rect.colliderect(z) for z in self.above_zones)
-        target_layer = 100 if in_above_zone else 8
+        target_layer = (
+            self.above_sprite_layer if in_above_zone else self.default_sprite_layer
+        )
         if self.group.get_layer_of_sprite(player) != target_layer:
             self.group.change_layer(player, target_layer)
 
