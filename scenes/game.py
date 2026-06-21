@@ -21,6 +21,7 @@ from player import Player
 from enemy import BossSlimeEnemy, SlimeEnemy
 
 from .dialogue import DialogueBox
+from .debug_menu import DebugMenu
 from .game_over import GameOverMenu
 from .hud import (
     draw_attack_cooldown,
@@ -73,6 +74,7 @@ class GameScene:
         self.paused = False
         self.pause_pending_scene = None
         self.pause_menu = PauseMenu(title_font, menu_font, sounds)
+        self.debug_menu = DebugMenu(title_font, menu_font, credit_font)
         self.game_over = False
         self.game_over_menu = GameOverMenu(title_font, menu_font, credit_font, sounds)
         self.restart_on_enter = False
@@ -254,6 +256,14 @@ class GameScene:
 
     def handle_event(self, event):
         """Handle input events."""
+        if event.type == pygame.KEYDOWN and event.key == pygame.K_F3:
+            self.debug_menu.toggle()
+            return None
+
+        if self.debug_menu.active:
+            self.debug_menu.handle_event(event)
+            return None
+
         if self.loading:
             return None
 
@@ -369,6 +379,10 @@ class GameScene:
         # Update UI elements
         self.task_panel.update(dt)
         self.inventory_bar.update(dt)
+        self.debug_menu.update(dt, mouse_pos)
+
+        if self._check_debug_menu():
+            return
 
         # Update timers
         self._update_timers(dt)
@@ -417,6 +431,16 @@ class GameScene:
                     self.dialogue.start()
             return True
         return False
+
+    def _check_debug_menu(self):
+        """Handle debug actions. Returns True if debug menu is open."""
+        action = self.debug_menu.consume_action()
+        if action == "Teleport to Boss Room":
+            self._debug_teleport_to_boss_room()
+        elif action == "Close":
+            self.debug_menu.close()
+
+        return self.debug_menu.active
 
     def _check_dialogue(self, dt):
         """Check and handle dialogue. Returns True if dialogue is active."""
@@ -632,6 +656,30 @@ class GameScene:
 
         self._enter_boss_room(trigger)
 
+    def _debug_teleport_to_boss_room(self):
+        """Debug shortcut for jumping straight to the boss room."""
+        self.debug_menu.close()
+        self.loading = False
+        self.paused = False
+        self.game_over = False
+        self.dialogue.active = False
+        self.keys_pressed = {"up": False, "down": False, "left": False, "right": False}
+
+        self.boss_room_started = True
+        self.show_boss_arrow = False
+        self.door_locked_message = False
+        self.task_panel.add_task("Defeat the boss")
+
+        self._load_world(BOSS_MAP_PATH)
+        self.spawn_x = self.player.position.x
+        self.spawn_y = self.player.position.y
+        self.camera.x = self.player.position.x
+        self.camera.y = self.player.position.y
+        self.player.update(0)
+
+        if self.world and self.world.map_layer:
+            self.world.center(self.player.position.x, self.player.position.y)
+
     def _enter_boss_room(self, trigger):
         """Start the boss room encounter."""
         trigger["used"] = True
@@ -794,6 +842,7 @@ class GameScene:
             self.game_over_menu.render(screen, self.time_seconds)
 
         self.dialogue.render(screen, self.time_seconds)
+        self.debug_menu.render(screen)
 
     def _render_enemy_health_bars(self, screen, zoom):
         """Render enemy health bars."""
