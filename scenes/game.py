@@ -31,6 +31,7 @@ from .hud import (
     draw_debug_collision,
     draw_door_prompt,
     draw_exit_prompt,
+    draw_go_back_prompt,
     draw_key_prompt,
     draw_locked_door_prompt,
     draw_objective_arrow,
@@ -40,6 +41,7 @@ from .inventory_bar import InventoryBar
 from .loading_screen import draw_loading_screen
 from .pause_menu import PauseMenu
 from .task_panel import TaskPanel
+from .victory_menu import VictoryMenu
 from .world import World
 
 
@@ -188,6 +190,8 @@ class GameScene:
         self.debug_menu = DebugMenu(title_font, menu_font, credit_font)
         self.game_over = False
         self.game_over_menu = GameOverMenu(title_font, menu_font, credit_font, sounds)
+        self.victory = False
+        self.victory_menu = VictoryMenu(title_font, menu_font, credit_font, sounds)
         self.restart_on_enter = False
 
     def _init_loading_state(self):
@@ -227,8 +231,11 @@ class GameScene:
         self.near_locked_door = None
         self.near_boss_room_trigger = None
         self.near_exit_trigger = None
+        self.near_boss_return = False
         self.exit_trigger_active = False
         self.boss_room_started = False
+        self.boss_defeated = False
+        self.boss_return_position = None
         self.show_boss_arrow = False
         self.door_locked_message = False
         self.door_locked_time = 0.0
@@ -358,6 +365,8 @@ class GameScene:
                 else:
                     self.world.unlock_door(self.near_locked_door)
                     self._play_sound("door_open")
+            elif self.near_boss_return:
+                self._return_from_boss_room()
             elif self.near_exit_trigger:
                 self._handle_exit_trigger(self.near_exit_trigger)
             return True
@@ -390,6 +399,10 @@ class GameScene:
 
         if self.game_over:
             self.game_over_menu.handle_event(event)
+            return None
+
+        if self.victory:
+            self.victory_menu.handle_event(event)
             return None
 
         self.task_panel.handle_event(event)
@@ -523,8 +536,11 @@ class GameScene:
         self.near_locked_door = None
         self.near_boss_room_trigger = None
         self.near_exit_trigger = None
+        self.near_boss_return = False
         self.exit_trigger_active = False
         self.boss_room_started = reset_map_path == BOSS_MAP_PATH
+        self.boss_defeated = False
+        self.boss_return_position = None
         self.show_boss_arrow = False
         self.boss_projectiles = []
         self.boss_shot_timer = 0.0
@@ -534,6 +550,8 @@ class GameScene:
         self.health_potion_spawn_timer = 2.0
         self.dialogue.active = False
         self.game_over_menu.reset()
+        self.victory = False
+        self.victory_menu.reset()
         self.inventory_bar = InventoryBar(self.credit_font)
         self.door_locked_message = False
 
@@ -565,6 +583,9 @@ class GameScene:
             return
 
         if self._check_dialogue(dt):
+            return
+
+        if self._check_victory(dt, mouse_pos):
             return
 
         if self._check_game_over(dt, mouse_pos):
@@ -651,6 +672,19 @@ class GameScene:
             elif action == "Main Menu":
                 self.restart_on_enter = True
                 self.pause_pending_scene = SCENE_MENU
+            return True
+        return False
+
+    def _check_victory(self, dt, mouse_pos):
+        """Check and handle victory state. Returns True if victory screen is open."""
+        if self.victory:
+            self.victory_menu.update(dt, mouse_pos)
+            action = self.victory_menu.consume_action()
+            if action == "Main Menu":
+                self.restart_on_enter = True
+                self.pause_pending_scene = SCENE_MENU
+            elif action == "Quit":
+                self.pause_pending_scene = SCENE_QUIT
             return True
         return False
 
@@ -954,12 +988,14 @@ class GameScene:
     def _handle_boss_defeated(self):
         """Reward the player after defeating the boss."""
         self.task_panel.set_task_done("Defeat the boss")
-        self.task_panel.add_task("Return to the escape door")
+        self.task_panel.add_task("Go back to the dungeon")
         self.inventory_bar.set_slot(1, "purple_orb")
         self.boss_projectiles = []
         self.fireballs = []
         self.boss_enemy = None
         self.boss_room_started = False
+        self.boss_defeated = True
+        self.near_boss_return = False
         self._play_sound("pickup")
 
     def _update_world_state(self, dt):
@@ -976,8 +1012,13 @@ class GameScene:
         self.near_exit_trigger = (
             self.world.get_exit_trigger(self.player) if self.world else None
         )
+        self.near_boss_return = self._is_near_boss_return()
 
-        if self.near_boss_room_trigger and not self.boss_room_started:
+        if (
+            self.near_boss_room_trigger
+            and not self.boss_room_started
+            and not self.boss_defeated
+        ):
             self._handle_boss_room_trigger(self.near_boss_room_trigger)
 
         # Update player layer based on above zones
@@ -1026,6 +1067,13 @@ class GameScene:
         self.keys_pressed = {"up": False, "down": False, "left": False, "right": False}
 
         self.boss_room_started = True
+        if self.current_map_path == DEFAULT_MAP_PATH:
+            self.boss_return_position = (
+                float(self.player.position.x),
+                float(self.player.position.y),
+            )
+        elif self.boss_return_position is None:
+            self.boss_return_position = ((27 * 16) / 2, (37 * 16) / 2)
         self.show_boss_arrow = False
         self.door_locked_message = False
         self.task_panel.add_task("Defeat the boss")
@@ -1044,6 +1092,10 @@ class GameScene:
         """Start the boss room encounter."""
         trigger["used"] = True
         self.boss_room_started = True
+        self.boss_return_position = (
+            float(self.player.position.x),
+            float(self.player.position.y),
+        )
         self.show_boss_arrow = False
         self.door_locked_message = False
         self.task_panel.set_task_done("Find the boss door")
@@ -1065,6 +1117,53 @@ class GameScene:
         if self.world and self.world.map_layer:
             self.world.center(self.player.position.x, self.player.position.y)
 
+    def _is_near_boss_return(self):
+        """Return True when the player can leave the cleared boss room."""
+        if self.current_map_path != BOSS_MAP_PATH:
+            return False
+        if not self.boss_defeated:
+            return False
+        if not self.world or not self.world.player_spawn:
+            return False
+
+        spawn_x, spawn_y = self.world.player_spawn
+        return_rect = pygame.Rect(int(spawn_x - 24), int(spawn_y - 24), 48, 48)
+        player_rect = pygame.Rect(
+            self.player.position.x - PLAYER_COLLISION_OFFSET_X,
+            self.player.position.y + PLAYER_COLLISION_OFFSET_Y,
+            PLAYER_COLLISION_WIDTH,
+            PLAYER_COLLISION_HEIGHT,
+        )
+        return player_rect.colliderect(return_rect)
+
+    def _return_from_boss_room(self):
+        """Return from the cleared boss arena to the dungeon."""
+        self.task_panel.set_task_done("Go back to the dungeon")
+        self.task_panel.add_task("Return to the escape door")
+        self.boss_projectiles = []
+        self.fireballs = []
+        self.active_health_potion = None
+        self.boss_room_started = False
+        self.near_boss_return = False
+        self.door_locked_message = False
+
+        return_position = self.boss_return_position
+        if return_position is None:
+            return_position = (self.spawn_x, self.spawn_y)
+
+        self._load_world(DEFAULT_MAP_PATH, player_spawn=return_position)
+        self.current_map_path = DEFAULT_MAP_PATH
+        self.camera.x = self.player.position.x
+        self.camera.y = self.player.position.y
+        self.player.update(0)
+
+        if self.world and self.world.map_layer:
+            self.world.center(self.player.position.x, self.player.position.y)
+
+        self.dialogue.set_text_and_start(
+            "The orb is yours. Now return to the escape door."
+        )
+
     def _handle_exit_trigger(self, trigger):
         """Handle exit trigger gate based on boss reward item."""
         required_item = trigger.get("required_item", "purple_orb")
@@ -1077,10 +1176,14 @@ class GameScene:
         self._exit_dungeon(trigger)
 
     def _exit_dungeon(self, trigger):
-        """Placeholder for leaving the dungeon after the boss reward."""
+        """Finish the game after the player escapes with the boss reward."""
         trigger["used"] = True
         self.task_panel.set_task_done("Return to the escape door")
-        self.dialogue.set_text_and_start("The rune opens the way forward.")
+        self.victory = True
+        self.paused = False
+        self.keys_pressed = {"up": False, "down": False, "left": False, "right": False}
+        self.victory_menu.reset()
+        self._play_sound("confirm")
 
     def render(self, screen):
         """Render the game scene."""
@@ -1176,6 +1279,9 @@ class GameScene:
         if self.near_key:
             draw_key_prompt(screen, self.player, self.camera, zoom, self.credit_font)
 
+        if self.near_boss_return:
+            draw_go_back_prompt(screen, self.player, self.camera, zoom, self.credit_font)
+
         if self.near_exit_trigger:
             draw_exit_prompt(screen, self.player, self.camera, zoom, self.credit_font)
 
@@ -1217,6 +1323,9 @@ class GameScene:
 
         if self.game_over:
             self.game_over_menu.render(screen, self.time_seconds)
+
+        if self.victory:
+            self.victory_menu.render(screen, self.time_seconds)
 
         self.dialogue.render(screen, self.time_seconds)
         self.debug_menu.set_stats(

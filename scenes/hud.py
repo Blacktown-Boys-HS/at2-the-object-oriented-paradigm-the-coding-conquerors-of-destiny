@@ -1,11 +1,7 @@
 """
-HUD (Heads Up Display) for the RPG game.
+HUD for the RPG game.
 
-This module handles all UI rendering for the game, organized into three categories:
-
-1. PLAYER HUD ELEMENTS: Health bar and coordinate display above the player.
-2. INTERACTION PROMPTS: Visual feedback for player interactions (doors, keys, locked doors).
-3. DEBUG VISUALIZATION: Collision rects and other debug information.
+This module handles all UI rendering for the game
 
 All rendering functions take a screen object and camera position to properly display
 elements in world space on the player's viewport.
@@ -294,6 +290,12 @@ def draw_exit_prompt(screen, player, camera, zoom, font):
     """Draw an exit interaction prompt above the player."""
     sx, sy = _player_screen_pos(player, camera, zoom)
     _draw_simple_prompt(screen, sx, sy, font, "Escape", GOTHIC_GOLD_DIM)
+
+
+def draw_go_back_prompt(screen, player, camera, zoom, font):
+    """Draw a return interaction prompt above the player."""
+    sx, sy = _player_screen_pos(player, camera, zoom)
+    _draw_simple_prompt(screen, sx, sy, font, "Go Back", GOTHIC_GOLD_DIM)
 
 
 def draw_objective_arrow(screen, player, target_rect, camera, zoom, font, time_seconds=0.0):
