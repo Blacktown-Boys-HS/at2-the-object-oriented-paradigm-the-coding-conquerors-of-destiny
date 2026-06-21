@@ -863,7 +863,11 @@ class GameScene:
             ):
                 fireball.active = False
 
-            if fireball.active and self.world:
+            if (
+                fireball.active
+                and self.world
+                and self.current_map_path != BOSS_MAP_PATH
+            ):
                 for rect in self.world.get_collision_rects():
                     if fireball.get_rect().colliderect(rect):
                         fireball.active = False

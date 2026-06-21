@@ -13,16 +13,21 @@ OBJECTIVES = [
 CONTROLS = [
     ("Move", "WASD or Arrow Keys"),
     ("Interact", "E — pick up keys, open doors, unlock gates"),
-    ("Pause", "ESC — pause menu (resume, settings, or quit to menu)"),
+    ("Slash", "F — close range attack"),
+    ("Fireball", "Right click or R — shoot toward the mouse"),
     ("Hotbar", "1–9 or mouse wheel — select inventory slots"),
     ("Tasks panel", "Click the gold tab — show or hide your objectives"),
-    ("Attack", "F — Use your magic ability to attack enemies"),
+    ("Pause", "ESC — pause menu (resume, settings, or quit to menu)"),
+    ("Debug", "F3 — open the debug menu while testing"),
 ]
 
 SURVIVAL_TIPS = [
     "Read the opening dialogue when you enter the dungeon.",
     "Check the Tasks panel (top-right) for your current objectives.",
     "Hazards on the floor drain health — step around them.",
+    "Health potions can appear in arenas. Walk over one when damaged to heal.",
+    "In the boss room, keep moving and use fireballs to damage the boss from range.",
+    "Fireballs pass through boss arena walls, but boss projectiles can still hit you.",
     "If health reaches zero, you get Game Over and can retry.",
     "Volume sliders live in Settings on the main menu.",
 ]
