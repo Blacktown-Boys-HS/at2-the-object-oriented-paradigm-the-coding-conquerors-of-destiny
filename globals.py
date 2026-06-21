@@ -29,7 +29,7 @@ SCENE_TUTORIAL = "tutorial"
 SCENE_QUIT = "quit"
 
 # Game display name
-GAME_TITLE = "Escape the Dungeon"
+GAME_TITLE = "Dungeon's End"
 
 # Font sizes
 TITLE_FONT_SIZE = 72

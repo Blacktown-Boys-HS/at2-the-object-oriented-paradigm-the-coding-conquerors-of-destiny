@@ -1,108 +1,74 @@
-[![Review Assignment Due Date](https://classroom.github.com/assets/deadline-readme-button-22041afd0340ce965d47ae6ef1cefeee28c7c493a6346c4f15d667ab976d596c.svg)](https://classroom.github.com/a/tZXTeiOZ)
-[![Open in Visual Studio Code](https://classroom.github.com/assets/open-in-vscode-2e0aaae1b6195c2367325f4f02e2d04e9abb55f0b24a779b69b11b9e10269abc.svg)](https://classroom.github.com/online_ide?assignment_repo_id=23769192&assignment_repo_type=AssignmentRepo)
+# Dungeon's End
 
----
+Dungeon's End is a top-down dungeon RPG built with Python and Pygame. The project uses an object-oriented structure with separate classes for the application loop, scene management, player behaviour, enemies, projectiles, pickups, UI panels, audio, and Tiled map loading.
 
-```
-██████╗██╗   ██╗███╗   ██╗ ██████╗ ███████╗ ██████╗ ███╗   ██╗    ███████╗
-██╔══██╗██║   ██║████╗  ██║██╔════╝ ██╔════╝██╔═══██╗████╗  ██║    ██╔════╝
-██║  ██║██║   ██║██╔██╗ ██║██║  ███╗█████╗  ██║   ██║██╔██╗ ██║    ███████╗
-██║  ██║██║   ██║██║╚██╗██║██║   ██║██╔══╝  ██║   ██║██║╚██╗██║    ╚════██║
-██████╔╝╚██████╔╝██║ ╚████║╚██████╔╝███████╗╚██████╔╝██║ ╚████║    ███████║
-╚═════╝  ╚═════╝ ╚═╝  ╚═══╝ ╚═════╝ ╚══════╝ ╚═════╝ ╚═╝  ╚═══╝   ╚══════╝
-```
+## Features
 
-# ⚔️ Dungeon's End
+- Main menu, tutorial, settings, credits, pause menu, game over screen, and victory screen
+- Tiled map support with collision objects, triggers, doors, keys, hazards, enemy spawns, and potion spawns
+- Animated player sprite with movement, health, melee attack, fireball attack, damage cooldowns, and regeneration
+- Slime enemies, a purple slime boss, boss projectiles, health potions, inventory hotbar, and task panel
+- Scene transitions, custom cursor, sound effects, and background music
 
-> *You wake up in a dungeon. You don't know how you got here. You don't know what lurks in the dark. All you know is — you need to get out.*
+## Requirements
 
-A top-down dungeon RPG built in Python with Pygame. Fight through procedurally-designed dungeons, avoid traps, and uncover the mystery of how you ended up here.
+- Python 3.10+
+- pygame
+- pytmx
+- pyscroll
+- numpy
 
----
-
-## 🎮 Gameplay
-
-- Explore hand-crafted dungeon maps built in Tiled
-- Smooth knight animations — idle, run, roll, attack, and death
-- Atmospheric lighting and layered tile rendering
-- Dialogue system with typewriter effect
-- Pause menu with scene transitions
-
----
-
-## 🕹️ Controls
-
-| Key | Action |
-|-----|--------|
-| `W` / `↑` | Move Up |
-| `S` / `↓` | Move Down |
-| `A` / `←` | Move Left |
-| `D` / `→` | Move Right |
-| `ESC` | Pause / Unpause |
-| `Enter` / `Space` | Confirm |
-| `Click` | Navigate Menus |
-
----
-
-## 🚀 Installation
-
-**Requirements:** Python 3.10+
+Install dependencies with:
 
 ```bash
-# Clone the repo
-git clone <your-repo-url>
-cd <your-repo-folder>
-
-# Install dependencies
-pip install pygame pytmx pyscroll
-
-# Run the game
-python main.py
+pip install -r requirements.txt
 ```
 
----
+## Running
 
-## 🗂️ Project Structure
-
-```
-📦 project root
- ┣ 📂 assets/
- ┃ ┣ 📂 maps/          # Tiled .tmx dungeon maps
- ┃ ┣ 📂 fonts/         # Pixel fonts
- ┃ ┣ 📂 rpg_assets/    # Sprites and tilesets
- ┃ ┗ 📂 cursor/        # Custom cursor
- ┣ 📂 scenes/
- ┃ ┣ game.py           # Main game scene
- ┃ ┣ menu.py           # Main menu
- ┃ ┣ credits.py        # Credits screen
- ┃ ┗ settings.py       # Settings screen
- ┣ camera.py           # Smooth camera with lerp
- ┣ player.py           # Player class + animations
- ┣ main.py             # Entry point + scene manager
- ┗ globals.py          # Constants and config
+```bash
+python3 main.py
 ```
 
----
+## Controls
 
-## 👾 Team
+| Input | Action |
+| --- | --- |
+| `WASD` / Arrow keys | Move |
+| `E` | Interact |
+| `F` | Slash attack |
+| Right mouse / `R` | Fireball |
+| Number keys / Mouse wheel | Select hotbar slot |
+| `Esc` | Pause |
+| `F3` | Debug menu |
 
-**Coding Conquerors of Destiny™**
+## Project Structure
 
-| Name | Role |
-|------|------|
-| Angadjot Dhaliwal | Developer |
-| Shivesh Sundar | Developer |
-| Sri Hari Srinigganathan | Developer |
+```text
+main.py              Entry point
+game_app.py          Pygame setup and main loop
+scene_manager.py     Scene creation and scene switching
+scenes/              Menu, game, tutorial, settings, HUD, and UI screens
+player.py            Player state, movement, health, animation, and attacks
+enemy.py             Slime enemy and boss enemy classes
+projectiles.py       Player and boss projectile classes
+pickups.py           Collectible pickup classes
+scenes/world.py      Tiled map loading, collision, triggers, and map objects
+sounds.py            Sound effects and background music
+assets/              Maps, sprites, fonts, music, and sound effects
+```
 
----
+## Team
 
-## 📚 Built With
+Coding Conquerors of Destiny
 
-- [Pygame](https://www.pygame.org/) — game framework
-- [pytmx](https://github.com/bitcraft/pytmx) — Tiled map loader
-- [pyscroll](https://github.com/bitcraft/pyscroll) — scrolling map renderer
-- [Tiled](https://www.mapeditor.org/) — map editor
+- Angadjot Dhaliwal
+- Shivesh Sundar
+- Sri Hari Srinigganathan
 
----
+## Built With
 
-*Coding Conquerors of Destiny™ — HSC Software Engineering, 2025*
+- Pygame
+- pytmx
+- pyscroll
+- Tiled
