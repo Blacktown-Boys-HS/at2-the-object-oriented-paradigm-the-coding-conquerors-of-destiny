@@ -79,9 +79,6 @@ class World:
 
     def _load_objects_from_tiled(self, tmx_data):
         """Extract and parse all objects from tiled map data.
-
-        Categorizes objects into collision rects, hazards, doors, keys, locked doors,
-        and above zones based on object names and properties.
         """
         for layer in tmx_data.layers:
             if not isinstance(layer, pytmx.TiledObjectGroup):
@@ -94,8 +91,6 @@ class World:
                 object_name = obj.name or getattr(obj, "type", "")
                 self._load_tiled_object(obj, object_name, layer_name=layer_name)
 
-        # Tiled lets you name the layer instead of each object.
-        # Use that for point markers like player_spawn.
         for layer in tmx_data.layers:
             if not isinstance(layer, pytmx.TiledObjectGroup):
                 continue

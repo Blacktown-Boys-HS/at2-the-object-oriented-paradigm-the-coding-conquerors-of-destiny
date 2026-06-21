@@ -37,7 +37,7 @@ MENU_FONT_SIZE = 48
 CREDIT_FONT_SIZE = 24
 DEBUG_FONT_SIZE = 32
 
-# pygame.font.Font.render(…, antialias, …) — False keeps pixel fonts crisp
+# False keeps pixel fonts crisp
 FONT_ANTIALIAS = False
 
 

@@ -29,6 +29,9 @@ class SoundManager:
         self.game_theme_path = (
             base_dir / "assets" / "rpg_assets" / "music" / "time_for_adventure.ogg"
         )
+        self.boss_theme_path = (
+            base_dir / "assets" / "rpg_assets" / "music" / "boss.ogg"
+        )
         self.music_scenes = {
             SCENE_MENU,
             SCENE_CREDITS,

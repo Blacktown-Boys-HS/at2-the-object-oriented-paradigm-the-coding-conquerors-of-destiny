@@ -18,10 +18,7 @@ import pygame
 from globals import FONT_ANTIALIAS, SCREEN_HEIGHT, SCREEN_WIDTH, WHITE
 from scenes.aesthetic import GOTHIC_GOLD, GOTHIC_GOLD_DIM, GOTHIC_PANEL_INNER
 
-# ============================================================================
 # PLAYER HUD ELEMENTS
-# ============================================================================
-
 
 def draw_player_health_bar(screen, player, font, time_seconds=0.0):
     """Gothic health panel fixed to the top-left of the screen."""
@@ -244,11 +241,7 @@ def draw_debug_coords(screen, player, font):
     )
     screen.blit(coord_text, (10, 90))
 
-
-# ============================================================================
 # INTERACTION PROMPTS
-# ============================================================================
-
 
 def _player_screen_pos(player, camera, zoom):
     screen_x = (player.position.x - camera.x) * zoom + SCREEN_WIDTH / 2
@@ -353,11 +346,7 @@ def draw_objective_arrow(screen, player, target_rect, camera, zoom, font, time_s
     label_rect = label.get_rect(center=(center[0], center[1] + 28))
     screen.blit(label, label_rect)
 
-
-# ============================================================================
 # DEBUG VISUALIZATION
-# ============================================================================
-
 
 def draw_debug_collision(screen, collision_rects, camera, zoom):
     """Draw collision rects for debugging."""

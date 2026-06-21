@@ -162,7 +162,7 @@ class GameScene:
         self.boss_shot_timer = 0.0
         self.boss_burst_timer = 1.2
         self.fireballs = []
-        self.fireball_damage = 35
+        self.fireball_damage = 40
         self.active_health_potion = None
         self.health_potion_spawn_timer = 2.0
 
