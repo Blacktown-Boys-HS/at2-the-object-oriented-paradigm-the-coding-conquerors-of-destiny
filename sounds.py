@@ -104,6 +104,29 @@ class SoundManager:
         if sound:
             sound.play()
 
+    def _play_music_path(self, music_path):
+        """Play a looped music file if it is not already playing."""
+        if not self.audio_enabled:
+            return
+
+        if getattr(self, "current_music_path", None) == music_path:
+            return
+
+        try:
+            pygame.mixer.music.load(str(music_path))
+            pygame.mixer.music.play(-1)
+            self.current_music_path = music_path
+        except (FileNotFoundError, pygame.error):
+            self.current_music_path = None
+
+    def play_game_music(self):
+        """Play the main dungeon music."""
+        self._play_music_path(self.game_theme_path)
+
+    def play_boss_music(self):
+        """Play the boss arena music."""
+        self._play_music_path(self.boss_theme_path)
+
     def update_music_for_scene(self, scene_name):
         """Play/stop looped background music based on active scene."""
         if not self.audio_enabled:
@@ -121,12 +144,4 @@ class SoundManager:
             self.current_music_path = None
             return
 
-        if getattr(self, "current_music_path", None) == music_path:
-            return
-
-        try:
-            pygame.mixer.music.load(str(music_path))
-            pygame.mixer.music.play(-1)
-            self.current_music_path = music_path
-        except (FileNotFoundError, pygame.error):
-            self.current_music_path = None
+        self._play_music_path(music_path)

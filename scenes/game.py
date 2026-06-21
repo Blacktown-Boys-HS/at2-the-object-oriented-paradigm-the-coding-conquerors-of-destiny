@@ -174,7 +174,8 @@ class GameScene:
         self.title_font = title_font
         self.menu_font = menu_font
         self.credit_font = credit_font
-        self.sounds = sounds or {}
+        self.sound_manager = sounds if hasattr(sounds, "play_effect") else None
+        self.sounds = sounds.effects if self.sound_manager else sounds or {}
         self.time_seconds = 0.0
         self.player = Player()
         self.camera = Camera(self.player.position.x, self.player.position.y)
@@ -186,12 +187,22 @@ class GameScene:
         self.inventory_bar = InventoryBar(credit_font)
         self.paused = False
         self.pause_pending_scene = None
-        self.pause_menu = PauseMenu(title_font, menu_font, sounds)
+        self.pause_menu = PauseMenu(title_font, menu_font, self.sounds)
         self.debug_menu = DebugMenu(title_font, menu_font, credit_font)
         self.game_over = False
-        self.game_over_menu = GameOverMenu(title_font, menu_font, credit_font, sounds)
+        self.game_over_menu = GameOverMenu(
+            title_font,
+            menu_font,
+            credit_font,
+            self.sounds,
+        )
         self.victory = False
-        self.victory_menu = VictoryMenu(title_font, menu_font, credit_font, sounds)
+        self.victory_menu = VictoryMenu(
+            title_font,
+            menu_font,
+            credit_font,
+            self.sounds,
+        )
         self.restart_on_enter = False
 
     def _init_loading_state(self):
@@ -237,6 +248,7 @@ class GameScene:
         self.boss_defeated = False
         self.boss_return_position = None
         self.show_boss_arrow = False
+        self.show_escape_arrow = False
         self.door_locked_message = False
         self.door_locked_time = 0.0
 
@@ -505,6 +517,12 @@ class GameScene:
             self.camera.y = self.player.position.y
             self.player.update(0)
 
+        if self.sound_manager:
+            if self.current_map_path == BOSS_MAP_PATH and self.boss_enemy is not None:
+                self.sound_manager.play_boss_music()
+            else:
+                self.sound_manager.play_game_music()
+
     def _reset_player(self):
         """Respawn the player and reset gameplay state."""
         reset_map_path = self.current_map_path
@@ -542,6 +560,7 @@ class GameScene:
         self.boss_defeated = False
         self.boss_return_position = None
         self.show_boss_arrow = False
+        self.show_escape_arrow = False
         self.boss_projectiles = []
         self.boss_shot_timer = 0.0
         self.boss_burst_timer = 1.2
@@ -995,6 +1014,7 @@ class GameScene:
         self.boss_enemy = None
         self.boss_room_started = False
         self.boss_defeated = True
+        self.show_escape_arrow = False
         self.near_boss_return = False
         self._play_sound("pickup")
 
@@ -1075,10 +1095,13 @@ class GameScene:
         elif self.boss_return_position is None:
             self.boss_return_position = ((27 * 16) / 2, (37 * 16) / 2)
         self.show_boss_arrow = False
+        self.show_escape_arrow = False
         self.door_locked_message = False
         self.task_panel.add_task("Defeat the boss")
 
         self._load_world(BOSS_MAP_PATH)
+        if self.sound_manager:
+            self.sound_manager.play_boss_music()
         self.spawn_x = self.player.position.x
         self.spawn_y = self.player.position.y
         self.camera.x = self.player.position.x
@@ -1093,10 +1116,11 @@ class GameScene:
         trigger["used"] = True
         self.boss_room_started = True
         self.boss_return_position = (
-            float(self.player.position.x),
-            float(self.player.position.y),
+            float(trigger["rect"].centerx),
+            float(trigger["rect"].centery),
         )
         self.show_boss_arrow = False
+        self.show_escape_arrow = False
         self.door_locked_message = False
         self.task_panel.set_task_done("Find the boss door")
         self.task_panel.add_task("Defeat the boss")
@@ -1108,6 +1132,8 @@ class GameScene:
             player_spawn = (float(target_x), float(target_y))
 
         self._load_world(BOSS_MAP_PATH, player_spawn=player_spawn)
+        if self.sound_manager:
+            self.sound_manager.play_boss_music()
         self.spawn_x = self.player.position.x
         self.spawn_y = self.player.position.y
         self.camera.x = self.player.position.x
@@ -1145,6 +1171,7 @@ class GameScene:
         self.active_health_potion = None
         self.boss_room_started = False
         self.near_boss_return = False
+        self.show_escape_arrow = True
         self.door_locked_message = False
 
         return_position = self.boss_return_position
@@ -1152,6 +1179,8 @@ class GameScene:
             return_position = (self.spawn_x, self.spawn_y)
 
         self._load_world(DEFAULT_MAP_PATH, player_spawn=return_position)
+        if self.sound_manager:
+            self.sound_manager.play_game_music()
         self.current_map_path = DEFAULT_MAP_PATH
         self.camera.x = self.player.position.x
         self.camera.y = self.player.position.y
@@ -1179,6 +1208,7 @@ class GameScene:
         """Finish the game after the player escapes with the boss reward."""
         trigger["used"] = True
         self.task_panel.set_task_done("Return to the escape door")
+        self.show_escape_arrow = False
         self.victory = True
         self.paused = False
         self.keys_pressed = {"up": False, "down": False, "left": False, "right": False}
@@ -1272,6 +1302,18 @@ class GameScene:
                     self.credit_font,
                     self.time_seconds,
                 )
+
+        if self.show_escape_arrow and self.world and self.world.exit_triggers:
+            draw_objective_arrow(
+                screen,
+                self.player,
+                self.world.exit_triggers[0]["rect"],
+                self.camera,
+                zoom,
+                self.credit_font,
+                self.time_seconds,
+                label_text="Escape",
+            )
 
         if self.near_door:
             draw_door_prompt(screen, self.player, self.camera, zoom, self.credit_font)

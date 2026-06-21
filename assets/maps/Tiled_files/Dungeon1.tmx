@@ -5051,7 +5051,7 @@
   <object id="238" name="enemy_spawn" x="443.555" y="418.209"/>
  </objectgroup>
  <objectgroup id="42" name="triggers">
-  <object id="227" name="boss_room_trigger" x="261.829" y="55.8841" width="21.9081" height="8.54952"/>
+  <object id="227" name="boss_room_trigger" x="261.34" y="63.2119" width="21.9081" height="8.54952"/>
   <object id="239" name="exit_trigger" x="277.285" y="230.141" width="22.3045" height="21.7975"/>
  </objectgroup>
 </map>

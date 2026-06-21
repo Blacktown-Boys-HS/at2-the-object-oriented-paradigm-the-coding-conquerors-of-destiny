@@ -298,7 +298,16 @@ def draw_go_back_prompt(screen, player, camera, zoom, font):
     _draw_simple_prompt(screen, sx, sy, font, "Go Back", GOTHIC_GOLD_DIM)
 
 
-def draw_objective_arrow(screen, player, target_rect, camera, zoom, font, time_seconds=0.0):
+def draw_objective_arrow(
+    screen,
+    player,
+    target_rect,
+    camera,
+    zoom,
+    font,
+    time_seconds=0.0,
+    label_text="Boss door",
+):
     """Draw a pulsing arrow that points from the player toward a world target."""
     if target_rect is None:
         return
@@ -344,7 +353,7 @@ def draw_objective_arrow(screen, player, target_rect, camera, zoom, font, time_s
     pygame.draw.polygon(screen, GOTHIC_GOLD, [tip, left, right])
     pygame.draw.polygon(screen, (255, 230, 140), [tip, left, right], width=2)
 
-    label = font.render("Boss door", FONT_ANTIALIAS, GOTHIC_GOLD)
+    label = font.render(label_text, FONT_ANTIALIAS, GOTHIC_GOLD)
     label_rect = label.get_rect(center=(center[0], center[1] + 28))
     screen.blit(label, label_rect)
 

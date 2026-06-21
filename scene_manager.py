@@ -27,7 +27,7 @@ class SceneManager:
                 title_font, menu_font, credit_font, sound_manager.effects
             ),
             SCENE_GAME: GameScene(
-                title_font, menu_font, credit_font, sound_manager.effects
+                title_font, menu_font, credit_font, sound_manager
             ),
             SCENE_SETTINGS: SettingsScene(
                 title_font, menu_font, credit_font, sound_manager
