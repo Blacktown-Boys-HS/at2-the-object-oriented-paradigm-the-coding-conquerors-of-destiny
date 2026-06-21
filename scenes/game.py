@@ -118,25 +118,30 @@ class HealthPotion:
         )
 
     def render(self, screen, camera, zoom, time_seconds=0.0):
-        """Draw a small animated health potion."""
+        """Draw a glowing golden health orb."""
         bob = math.sin(time_seconds * 4.0) * 3
         screen_x = int((self.x - camera.x) * zoom + SCREEN_WIDTH / 2)
         screen_y = int((self.y + bob - camera.y) * zoom + SCREEN_HEIGHT / 2)
-        size = max(7, int(7 * zoom))
+        radius = max(5, int(self.radius * zoom))
 
-        pygame.draw.circle(screen, (35, 10, 18), (screen_x, screen_y), size + 3)
-        pygame.draw.circle(screen, (190, 45, 70), (screen_x, screen_y), size)
-        pygame.draw.rect(
-            screen,
-            (245, 225, 225),
-            (screen_x - size // 3, screen_y - size // 2, max(2, size // 2), size),
-            border_radius=2,
+        pulse = 0.5 + 0.5 * math.sin(time_seconds * 8.0)
+        glow_radius = radius + int(7 + 4 * pulse)
+        core = (
+            255,
+            min(255, int(205 + 35 * pulse)),
+            min(255, int(70 + 35 * pulse)),
         )
-        pygame.draw.rect(
+        inner = (255, 245, 165)
+        rim = (125, 80, 18)
+
+        pygame.draw.circle(screen, rim, (screen_x, screen_y), glow_radius)
+        pygame.draw.circle(screen, (205, 140, 30), (screen_x, screen_y), radius + 4)
+        pygame.draw.circle(screen, core, (screen_x, screen_y), radius)
+        pygame.draw.circle(
             screen,
-            (245, 225, 225),
-            (screen_x - size // 2, screen_y - size // 3, size, max(2, size // 2)),
-            border_radius=2,
+            inner,
+            (screen_x - radius // 3, screen_y - radius // 3),
+            max(2, radius // 3),
         )
 
 
