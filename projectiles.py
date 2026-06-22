@@ -67,7 +67,7 @@ class PlayerFireball:
 class BossProjectile:
     """Projectile fired by the boss in the arena."""
 
-    def __init__(self, x, y, vx, vy, radius=5, damage=12, lifetime=4.0):
+    def __init__(self, x, y, vx, vy, radius=5, damage=30, lifetime=4.0):
         self.x = float(x)
         self.y = float(y)
         self.vx = float(vx)

@@ -841,7 +841,7 @@ class GameScene:
                 dx / length * speed,
                 dy / length * speed,
                 radius=4,
-                damage=10,
+                damage=30,
             )
         )
 
@@ -860,7 +860,7 @@ class GameScene:
                     math.cos(angle) * speed,
                     math.sin(angle) * speed,
                     radius=4,
-                    damage=8,
+                    damage=30,
                 )
             )
 
