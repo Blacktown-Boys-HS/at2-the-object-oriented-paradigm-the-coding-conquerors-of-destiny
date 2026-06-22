@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.12.1" orientation="orthogonal" renderorder="right-down" width="37" height="27" tilewidth="16" tileheight="16" infinite="0" nextlayerid="43" nextobjectid="262">
+<map version="1.10" tiledversion="1.12.1" orientation="orthogonal" renderorder="right-down" width="37" height="27" tilewidth="16" tileheight="16" infinite="0" nextlayerid="43" nextobjectid="301">
  <tileset firstgid="1" name="cracked_tiles" tilewidth="16" tileheight="16" tilecount="256" columns="8">
   <image source="decorative_cracks_walls.png" width="128" height="512"/>
  </tileset>
@@ -4863,6 +4863,7 @@
   <object id="57" x="153.918" y="368.177" width="92.9399" height="9.16341"/>
   <object id="58" x="179.861" y="295.638" width="9.48675" height="45.1105"/>
   <object id="59" x="147.141" y="259.627" width="32.9132" height="73.9579"/>
+  <object id="263" x="111.287" y="242.915" width="32.9132" height="37.7998"/>
   <object id="60" x="92.7378" y="248.398" width="16.8438" height="68.5369"/>
   <object id="61" x="100.482" y="255.755" width="18.9735" height="29.8155"/>
   <object id="62" x="138.042" y="256.336" width="17.8119" height="30.2027"/>
@@ -4889,6 +4890,12 @@
   <object id="149" x="376.545" y="79.1818" width="42" height="2.72727"/>
   <object id="151" x="417.636" y="79.2727" width="1.09091" height="30.3636"/>
   <object id="152" x="376.364" y="92.5455" width="41.8182" height="1.81818"/>
+  <object id="291" x="355.156" y="112.34" width="2.22992" height="30.3783"/>
+  <object id="294" x="394.462" y="112.34" width="2.22992" height="30.3783"/>
+  <object id="296" x="355.732" y="112.34" width="40.9596" height="1.97654"/>
+  <object id="292" x="381.171" y="143.727" width="16.0858" height="13.4119"/>
+  <object id="293" x="381.171" y="143.727" width="16.0858" height="13.4119"/>
+  <object id="295" x="354.756" y="143.33" width="16.0858" height="13.4119"/>
   <object id="153" x="334.364" y="92.3636" width="26.1818" height="2.72727"/>
   <object id="154" x="358.727" y="80.7273" width="2" height="14.7273"/>
   <object id="155" x="376.364" y="79.6364" width="2" height="14.5455"/>
@@ -4930,7 +4937,7 @@
   <object id="193" x="201.636" y="243.273" width="4.36364" height="17.0909"/>
   <object id="194" x="204.364" y="256" width="45.2727" height="2.90909"/>
   <object id="195" x="176.182" y="185.455" width="3.63636" height="22.5455"/>
-  <object id="217" x="282.191" y="89.6234" width="19.1537" height="4.81143"/>
+  <object id="217" x="282.191" y="90.206" width="19.1537" height="4.81143"/>
   <object id="220" x="282.191" y="19.0902" width="19.1537" height="75.3447"/>
   <object id="256" x="299.98" y="-12.9297" width="65.1082" height="75.3447"/>
   <object id="257" x="324.884" y="-28.0502" width="65.1082" height="75.3447"/>
@@ -4939,15 +4946,16 @@
   <object id="260" x="423.316" y="57.0397" width="21.2291" height="7.4506"/>
   <object id="218" x="251.157" y="89.4219" width="12.1003" height="4.81143"/>
   <object id="219" x="251.157" y="19.0902" width="12.1003" height="75.1431"/>
-  <object id="221" x="219.57" y="88.9319" width="32.4562" height="9.16202"/>
+  <object id="221" x="219.57" y="88.9319" width="42.7565" height="9.16202"/>
   <object id="222" x="186.436" y="102.891" width="13.6797" height="6.00335"/>
   <object id="255" x="128.918" y="183.83" width="13.6797" height="8.67168"/>
   <object id="246" x="83.8534" y="75.3179" width="45.6996" height="35.0585"/>
-  <object id="254" x="56.8737" y="138.765" width="15.7551" height="18.752"/>
+  <object id="254" x="7.86939" y="127.528" width="15.7551" height="18.752"/>
+  <object id="273" x="7.86939" y="127.528" width="15.7551" height="18.752"/>
   <object id="247" x="21.9884" y="58.7149" width="83.5497" height="35.0585"/>
   <object id="248" x="-5.38731" y="58.4185" width="45.6996" height="35.0585"/>
   <object id="249" x="6.7684" y="58.4185" width="7.75008" height="160.766"/>
-  <object id="250" x="8.54729" y="127.795" width="15.1621" height="14.0083"/>
+  <object id="250" x="42.2573" y="130.604" width="8.29525" height="14.0083"/>
   <object id="251" x="40.8637" y="127.795" width="10.4184" height="14.0083"/>
   <object id="252" x="46.4968" y="127.795" width="4.78528" height="48.1036"/>
   <object id="253" x="13.8839" y="173.453" width="37.3982" height="2.44558"/>
@@ -4997,12 +5005,14 @@
   <object id="76" name="above" x="219.5" y="374.834" width="87.5" height="24"/>
   <object id="108" name="above" x="384.461" y="333.031" width="15.644" height="6.38551"/>
   <object id="103" name="above" x="462.833" y="379.917" width="51.5" height="3.45455"/>
-  <object id="84" name="above" x="91.653" y="371.291" width="87.5" height="7.01132"/>
-  <object id="90" name="above" x="147.326" y="327.201" width="35.0942" height="7.01132"/>
+  <object id="84" name="above" x="83.7121" y="371.291" width="95.4409" height="7.01132"/>
+  <object id="90" name="above" x="147.032" y="328.377" width="35.0942" height="7.01132"/>
   <object id="91" name="above" x="91.5553" y="311.166" width="18.6814" height="7.01132"/>
   <object id="92" name="above" x="100.579" y="283.108" width="18.6814" height="7.01132"/>
   <object id="93" name="above" x="138.012" y="283.396" width="18.6814" height="7.01132"/>
   <object id="88" name="above" x="0.0868295" y="327.498" width="47.1879" height="7.01132"/>
+  <object id="264" name="above" x="13.9847" y="214.959" width="25.4937" height="7.01132"/>
+  <object id="265" name="above" x="56.0171" y="215.298" width="37.6967" height="5.65543"/>
   <object id="89" name="above" x="42.1266" y="311.933" width="47.1879" height="7.01132"/>
   <object id="85" name="above" x="178.728" y="388.846" width="14.0743" height="7.01132"/>
   <object id="110" name="above" x="113.023" y="394.198" width="14.0743" height="11.4456"/>
@@ -5026,6 +5036,31 @@
   <object id="136" name="above" x="336.314" y="242.455" width="16.4233" height="10.2679"/>
   <object id="214" name="above" x="354.496" y="186.819" width="10.0597" height="9.17698"/>
   <object id="215" name="above" x="255.587" y="124.273" width="13.5142" height="11.7224"/>
+  <object id="279" name="above" x="297.924" y="89.3161" width="13.5142" height="11.7224"/>
+  <object id="280" name="above" x="301.614" y="52.9998" width="64.0075" height="11.7224"/>
+  <object id="281" name="above" x="365.119" y="37.2692" width="26.1044" height="14.0753"/>
+  <object id="282" name="above" x="410.657" y="37.5419" width="26.1044" height="11.7224"/>
+  <object id="283" name="above" x="419.928" y="59.3566" width="26.1044" height="11.7224"/>
+  <object id="284" name="above" x="436.425" y="44.6317" width="26.1044" height="11.7224"/>
+  <object id="286" name="above" x="415.911" y="103.306" width="65.1471" height="11.7224"/>
+  <object id="299" name="above" x="354.443" y="151.834" width="43.383" height="11.7224"/>
+  <object id="300" name="above" x="285.033" y="277.124" width="50.1475" height="11.7224"/>
+  <object id="297" name="above" x="376.189" y="84.4377" width="42.1079" height="14.503"/>
+  <object id="298" name="above" x="334.678" y="85.6294" width="25.623" height="14.503"/>
+  <object id="287" name="above" x="478.997" y="21.0296" width="81.9112" height="13.9072"/>
+  <object id="288" name="above" x="524.216" y="65.1456" width="27.4279" height="11.7224"/>
+  <object id="289" name="above" x="569.656" y="64.4839" width="27.4279" height="11.7224"/>
+  <object id="290" name="above" x="535.025" y="76.8364" width="22.5751" height="8.4137"/>
+  <object id="274" name="above" x="185.046" y="99.9269" width="13.5142" height="11.7224"/>
+  <object id="275" name="above" x="196.907" y="114.597" width="27.2479" height="11.7224"/>
+  <object id="276" name="above" x="220.941" y="88.3781" width="27.2479" height="11.7224"/>
+  <object id="266" name="above" x="15.2474" y="85.2568" width="24.1266" height="11.7224"/>
+  <object id="267" name="above" x="58.3213" y="84.3204" width="24.1266" height="11.7224"/>
+  <object id="268" name="above" x="83.2916" y="100.863" width="44.1029" height="11.7224"/>
+  <object id="269" name="above" x="129.487" y="132.388" width="60.0215" height="11.7224"/>
+  <object id="270" name="above" x="55.2" y="146.746" width="20.6932" height="13.283"/>
+  <object id="272" name="above" x="55.2" y="146.746" width="20.6932" height="13.283"/>
+  <object id="271" name="above" x="148.527" y="142.064" width="7.27161" height="7.97685"/>
   <object id="82" name="above" x="381.024" y="264.179" width="72.2751" height="5.73015"/>
   <object id="83" name="above" x="450.754" y="334.214" width="32.6905" height="5.73015"/>
  </objectgroup>
