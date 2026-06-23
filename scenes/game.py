@@ -840,8 +840,8 @@ class GameScene:
                 self.boss_enemy.position.y,
                 dx / length * speed,
                 dy / length * speed,
-                radius=4,
-                damage=30,
+                radius=3,
+                damage=10,
             )
         )
 
@@ -859,8 +859,8 @@ class GameScene:
                     self.boss_enemy.position.y,
                     math.cos(angle) * speed,
                     math.sin(angle) * speed,
-                    radius=4,
-                    damage=30,
+                    radius=3,
+                    damage=15,
                 )
             )
 
