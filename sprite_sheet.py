@@ -3,7 +3,6 @@ Slice rectangular frames from a sprite sheet image.
 """
 from pathlib import Path
 
-from numpy import row_stack
 import pygame
 
 
@@ -12,7 +11,6 @@ class SpriteSheet:
 
     def __init__(self, path, frame_width: int, frame_height: int):
         self.sheet = pygame.image.load(str(Path(path))).convert_alpha()
-        print(self.sheet.get_at((0, 0)))
         self.fw = frame_width
         self.fh = frame_height
         sw, sh = self.sheet.get_size()
