@@ -5,6 +5,20 @@
 
 Dungeon's End is a top-down dungeon RPG built with Python and Pygame. The project uses an object-oriented structure with separate classes for the application loop, scene management, player behaviour, enemies, projectiles, pickups, UI panels, audio, and Tiled map loading.
 
+## Game Play
+
+### Start
+
+https://github.com/user-attachments/assets/c447b470-c3f5-4db6-aaf5-161655aa0621
+
+### Boss fight
+
+https://github.com/user-attachments/assets/c74a9114-5c6d-4575-b98f-ad10d715a07a
+
+### Victory
+
+https://github.com/user-attachments/assets/6edb33ed-2171-4aa0-9d1f-c55f7aeef5df
+
 ## Features
 
 - Main menu, tutorial, settings, credits, pause menu, game over screen, and victory screen
