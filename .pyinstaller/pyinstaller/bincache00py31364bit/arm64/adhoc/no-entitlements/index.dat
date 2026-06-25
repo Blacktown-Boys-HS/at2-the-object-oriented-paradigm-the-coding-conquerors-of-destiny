@@ -1,0 +1,578 @@
+{'Python.framework/Versions/3.13/Python': bytearray(b'\x86\xa2\xb0\xf7'
+                                                    b'\xc53f\xdd\x88B^\x87'
+                                                    b'\xff\xdai\x009\xd6=z'),
+ 'charset_normalizer/cd.cpython-313-darwin.so': bytearray(b'\xd1)i!'
+                                                          b'N\xe2\xbd\xca'
+                                                          b'\xef\xb0x\xcf'
+                                                          b'\x04\xb3\xa3['
+                                                          b'\x91\x93\x8a\xcc'),
+ 'charset_normalizer/md.cpython-313-darwin.so': bytearray(b'Vt\xf4%\xc3!\x85]'
+                                                          b'9\x91+\x82B\x18jr'
+                                                          b'D\x93.\x0c'),
+ 'lib-dynload/_asyncio.cpython-313-darwin.so': bytearray(b'\x00\xec;Si,\xd3\xca'
+                                                         b'\xac"C\xd3'
+                                                         b'\x8dS\xe1\x7fIt\x19K'),
+ 'lib-dynload/_bisect.cpython-313-darwin.so': bytearray(b'\xf4\xdaw\xe6'
+                                                        b'\xd9.l\x84 \xa1M\xf8'
+                                                        b'\xba\x01Z\x82'
+                                                        b'\x14\x85\xcb\xb0'),
+ 'lib-dynload/_blake2.cpython-313-darwin.so': bytearray(b'\xb0?\x12*6:h\x8c'
+                                                        b'T\xf6\xf5\xa6'
+                                                        b'\xa5"\xe5\x10'
+                                                        b'\x8dM\x97\x05'),
+ 'lib-dynload/_bz2.cpython-313-darwin.so': bytearray(b'!R\xe8G[L\xf9[\xec%O\xfa'
+                                                     b'\x10\xf4\xc3 rdd\x92'),
+ 'lib-dynload/_codecs_cn.cpython-313-darwin.so': bytearray(b'I=\t\xdd\x17\xbdBp'
+                                                           b'\x8a\n\x9c*'
+                                                           b'\xe8\xb2\xa1\xb5'
+                                                           b'\x90x(\x05'),
+ 'lib-dynload/_codecs_hk.cpython-313-darwin.so': bytearray(b'\xd7\xfa\x01{'
+                                                           b't\x0f\x02.'
+                                                           b')\xbf\xb7\x8a'
+                                                           b'\x88_%uJ\xd7\x83$'),
+ 'lib-dynload/_codecs_iso2022.cpython-313-darwin.so': bytearray(b'\xdb\xaa\xa3\xc8'
+                                                                b'(P\x814'
+                                                                b'l\xb3E)'
+                                                                b'\x91\x1f\xf3\xbc'
+                                                                b'\xcf\xbd\xf1\x92'),
+ 'lib-dynload/_codecs_jp.cpython-313-darwin.so': bytearray(b'Q?\xda\xfc'
+                                                           b'\xe6t\x9a\x97'
+                                                           b'v\xe2BH'
+                                                           b'P\x8d\xeb\x81'
+                                                           b'\xd4M\xa6\x96'),
+ 'lib-dynload/_codecs_kr.cpython-313-darwin.so': bytearray(b'\x7f$#\xbb'
+                                                           b'\xd02|\x9b'
+                                                           b'\x82Z.\xf2\xa6t/&'
+                                                           b'Z\xe6\xf1\x8a'),
+ 'lib-dynload/_codecs_tw.cpython-313-darwin.so': bytearray(b'6!\xbf\xb2'
+                                                           b'r\x19\xad\x15'
+                                                           b'\x17LZ\xc2'
+                                                           b'\x99\xeeW\x9a'
+                                                           b'\xc1\xf1e\xe2'),
+ 'lib-dynload/_contextvars.cpython-313-darwin.so': bytearray(b'E7+\x03'
+                                                             b'\xc2\x8e\xad\x89'
+                                                             b'_\x82\x1d\xd6'
+                                                             b'9\xdcQ\xcd'
+                                                             b'\xd5KD\x01'),
+ 'lib-dynload/_csv.cpython-313-darwin.so': bytearray(b'\x95l\x87\x13'
+                                                     b'\xa0_\xec\xbf'
+                                                     b'\x97\x06\x80\x99'
+                                                     b'\x1a\xcf\xe3\xc4'
+                                                     b'\xee\xff,\xf2'),
+ 'lib-dynload/_ctypes.cpython-313-darwin.so': bytearray(b'\xd6\xa3\x05\x1c'
+                                                        b'\x1dfN\x9c'
+                                                        b'\xfe?\x89\xf3'
+                                                        b'\xad\xd6\x1f\x83'
+                                                        b'&v\xbf\x9c'),
+ 'lib-dynload/_curses.cpython-313-darwin.so': bytearray(b'\x17\xbe\xafM'
+                                                        b'\x8c\x7fwc'
+                                                        b'p\xec\xfb\x1d'
+                                                        b'1\x82\xdd\xee'
+                                                        b'\x8dy;\xbf'),
+ 'lib-dynload/_datetime.cpython-313-darwin.so': bytearray(b'\xdc@\x99\xc3'
+                                                          b'\xc4\xf5\xd9\xd3'
+                                                          b'\x16\xd8\xa1\x9c'
+                                                          b"'\x12D'Vr\x8a^"),
+ 'lib-dynload/_decimal.cpython-313-darwin.so': bytearray(b'\x9d\xf1\xc7\x8e'
+                                                         b'\xc2\x82\x8f\xe5'
+                                                         b'\x8f\x8e >'
+                                                         b'\xdb\xd6\x07I'
+                                                         b'\xac\xe8\x11E'),
+ 'lib-dynload/_elementtree.cpython-313-darwin.so': bytearray(b'$\x1b\xd2\x1b'
+                                                             b'\xf9l\x1fu'
+                                                             b'\xe6\xb3\xba='
+                                                             b'\xa0#\x03\x91'
+                                                             b'7)u\x0b'),
+ 'lib-dynload/_hashlib.cpython-313-darwin.so': bytearray(b'\x8dt\xc9\xc9'
+                                                         b'\x9e\xc6\x11\x95'
+                                                         b'\xbb\xadT(\x94i\xdaR'
+                                                         b'\xc4_\x8f\x10'),
+ 'lib-dynload/_heapq.cpython-313-darwin.so': bytearray(b'\xb3\xdb\xdf='
+                                                       b'\xe56\x93a'
+                                                       b'\xa6\xbd\xc7\xaf'
+                                                       b'\x114\xa7\x00'
+                                                       b'\x1a\xfc\x92\xb8'),
+ 'lib-dynload/_json.cpython-313-darwin.so': bytearray(b']\xb2\xc0E\x7f>\x93_'
+                                                      b'\x87\xfe#\xfbe\x99#\xd1'
+                                                      b'%\xeb\xf6C'),
+ 'lib-dynload/_lzma.cpython-313-darwin.so': bytearray(b'>\xb0O\x8d\xc1\x06\x9bh'
+                                                      b'\xd4Wv\xed5@&\x7f'
+                                                      b'@\x82P\xa9'),
+ 'lib-dynload/_md5.cpython-313-darwin.so': bytearray(b'\xd0\xf7\x82\x8f'
+                                                     b'\xe7\xc8W\x0e.zr\x84'
+                                                     b'\xc2\x85\xea\xae'
+                                                     b'\xe2\xdc\xe6\x14'),
+ 'lib-dynload/_multibytecodec.cpython-313-darwin.so': bytearray(b'a\x95}+'
+                                                                b'\x8fX\xcb\xa5'
+                                                                b'\xf2~\xc8\xa4'
+                                                                b'(\x93c\x16'
+                                                                b'\xde\xcd?\xf9'),
+ 'lib-dynload/_multiprocessing.cpython-313-darwin.so': bytearray(b'\x83\xe4\xadv'
+                                                                 b'\xf9\t\xea\xdc'
+                                                                 b'\x1eey\x97'
+                                                                 b'\xed\t\xfdh'
+                                                                 b'e\x92\x7f\xe5'),
+ 'lib-dynload/_opcode.cpython-313-darwin.so': bytearray(b'N\x1f\xaa\x02'
+                                                        b"\x9d\\\xe7'"
+                                                        b'j\x98\x05\x9c\xd8^vZ'
+                                                        b'% *\xc0'),
+ 'lib-dynload/_pickle.cpython-313-darwin.so': bytearray(b'n\xb5\xcd6'
+                                                        b'x\x1f\xfd\x84'
+                                                        b'\x8b\xdcr\x11'
+                                                        b'o\x13\xd7T'
+                                                        b'\xe0\xcf\x16\x95'),
+ 'lib-dynload/_posixshmem.cpython-313-darwin.so': bytearray(b'mz?\xe9T\xea\xb2R'
+                                                            b'\xd6\x89\x80J'
+                                                            b'_\x19=\x07'
+                                                            b'\xb8\xa9r\xba'),
+ 'lib-dynload/_posixsubprocess.cpython-313-darwin.so': bytearray(b'\xae\x08}4'
+                                                                 b'\x92\xdb*\xc3'
+                                                                 b'|\x1c\xb5\x16'
+                                                                 b'-L\xf3C'
+                                                                 b'vF\x1az'),
+ 'lib-dynload/_queue.cpython-313-darwin.so': bytearray(b'\xb6\xe9d{'
+                                                       b'\x87\xe9#\xc1'
+                                                       b'\xd8Eo\xb9'
+                                                       b'\xbay\x0f\xdac\x9be`'),
+ 'lib-dynload/_random.cpython-313-darwin.so': bytearray(b'%\xccE\xb9\xefLS\xe3'
+                                                        b'\xd0\xa8\xd6['
+                                                        b'\xb0qt\xad\xd3d\xecC'),
+ 'lib-dynload/_scproxy.cpython-313-darwin.so': bytearray(b'V\x90\x85\x13|q\xa6n'
+                                                         b'\x8b\xb7\xb3\xaf'
+                                                         b'I\xce\xa2\xa3'
+                                                         b'\x94\xf8>\x94'),
+ 'lib-dynload/_sha1.cpython-313-darwin.so': bytearray(b'\xdd<\xf1\x0e'
+                                                      b'\x86\xca)\xf3J\\`$'
+                                                      b'>]\xe6\x13\xe5&!B'),
+ 'lib-dynload/_sha2.cpython-313-darwin.so': bytearray(b'P\x9a\x82;\xeaW\xb4\x7f'
+                                                      b'\xfd\x12rz;\x97M<'
+                                                      b'\xbf\xbc\xcf\xb1'),
+ 'lib-dynload/_sha3.cpython-313-darwin.so': bytearray(b'\xe8h\xf4-x:\xb0Q'
+                                                      b'\x86\xe1\x99\x88'
+                                                      b'\x1d7&\xf8\xdd8\xfb\xe4'),
+ 'lib-dynload/_socket.cpython-313-darwin.so': bytearray(b'\x1f1\xa2J\x8e}V\x0e'
+                                                        b'\x12\xe4!\xb0'
+                                                        b'\x105{\xb9'
+                                                        b'\x9f\xea\x04]'),
+ 'lib-dynload/_ssl.cpython-313-darwin.so': bytearray(b'\xfeF*\xeb\x17\xe7n\xb5'
+                                                     b'\xdc\x17\xbb\xca;yO\xce'
+                                                     b'l\xf4g\x99'),
+ 'lib-dynload/_statistics.cpython-313-darwin.so': bytearray(b'Ov4\xac'
+                                                            b'\x94Z\xf0\x92'
+                                                            b'B\xa1\xf5\xd4'
+                                                            b'N\xc8b\x89D\xd3@^'),
+ 'lib-dynload/_struct.cpython-313-darwin.so': bytearray(b'$S\xb2\xa9\t3\xdfk'
+                                                        b'\xfa\xa8\x1c\xf3'
+                                                        b'\x17]q\xf6#Q\xba\xd4'),
+ 'lib-dynload/array.cpython-313-darwin.so': bytearray(b'\x12\x98\x0f\xb1'
+                                                      b'\xd8\xf6\xbf\x16'
+                                                      b'5\x86l\xec'
+                                                      b'\xd6\x88\xa1\x08'
+                                                      b'e\xe8A\xc9'),
+ 'lib-dynload/binascii.cpython-313-darwin.so': bytearray(b'e\xc9w\x9a'
+                                                         b'\x04 \x00\xc7'
+                                                         b'L\xc7w\xf3'
+                                                         b'R\x08\xe4\x81'
+                                                         b'\x91C\xee\xf0'),
+ 'lib-dynload/fcntl.cpython-313-darwin.so': bytearray(b'J\xad&G;*V\x9b'
+                                                      b'H\x92\x0b\xba'
+                                                      b'\xc7\xc3B\x93'
+                                                      b'\xca\xc9\x828'),
+ 'lib-dynload/grp.cpython-313-darwin.so': bytearray(b'H)\x86a\x12Zc\xe9'
+                                                    b'\xf2\x83P\x07'
+                                                    b'\xe7\x01\xe2\x8b'
+                                                    b')/\xf6\xdd'),
+ 'lib-dynload/math.cpython-313-darwin.so': bytearray(b'\xc5\xf8\xd0\xf7'
+                                                     b'\xef&H\xaa!\xf5\xa8\xce'
+                                                     b'\x13\x86\xc3\x8f'
+                                                     b'\xa8h\xb7\xa5'),
+ 'lib-dynload/mmap.cpython-313-darwin.so': bytearray(b'\xd3\x94\x98\xe7'
+                                                     b'\xa5\x91\x1a\x9e'
+                                                     b'\xa9\xcc\xdc\xcd'
+                                                     b'z\xe1\n\xde'
+                                                     b'\xda\xdb\xaa\x88'),
+ 'lib-dynload/pyexpat.cpython-313-darwin.so': bytearray(b'\xc3\x90\xc0V'
+                                                        b'\x11]\x14\xf0'
+                                                        b'~\xb3$\xb8\xdb\t\x8fL'
+                                                        b'\xb8Z)y'),
+ 'lib-dynload/readline.cpython-313-darwin.so': bytearray(b"D}\xbe'\xe5y\xd9\xfd"
+                                                         b'\xad\xb1e\x11'
+                                                         b'\xf7*\xbb\x10'
+                                                         b'\xfb\xf1_\xcc'),
+ 'lib-dynload/resource.cpython-313-darwin.so': bytearray(b'wQ\x04I\x86h\xa5y'
+                                                         b'8\xfa<\xcc'
+                                                         b'\xb5\x0e\xe3\xd3'
+                                                         b'\xd7\x80\x15\xce'),
+ 'lib-dynload/select.cpython-313-darwin.so': bytearray(b'2\x11\x98\xa2'
+                                                       b'\xd9J\x9aA'
+                                                       b"\x97g\x12\xa6\x0bp'x"
+                                                       b'\xac*\xac&'),
+ 'lib-dynload/syslog.cpython-313-darwin.so': bytearray(b'\x99;=c'
+                                                       b'\xa3\xa5\x89\x11'
+                                                       b'<\xb2\x13\x1c'
+                                                       b'\x105\xf3\xb1'
+                                                       b'\xdd\xd4\xf6#'),
+ 'lib-dynload/termios.cpython-313-darwin.so': bytearray(b'b\x10\xcc\xc4'
+                                                        b'\xd6\x8bc\xb9'
+                                                        b'\xc4X\xe0\x11'
+                                                        b'\x9d\xc4W\xd5'
+                                                        b'\xe3\x96\x805'),
+ 'lib-dynload/unicodedata.cpython-313-darwin.so': bytearray(b'D\x88W\x95'
+                                                            b'\xeei\xcb9'
+                                                            b'\xa8\x8c,\x98'
+                                                            b'E\x10\xb0\xd9'
+                                                            b'<\xe9\xef\xb8'),
+ 'lib-dynload/zlib.cpython-313-darwin.so': bytearray(b'X_\x87j\xb0bb\xdfO\x94RU'
+                                                     b'\xd2\xa8#PUZzJ'),
+ 'libcrypto.3.dylib': bytearray(b'n\xbb\xe63\xdb\x91\xccyK\xc9\x10\x1a'
+                                b'\x17\x13F\x82\x02\x1f\n\xee'),
+ 'libssl.3.dylib': bytearray(b'+\x91\x07\x97L\xff{=*\xa0=\xa7\xfa\xed\r\x88'
+                             b'\xa4\xe3\x10p'),
+ 'numpy/_core/_multiarray_tests.cpython-313-darwin.so': bytearray(b'@\xdb\xa8\xff'
+                                                                  b'\x85\xd7\xbe\xef'
+                                                                  b'\xc3\xef\xb4\xa9'
+                                                                  b'\x15\xe2\xb1\x08'
+                                                                  b'z\xf7\x05>'),
+ 'numpy/_core/_multiarray_umath.cpython-313-darwin.so': bytearray(b'\x80F\rs'
+                                                                  b'P\xbb\x1ey'
+                                                                  b'=\x07\xa0y'
+                                                                  b'\xaa\xa8\xd8\x80'
+                                                                  b'\xb8w\xddZ'),
+ 'numpy/fft/_pocketfft_umath.cpython-313-darwin.so': bytearray(b'\x8dW*\xfe'
+                                                               b'\x8c\xd9p\xaf'
+                                                               b'~W\xeb\xf7'
+                                                               b'\xb2r\x01%'
+                                                               b'\xcd\x90\x00\xea'),
+ 'numpy/linalg/_umath_linalg.cpython-313-darwin.so': bytearray(b'\x98\xe7G\x8f'
+                                                               b'\xdbK\xf0\x8a'
+                                                               b'\xe4\x15<$'
+                                                               b'c\xa9\x17\xaf'
+                                                               b'6an<'),
+ 'numpy/random/_bounded_integers.cpython-313-darwin.so': bytearray(b'\\P\xb5\xb1'
+                                                                   b'r\xcd:\xfe'
+                                                                   b'J}\xe7H'
+                                                                   b'\x93@\x19\xb5'
+                                                                   b'\x1a\xd2\x13\xaf'),
+ 'numpy/random/_common.cpython-313-darwin.so': bytearray(b'\x1d\xca\xdf\xef'
+                                                         b'\xdb\xd7\x8a|'
+                                                         b'\xd8@\xbe\x93'
+                                                         b'w\x9d\x13G'
+                                                         b'\xee_\xd4\xde'),
+ 'numpy/random/_generator.cpython-313-darwin.so': bytearray(b'PA)\xe0\xe68w['
+                                                            b'\xa7T\x8f\x90'
+                                                            b'\x96\xb6\rn'
+                                                            b'M\x84\xf8\xcb'),
+ 'numpy/random/_mt19937.cpython-313-darwin.so': bytearray(b'M\xef\x0c8*FH6'
+                                                          b'6s2\xa0'
+                                                          b'<\xd4\xbf\xa4'
+                                                          b'\x1b\xc8>\n'),
+ 'numpy/random/_pcg64.cpython-313-darwin.so': bytearray(b'\xfe\x99\x9c\xe8'
+                                                        b'\xe8h\\\xf4'
+                                                        b'\xc0\x0c.\xff'
+                                                        b'\xf7W\x9ah'
+                                                        b'\x95\x1cB\x15'),
+ 'numpy/random/_philox.cpython-313-darwin.so': bytearray(b'e\xc7\x97\x82'
+                                                         b'\x0b\x9e:8o\xfa\xc73'
+                                                         b'\xb6-\xf2\xf2'
+                                                         b'\x81\x81\xdd\x19'),
+ 'numpy/random/_sfc64.cpython-313-darwin.so': bytearray(b'\xb6\xf4\xd0\xe5'
+                                                        b'"\x8bV\x8a\xd8%v7'
+                                                        b'\xaf\xed\xc8\xef'
+                                                        b'\xff+h\xf5'),
+ 'numpy/random/bit_generator.cpython-313-darwin.so': bytearray(b'1\xc1\x1c)'
+                                                               b'\xaf\x0c\xac\xf3'
+                                                               b'8@\x0fe'
+                                                               b'\xfb>\xc6\x14'
+                                                               b'\xb1\xbaW\x19'),
+ 'numpy/random/mtrand.cpython-313-darwin.so': bytearray(b'd\x16X\xfd'
+                                                        b'\x08\x0e\xd4o'
+                                                        b'\xec\xc5Y\x00'
+                                                        b'\x9e9\xab8'
+                                                        b'c\x9d\xcc\xb4'),
+ 'psutil/_psutil_osx.abi3.so': bytearray(b'G\x96Qw\xf2\xa7\xfa\x01\x8b\xac(\x1e'
+                                         b'\xb1\x18\x82\x8dZg\x05c'),
+ 'pygame/.dylibs/libFLAC.8.dylib': bytearray(b'g\xc8\x96\xe9e\xdb\xa5\xb4'
+                                             b'\xdb\xeeM>x\xef\x1fQ\n%\xc3u'),
+ 'pygame/.dylibs/libSDL2-2.0.0.dylib': bytearray(b'\xc9\xf13[%k\xc0*'
+                                                 b'\xeb\x84\x81J'
+                                                 b'\xff\xab\x1a\x95'
+                                                 b'q\xd4\x91\x01'),
+ 'pygame/.dylibs/libSDL2_image-2.0.0.dylib': bytearray(b'Ze\x00\x89\xa0\xc1\n\t'
+                                                       b'\xbd\xee\xe0\\'
+                                                       b'a\xc4\x93\x80'
+                                                       b'\xb4Wr\xfd'),
+ 'pygame/.dylibs/libSDL2_mixer-2.0.0.dylib': bytearray(b'Hve/\xed\xabW^'
+                                                       b'\xa3\xee\x16A'
+                                                       b'\xf7\xfd\x0c`'
+                                                       b'\xc2)\xe0 '),
+ 'pygame/.dylibs/libSDL2_ttf-2.0.0.dylib': bytearray(b',f\xa0\x93'
+                                                     b'\x89\xdf\xef\x13'
+                                                     b"\x0btO\x06d'\xdf`{\x88o|"),
+ 'pygame/.dylibs/libbrotlicommon.1.0.9.dylib': bytearray(b'\xd2\x8f\x9b\xea'
+                                                         b'\xd4\x13 G.Q\xa3\xa0'
+                                                         b'0n\xc8\xfc`FM\x99'),
+ 'pygame/.dylibs/libbrotlidec.1.0.9.dylib': bytearray(b'\xc2\xe6\x1e2'
+                                                      b'\xfc\xa4\xc9\xcb'
+                                                      b'\x06\xe3\xf7\xcc'
+                                                      b'\x14jf\xb8\xb2\xd9s\xfc'),
+ 'pygame/.dylibs/libfluidsynth.3.1.1.dylib': bytearray(b'\x81\xf3\xd8\xb4'
+                                                       b'\xc5\xc5@\x84'
+                                                       b'bv\x05\xa2'
+                                                       b'\x92\xe8\xe5\x0c'
+                                                       b"%\xdd '"),
+ 'pygame/.dylibs/libfreetype.6.dylib': bytearray(b' \xfc\xb6z]~\x0flv\x01j0'
+                                                 b'\xd5b\x15c$\xdd8\xc3'),
+ 'pygame/.dylibs/libglib-2.0.0.dylib': bytearray(b'KV@%\x1f\xb6&|z}[_'
+                                                 b'\x97\x94\xc5\xdd'
+                                                 b';\xdb\x9f\xb8'),
+ 'pygame/.dylibs/libgthread-2.0.0.dylib': bytearray(b'\xb99\xe3\xc9/\xed0z'
+                                                    b'n\xa9\x99\xa7'
+                                                    b'\xfct\xbe\xcd'
+                                                    b'\xa2\x81\xcdR'),
+ 'pygame/.dylibs/libintl.8.dylib': bytearray(b'\x82\xd3@\xe1\xb1\xa4\x01\xba'
+                                             b'K\x83\x97nK\x0c\x13\xe4'
+                                             b'\xd5U\x9f\x9f'),
+ 'pygame/.dylibs/libjpeg.62.3.0.dylib': bytearray(b'\xee\xab\x04!N\x04\xeb '
+                                                  b'\xcat1M\xe4\x01\x99\x0e'
+                                                  b'\xab\xdas#'),
+ 'pygame/.dylibs/libmodplug.1.dylib': bytearray(b'\xa2lj\x8a\x07\xe1]\xb6'
+                                                b'}\x07\x02\xfa\xc8\xf4\xd5\xcf'
+                                                b'7%^B'),
+ 'pygame/.dylibs/libmpg123.0.dylib': bytearray(b'\xae\xea\x95f\x8e*\x7fj'
+                                               b'w\xe3(\xfd\xb2E\x05)'
+                                               b'\xe0\xf5_\xc7'),
+ 'pygame/.dylibs/libogg.0.8.5.dylib': bytearray(b'\xfa\xd0+oJ|\xa8\xde'
+                                                b'P\xe9\xa5\xad\xb0\xe9\xac\xf6'
+                                                b'\x07>_\xa5'),
+ 'pygame/.dylibs/libopus.0.dylib': bytearray(b'\x99\x1fH\x98l%\x89\xf5'
+                                             b'9\xb0\xa4c]\x7f\x11\x81'
+                                             b'\xfe\xb1\x92\xf7'),
+ 'pygame/.dylibs/libopusfile.0.dylib': bytearray(b'\xc7\xf7\xd3%e\xb7Pq'
+                                                 b'\x19\xc1\xfa6\xa09\x9d4'
+                                                 b'PC\xe2\xbd'),
+ 'pygame/.dylibs/libpng16.16.dylib': bytearray(b'\xd6\xb9\xbeP\x01\xe9\xc0\xc6'
+                                               b"\xc2*G'\x87\xa2\xa8\xbb"
+                                               b'\x8a\xa0\xb2C'),
+ 'pygame/.dylibs/libsharpyuv.0.dylib': bytearray(b'N\x94\xd4 \xbf\xdfe\x18'
+                                                 b'\\\x94\xb3\xce\xfb\xf58\xe1'
+                                                 b'\x82\x143a'),
+ 'pygame/.dylibs/libsndfile.1.0.34.dylib': bytearray(b'\x90\xef8<y\xc9\x9e\x80'
+                                                     b'|\x9d\xb6$dS\x05`'
+                                                     b'2\x15s\xec'),
+ 'pygame/.dylibs/libtiff.5.8.0.dylib': bytearray(b'{\xda\xa9k\x91m#\xe5'
+                                                 b'F\xbf\xcb\x926?\x92\xdf'
+                                                 b'\xb5\x81\xd8L'),
+ 'pygame/.dylibs/libvorbis.0.4.9.dylib': bytearray(b'\x99\x89Z\x18'
+                                                   b'\x98\x83\x06\xbb'
+                                                   b'\xd0\xb2\xda\xde'
+                                                   b'\xbb\x97\xce/\x1f\xfa\xbfC'),
+ 'pygame/.dylibs/libvorbisenc.2.0.12.dylib': bytearray(b'\x94\x80\x03c^)/B'
+                                                       b'\xb88\xdeU'
+                                                       b'\x9f\x00\xd6t'
+                                                       b'\xd1\xfc7s'),
+ 'pygame/.dylibs/libvorbisfile.3.3.8.dylib': bytearray(b'4\xd2\xe9Gq\xdf\x03{'
+                                                       b'\xa2\xbc\x12)'
+                                                       b"c\x92'\xe3"
+                                                       b'\xfc*\xb6\x9c'),
+ 'pygame/.dylibs/libwebp.7.dylib': bytearray(b';\xbf\xc9\xeb(\xb3\xc0D'
+                                             b'\x9c\x0f\xb1\x93\xf6\x13p}'
+                                             b'\xf1\x81r`'),
+ 'pygame/.dylibs/libz.1.2.11.zlib-ng.dylib': bytearray(b'u4deu\xb0\xdb\x8f'
+                                                       b'k{d\xc4'
+                                                       b'\x1f\xd3\xd0\xca'
+                                                       b'D$\xd9\x05'),
+ 'pygame/__dot__dylibs/libFLAC.8.dylib': bytearray(b'g\xc8\x96\xe9e\xdb\xa5\xb4'
+                                                   b'\xdb\xeeM>x\xef\x1fQ'
+                                                   b'\n%\xc3u'),
+ 'pygame/__dot__dylibs/libSDL2-2.0.0.dylib': bytearray(b'\xc9\xf13[%k\xc0*'
+                                                       b'\xeb\x84\x81J'
+                                                       b'\xff\xab\x1a\x95'
+                                                       b'q\xd4\x91\x01'),
+ 'pygame/__dot__dylibs/libSDL2_image-2.0.0.dylib': bytearray(b'Ze\x00\x89'
+                                                             b'\xa0\xc1\n\t'
+                                                             b'\xbd\xee\xe0\\'
+                                                             b'a\xc4\x93\x80'
+                                                             b'\xb4Wr\xfd'),
+ 'pygame/__dot__dylibs/libSDL2_mixer-2.0.0.dylib': bytearray(b'Hve/\xed\xabW^'
+                                                             b'\xa3\xee\x16A'
+                                                             b'\xf7\xfd\x0c`'
+                                                             b'\xc2)\xe0 '),
+ 'pygame/__dot__dylibs/libSDL2_ttf-2.0.0.dylib': bytearray(b',f\xa0\x93'
+                                                           b'\x89\xdf\xef\x13'
+                                                           b"\x0btO\x06d'\xdf`"
+                                                           b'{\x88o|'),
+ 'pygame/__dot__dylibs/libbrotlicommon.1.0.9.dylib': bytearray(b'\xd2\x8f\x9b\xea'
+                                                               b'\xd4\x13 G'
+                                                               b'.Q\xa3\xa0'
+                                                               b'0n\xc8\xfc'
+                                                               b'`FM\x99'),
+ 'pygame/__dot__dylibs/libbrotlidec.1.0.9.dylib': bytearray(b'\xc2\xe6\x1e2'
+                                                            b'\xfc\xa4\xc9\xcb'
+                                                            b'\x06\xe3\xf7\xcc'
+                                                            b'\x14jf\xb8'
+                                                            b'\xb2\xd9s\xfc'),
+ 'pygame/__dot__dylibs/libfluidsynth.3.1.1.dylib': bytearray(b'\x81\xf3\xd8\xb4'
+                                                             b'\xc5\xc5@\x84'
+                                                             b'bv\x05\xa2'
+                                                             b'\x92\xe8\xe5\x0c'
+                                                             b"%\xdd '"),
+ 'pygame/__dot__dylibs/libfreetype.6.dylib': bytearray(b' \xfc\xb6z]~\x0fl'
+                                                       b'v\x01j0\xd5b\x15c'
+                                                       b'$\xdd8\xc3'),
+ 'pygame/__dot__dylibs/libglib-2.0.0.dylib': bytearray(b'KV@%\x1f\xb6&|z}[_'
+                                                       b'\x97\x94\xc5\xdd'
+                                                       b';\xdb\x9f\xb8'),
+ 'pygame/__dot__dylibs/libgthread-2.0.0.dylib': bytearray(b'\xb99\xe3\xc9'
+                                                          b'/\xed0z'
+                                                          b'n\xa9\x99\xa7'
+                                                          b'\xfct\xbe\xcd'
+                                                          b'\xa2\x81\xcdR'),
+ 'pygame/__dot__dylibs/libintl.8.dylib': bytearray(b'\x82\xd3@\xe1'
+                                                   b'\xb1\xa4\x01\xbaK\x83\x97n'
+                                                   b'K\x0c\x13\xe4\xd5U\x9f\x9f'),
+ 'pygame/__dot__dylibs/libjpeg.62.3.0.dylib': bytearray(b'\xee\xab\x04!'
+                                                        b'N\x04\xeb \xcat1M'
+                                                        b'\xe4\x01\x99\x0e'
+                                                        b'\xab\xdas#'),
+ 'pygame/__dot__dylibs/libmodplug.1.dylib': bytearray(b'\xa2lj\x8a\x07\xe1]\xb6'
+                                                      b'}\x07\x02\xfa'
+                                                      b'\xc8\xf4\xd5\xcf7%^B'),
+ 'pygame/__dot__dylibs/libmpg123.0.dylib': bytearray(b'\xae\xea\x95f\x8e*\x7fj'
+                                                     b'w\xe3(\xfd\xb2E\x05)'
+                                                     b'\xe0\xf5_\xc7'),
+ 'pygame/__dot__dylibs/libogg.0.8.5.dylib': bytearray(b'\xfa\xd0+oJ|\xa8\xde'
+                                                      b'P\xe9\xa5\xad'
+                                                      b'\xb0\xe9\xac\xf6'
+                                                      b'\x07>_\xa5'),
+ 'pygame/__dot__dylibs/libopus.0.dylib': bytearray(b'\x99\x1fH\x98l%\x89\xf5'
+                                                   b'9\xb0\xa4c]\x7f\x11\x81'
+                                                   b'\xfe\xb1\x92\xf7'),
+ 'pygame/__dot__dylibs/libopusfile.0.dylib': bytearray(b'\xc7\xf7\xd3%e\xb7Pq'
+                                                       b'\x19\xc1\xfa6'
+                                                       b'\xa09\x9d4PC\xe2\xbd'),
+ 'pygame/__dot__dylibs/libpng16.16.dylib': bytearray(b'\xd6\xb9\xbeP'
+                                                     b"\x01\xe9\xc0\xc6\xc2*G'"
+                                                     b'\x87\xa2\xa8\xbb'
+                                                     b'\x8a\xa0\xb2C'),
+ 'pygame/__dot__dylibs/libsharpyuv.0.dylib': bytearray(b'N\x94\xd4 '
+                                                       b'\xbf\xdfe\x18'
+                                                       b'\\\x94\xb3\xce'
+                                                       b'\xfb\xf58\xe1'
+                                                       b'\x82\x143a'),
+ 'pygame/__dot__dylibs/libsndfile.1.0.34.dylib': bytearray(b'\x90\xef8<'
+                                                           b'y\xc9\x9e\x80'
+                                                           b'|\x9d\xb6$dS\x05`'
+                                                           b'2\x15s\xec'),
+ 'pygame/__dot__dylibs/libtiff.5.8.0.dylib': bytearray(b'{\xda\xa9k\x91m#\xe5'
+                                                       b'F\xbf\xcb\x92'
+                                                       b'6?\x92\xdf'
+                                                       b'\xb5\x81\xd8L'),
+ 'pygame/__dot__dylibs/libvorbis.0.4.9.dylib': bytearray(b'\x99\x89Z\x18'
+                                                         b'\x98\x83\x06\xbb'
+                                                         b'\xd0\xb2\xda\xde'
+                                                         b'\xbb\x97\xce/'
+                                                         b'\x1f\xfa\xbfC'),
+ 'pygame/__dot__dylibs/libvorbisenc.2.0.12.dylib': bytearray(b'\x94\x80\x03c'
+                                                             b'^)/B\xb88\xdeU'
+                                                             b'\x9f\x00\xd6t'
+                                                             b'\xd1\xfc7s'),
+ 'pygame/__dot__dylibs/libvorbisfile.3.3.8.dylib': bytearray(b'4\xd2\xe9G'
+                                                             b'q\xdf\x03{'
+                                                             b'\xa2\xbc\x12)'
+                                                             b"c\x92'\xe3"
+                                                             b'\xfc*\xb6\x9c'),
+ 'pygame/__dot__dylibs/libwebp.7.dylib': bytearray(b';\xbf\xc9\xeb(\xb3\xc0D'
+                                                   b'\x9c\x0f\xb1\x93\xf6\x13p}'
+                                                   b'\xf1\x81r`'),
+ 'pygame/__dot__dylibs/libz.1.2.11.zlib-ng.dylib': bytearray(b'u4de'
+                                                             b'u\xb0\xdb\x8f'
+                                                             b'k{d\xc4'
+                                                             b'\x1f\xd3\xd0\xca'
+                                                             b'D$\xd9\x05'),
+ 'pygame/_freetype.cpython-313-darwin.so': bytearray(b'\x05\xd0E\xf719\x8e\xcc'
+                                                     b'L}O\xd5\x9b\x1fQ\xc4'
+                                                     b'X\x84MK'),
+ 'pygame/base.cpython-313-darwin.so': bytearray(b'\xaa\xb9{\xc4\x94\xac.\x07'
+                                                b'V\\\xa5F\x8d\x1a\xccB'
+                                                b'"\x96\x10f'),
+ 'pygame/bufferproxy.cpython-313-darwin.so': bytearray(b'\x0e\xa9\x821'
+                                                       b'_\x88\xdb\x03'
+                                                       b'Ip\xec\x98C{R%'
+                                                       b'\xd2\xf9\x03\x17'),
+ 'pygame/color.cpython-313-darwin.so': bytearray(b"'\x04\x96m\xd5\x1a\xa8\xa9"
+                                                 b'\xb8t\x1e\xea`#\x8a\xc0'
+                                                 b'\x1cN\xc2\xbb'),
+ 'pygame/constants.cpython-313-darwin.so': bytearray(b'\x94\xf5\x08;'
+                                                     b'\xc6n\xa3\xb0'
+                                                     b'\x9b\xd1\xed\xc0z\xfdI$'
+                                                     b'R\xe0`m'),
+ 'pygame/display.cpython-313-darwin.so': bytearray(b'\x8f#\xe5\xb6\xbcK\xa5\xee'
+                                                   b'\x91\xafw;\xf1\xbb\xb2\xc5'
+                                                   b'9\x18~\xa7'),
+ 'pygame/draw.cpython-313-darwin.so': bytearray(b'\xe0\xb5::\xf6<\xd0\x86'
+                                                b'C\xcbhD|\xf3\xa3p'
+                                                b'\xc5\xe0c\x11'),
+ 'pygame/event.cpython-313-darwin.so': bytearray(b'\xf3I\xf1[\t\x14-\xea'
+                                                 b' \x82;\xf0Ul\xd8\xd6'
+                                                 b'\xaf\xed\n '),
+ 'pygame/font.cpython-313-darwin.so': bytearray(b'\xc8\x90\x0eb\xf4\xeb\x0f\xfd'
+                                                b'/3\x17\x9bS\xea\xdd)'
+                                                b'\xe4\xa1*D'),
+ 'pygame/image.cpython-313-darwin.so': bytearray(b':\xbbe\x8d\xc1$m\xb2'
+                                                 b'9\xdd\x0f(A\xd4dY'
+                                                 b'g\x95\xcf\xaa'),
+ 'pygame/imageext.cpython-313-darwin.so': bytearray(b'c\x10\xc2\xb9S\xbbQ\xfc'
+                                                    b'\x9e1\xfd\x11'
+                                                    b'\xb0\x06\xfeY\xc9[\xbf}'),
+ 'pygame/joystick.cpython-313-darwin.so': bytearray(b'\x18(M L\xaf\x15\x9d'
+                                                    b'\x9b\x1e\xc3\xe5'
+                                                    b'O\xdaN\xd9r\x88\xf3]'),
+ 'pygame/key.cpython-313-darwin.so': bytearray(b'\xdf\x88\xd9\x96\x90\xe5f='
+                                               b'\x98\xb0\xa8\xd7\xe1K\xfbN'
+                                               b'X\xf7\xc0\n'),
+ 'pygame/mask.cpython-313-darwin.so': bytearray(b'n\x12~4\xf0\x1b\xc7\x98'
+                                                b'\xa1\x98\xdd\x13J\xa2(\x97'
+                                                b'\x9f\xcbu\x94'),
+ 'pygame/math.cpython-313-darwin.so': bytearray(b't4u\x04*\x19\xa5\xee|4q\xc7'
+                                                b'\x05\xe7\x1d\xe5'
+                                                b'\xbc\xc6\xfd\xa5'),
+ 'pygame/mixer.cpython-313-darwin.so': bytearray(b'\x92\x1e\n\xa0\t\xaa\xf6\xcf'
+                                                 b'\x7f\x0f8\x8d\x05\xf6=P'
+                                                 b'\x1d\x16\x01\x1e'),
+ 'pygame/mixer_music.cpython-313-darwin.so': bytearray(b'\xf76\xa2\xcf'
+                                                       b'y\x10\xea\x99'
+                                                       b'\xc5I^\x92'
+                                                       b'\x01\x86H\x02'
+                                                       b'\x8f\xc0\x93s'),
+ 'pygame/mouse.cpython-313-darwin.so': bytearray(b"\x18\x1eU\\'&.*\x1a{\xdbi"
+                                                 b'XQ}[\xd0\xb4\n\xd9'),
+ 'pygame/pixelarray.cpython-313-darwin.so': bytearray(b'\x08<N\x13'
+                                                      b'\xf9\xd1\xbc\xc5'
+                                                      b'T\xa0\xef\xa4\xd3$\xbd7'
+                                                      b'r\xec \x8b'),
+ 'pygame/pixelcopy.cpython-313-darwin.so': bytearray(b'\xe94\x14s\xa61sC'
+                                                     b' \x06\x17\xad'
+                                                     b'u\x8f\xbd\xbdqP^n'),
+ 'pygame/rect.cpython-313-darwin.so': bytearray(b'-B\xe7\xde0x\x15\xbb'
+                                                b'o\xbf\x1e\x1f\x08P\x9d\xbc'
+                                                b'c\x96\x8ep'),
+ 'pygame/rwobject.cpython-313-darwin.so': bytearray(b"\xd8\xe3@p'\x97\xed8"
+                                                    b'\x17\xcd\x12\xf2\xd8#P.'
+                                                    b'u\x90\xcdx'),
+ 'pygame/scrap.cpython-313-darwin.so': bytearray(b'\xf8!\x90&\xd0&\x0c\xeb'
+                                                 b'\xef\x90\x02\xbc\xdd\xd3Ei'
+                                                 b'\xd6e\x9an'),
+ 'pygame/surface.cpython-313-darwin.so': bytearray(b'.d\xdc\x8f\x17O83'
+                                                   b"\xff\t\xa5'\x89L\xd6\x12"
+                                                   b'\xcfU\xa7C'),
+ 'pygame/surflock.cpython-313-darwin.so': bytearray(b'+\x0e\xb8\xae\xa4\x7fEo'
+                                                    b'\xd5+`\x9eB.]OX\xe4Wd'),
+ 'pygame/time.cpython-313-darwin.so': bytearray(b'I \xa3\xd5\xd9\xb7_\x19'
+                                                b'\x0b]\xd4\x81\xa0\xd1\x12\xbf'
+                                                b'\xa6\\8 '),
+ 'pygame/transform.cpython-313-darwin.so': bytearray(b'>hv\x9e\x17 \xff\xde'
+                                                     b'\xbd\xb5\xbbE'
+                                                     b'\x9e\xb2O\xfd'
+                                                     b'\x98\xc2\xde\xd4'),
+ 'yaml/_yaml.cpython-313-darwin.so': bytearray(b'+uk\x08\xdf\xe9\xa2\xc7'
+                                               b'\xb5(\xbd%H\xd4 \x00\xf1a7\x80')}
